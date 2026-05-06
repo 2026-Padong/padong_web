@@ -1,0 +1,104 @@
+@import 'tailwindcss';
+
+@theme {
+  /* ============================================ */
+  /* COLORS — Padong Variables 그대로 매핑          */
+  /* ============================================ */
+
+  /* Brand */
+  --color-brand-primary: #2e58e4;
+  --color-brand-primary-hover: #3d5ad7;
+  --color-brand-primary-light: #4a6cf7;
+  --color-brand-primary-soft: #4a6cdf;
+  --color-brand-primary-tint: #f0f5ff;
+
+  /* Neutral */
+  --color-neutral-white: #ffffff;
+  --color-neutral-black: #000000;
+
+  /* Surface */
+  --color-surface-subtle: #f5f5fa;
+  --color-surface-cool: #e8edf0;
+
+  /* Border */
+  --color-border-default: #e0e0eb;
+  --color-border-medium: #bdbdbd;
+  --color-border-strong: #a3a3a3;
+
+  /* Text */
+  --color-text-primary: #262633;
+  --color-text-secondary: #585858;
+  --color-text-tertiary: #818181;
+
+  /* Transit (지하철 노선 18개) */
+  --color-transit-line-1: #0052a4;
+  --color-transit-line-2: #00a84d;
+  --color-transit-line-3: #ef7c1c;
+  --color-transit-line-4: #00a4e3;
+  --color-transit-line-5: #996cac;
+  --color-transit-line-6: #cd7c2f;
+  --color-transit-line-7: #747f00;
+  --color-transit-line-8: #e6186c;
+  --color-transit-line-9: #bdb092;
+  --color-transit-gyeongui-jungang: #77c4a3;
+  --color-transit-gyeongchun: #0c8e72;
+  --color-transit-airport: #0090d2;
+  --color-transit-suin-bundang: #fabe00;
+  --color-transit-shinbundang: #d4003b;
+  --color-transit-gtx-a: #9a6344;
+  --color-transit-uijeongbu-shinseol: #b7c450;
+  --color-transit-seohae: #81a914;
+  --color-transit-gimpo-gold: #b6701d;
+
+  /* Status (모집/마감/종료) */
+  --color-status-recruiting: #2457e8;
+  --color-status-recruiting-bg: #dbe5fc;
+  --color-status-closing: #f27f0d;
+  --color-status-closing-bg: #fff2db;
+  --color-status-closed: #808080;
+  --color-status-closed-bg: #e8e8ed;
+
+  /* ============================================ */
+  /* SPACING — Padong space/* 매핑                  */
+  /* ============================================ */
+  --spacing-xxs: 0.25rem; /* 4px */
+  --spacing-xs: 0.5rem; /* 8px */
+  --spacing-sm: 0.75rem; /* 12px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.25rem; /* 20px */
+  --spacing-xl: 1.5rem; /* 24px */
+  --spacing-2xl: 2rem; /* 32px */
+  --spacing-3xl: 3rem; /* 48px */
+
+  /* ============================================ */
+  /* RADIUS — Padong radius/* 매핑                  */
+  /* radius-full(9999px)은 Tailwind 기본값 사용     */
+  /* ============================================ */
+  --radius-none: 0;
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem; /* 16px */
+  --radius-2xl: 1.5rem; /* 24px */
+
+  /* ============================================ */
+  /* FONT FAMILY — Pretendard Variable (jsDelivr CDN) */
+  /* (Figma는 Noto Sans KR + Inter, 코드는 Pretendard) */
+  /* ============================================ */
+  --font-sans: 'Pretendard Variable', 'Pretendard', system-ui, -apple-system, sans-serif;
+
+  /* ============================================ */
+  /* FONT SIZE — Figma Typography 10 스케일         */
+  /* lineHeight=AUTO (브라우저 normal), letterSpacing=0 */
+  /* ============================================ */
+  --text-display: 4rem; /* 64px — Hero */
+  --text-h1: 2rem; /* 32px — 페이지 제목 */
+  --text-h2: 1.75rem; /* 28px — 섹션 제목 */
+  --text-h3: 1.375rem; /* 22px — DetailAddress, ScoreBadge */
+  --text-h4: 1.125rem; /* 18px — 카드 제목 */
+  --text-subhead: 1rem; /* 16px — 강조 본문 */
+  --text-body-l: 0.875rem; /* 14px — 본문 large */
+  --text-body: 0.8125rem; /* 13px — 본문 기본 */
+  --text-body-s: 0.6875rem; /* 11px — Chip/Pill 보조 */
+  --text-caption: 0.625rem; /* 10px — 캡션 */
+}

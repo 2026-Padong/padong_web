@@ -1,0 +1,31 @@
+/* Pretendard는 index.html에서 jsDelivr CDN으로 로드 (variable font) */
+
+/* Reset / base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  color: var(--color-text-secondary);
+  background: var(--color-neutral-white);
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
