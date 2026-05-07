@@ -1,0 +1,23 @@
+import { ResultCard, type ResultCardProps } from '@/components/ui/ResultCard'
+
+// Figma 1:1: Tile · ResultListPanel · v1 (432:853) > ResultListPanel COMPONENT
+// w-[381px] h-[565px] flex flex-col gap-xs items-center justify-center
+// 5 ResultCards (첫 번째 selected, 나머지 default)
+export interface ResultListPanelProps {
+  results: ResultCardProps[]
+  selectedId?: string
+}
+
+export function ResultListPanel({ results, selectedId }: ResultListPanelProps) {
+  return (
+    <div className="flex h-[565px] w-[381px] flex-col items-center justify-center gap-xs">
+      {results.map((r) => (
+        <ResultCard
+          key={r.id ?? r.dong}
+          {...r}
+          state={r.id === selectedId ? 'selected' : 'default'}
+        />
+      ))}
+    </div>
+  )
+}
