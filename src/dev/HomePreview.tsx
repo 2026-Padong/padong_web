@@ -19,37 +19,29 @@ export function HomePreview() {
       <header>
         <h1 className="text-h1 font-bold text-text-primary">Home Feature — Phase 3</h1>
         <p className="mt-xs text-body text-text-tertiary">
-          features/home/components/ (4 components)
+          features/home/components/ (4 components, 1:1 Figma)
         </p>
       </header>
 
       <section>
         <h2 className="mb-md text-h2 font-bold text-text-primary">Atoms</h2>
-        <Row name="HomeHeroCTA">
-          <HomeHeroCTA>동네 찾기 시작</HomeHeroCTA>
+        <Row name="HomeHeroCTA (Primary/Secondary)">
+          <div className="flex gap-md">
+            <HomeHeroCTA type="Primary" />
+            <HomeHeroCTA type="Secondary" />
+          </div>
         </Row>
         <Row name="HomeHeroTag">
-          <div className="flex gap-xs">
-            <HomeHeroTag>AI</HomeHeroTag>
-            <HomeHeroTag>데이터</HomeHeroTag>
-            <HomeHeroTag>지도</HomeHeroTag>
-          </div>
+          <HomeHeroTag />
         </Row>
       </section>
 
       <section>
         <h2 className="mb-md text-h2 font-bold text-text-primary">Organisms</h2>
-        <Row name="HomeHero (614x411)">
-          <div className="rounded-lg border border-border-default p-md">
-            <HomeHero
-              title="파동"
-              subtitle="동네 데이터로 찾는 나의 동네"
-              ctaLabel="동네 찾기 시작"
-              tags={['AI', '데이터', '지도']}
-            />
-          </div>
+        <Row name="HomeHero (Banner 520x237 + 좌측 텍스트)">
+          <HomeHero />
         </Row>
-        <Row name="DataMap (600x493)">
+        <Row name="DataMap (600x493 — Leaflet 인터랙티브 지도)">
           <DataMap />
         </Row>
       </section>

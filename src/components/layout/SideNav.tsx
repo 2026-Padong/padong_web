@@ -1,5 +1,10 @@
 import { NavItem, type NavItemType } from './NavItem'
+import logoUrl from '@/assets/logo-sidenav.png'
 
+// Figma 1:1: Tile · SideNav (432:847) > SideNav COMPONENT
+// h-[900px] w-[112px] flex flex-col gap-xs items-center pt-xs bg-brand-primary
+// Logo: w-full h-[70px] rounded-sm IMAGE
+// 6 NavItem (NavIcon 6 type, 첫 번째 Active)
 const ITEMS: NavItemType[] = ['Commute', 'Custom', 'LocalShop', 'News', 'MyPage', 'Guide']
 
 export interface SideNavProps {
@@ -7,13 +12,10 @@ export interface SideNavProps {
   onNavigate?: (t: NavItemType) => void
 }
 
-// TODO: src/assets/logo.png 추가 시 <img>로 교체
 export function SideNav({ activeType, onNavigate }: SideNavProps) {
   return (
-    <nav className="flex h-full w-28 flex-col gap-xs bg-brand-primary pt-xs">
-      <div className="flex h-[70px] w-28 items-center justify-center rounded-sm">
-        <span className="text-h4 font-black text-neutral-white">파동</span>
-      </div>
+    <nav className="flex h-[900px] w-[112px] flex-col items-center gap-xs bg-brand-primary pt-xs">
+      <img src={logoUrl} alt="파동" className="h-[70px] w-full rounded-sm object-cover" />
       {ITEMS.map((t) => (
         <NavItem key={t} type={t} active={t === activeType} onClick={() => onNavigate?.(t)} />
       ))}

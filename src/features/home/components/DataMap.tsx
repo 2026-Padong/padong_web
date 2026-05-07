@@ -1,5 +1,9 @@
 import { LeafletMap } from '@/lib/map/LeafletMap'
 
+// Figma: Tile · DataMap (950:3179) > DataMap COMPONENT
+// 600x493 — Figma는 25개 서울 구의 정적 SVG shape으로 구성된 design-only 지도
+// 코드는 의도된 divergence: Leaflet + OSM 타일로 실제 인터랙티브 지도 구현
+// (zoom/pan 가능, 실시간 데이터 오버레이 가능 — 별도 phase에서 마커/히트맵 추가)
 export interface DataMapProps {
   /** 표시할 데이터 포인트 (좌표 + 값) */
   points?: Array<{ lat: number; lng: number; value: number }>
@@ -7,14 +11,9 @@ export interface DataMapProps {
   height?: number
 }
 
-/**
- * HomePage 우측 컬럼의 데이터 시각화 지도.
- * Figma: 600x493 (HomePage CityDataSection 안에서는 705x493로 확장)
- * Phase 3에서는 Leaflet 빈 지도. 마커/오버레이는 별도 phase.
- */
 export function DataMap({ points = [], width = 600, height = 493 }: DataMapProps) {
   return (
-    <div className="overflow-hidden rounded-xl" style={{ width, height }}>
+    <div className="overflow-clip rounded-xl" style={{ width, height }}>
       <LeafletMap />
       {/* TODO: points 마커/오버레이 (별도 phase) */}
       {points.length > 0 && null}

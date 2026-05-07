@@ -202,7 +202,8 @@ export function UiBasicsPreview() {
       <section>
         <h2 className="mb-md text-h2 font-bold text-text-primary">Atoms — 단순 텍스트</h2>
         <Row name="CityDataHeading">
-          <CityDataHeading city="서울특별시" />
+          <CityDataHeading />
+          <CityDataHeading>서울특별시 도시데이터</CityDataHeading>
         </Row>
         <Row name="AreaSectionTitle">
           <AreaSectionTitle>마포구 연남동</AreaSectionTitle>

@@ -1,57 +1,70 @@
 import type { MouseEvent } from 'react'
-import { cva, type VariantProps } from 'class-variance-authority'
 import { Chip } from './Chip'
 import { Heart } from './Heart'
+import { ScoreBar } from './ScoreBar'
 
-const variants = cva(
-  'flex flex-col gap-xs rounded-md border border-border-default px-md py-xs transition-colors cursor-pointer',
-  {
-    variants: {
-      state: {
-        default: 'bg-transparent',
-        selected: 'bg-brand-primary-tint',
-      },
-    },
-    defaultVariants: { state: 'default' },
-  },
-)
-
-export interface ResultCardProps extends VariantProps<typeof variants> {
+// Figma 1:1: Tile · ResultCard (431:883) > ResultCard COMPONENT_SET (Default/Selected)
+// V flex items-center justify-center px-md py-xs gap-xs rounded-md w-[381px]
+// Default: border-[1px] border-border-default (no bg)
+// Selected: border-[1.5px] border-border-default bg-brand-primary-tint
+// Header: H justify-between — Address (V gap-xxs) + Heart 24x24
+// ScoreBar (default: empty/border, selected: filled with brand-primary)
+// Tags: H gap-xs — Default chip = surface-subtle, Selected chip = brand-primary (active)
+export interface ResultCardProps {
+  state?: 'default' | 'selected'
   id?: string
   dong: string
   fullAddress: string
   liked: boolean
   tags: string[]
+  /** 0~100 — Selected 시 ScoreBar fill 비율 */
+  score?: number
   onToggleLike?: () => void
   onClick?: () => void
 }
 
 export function ResultCard({
-  state,
+  state = 'default',
   dong,
   fullAddress,
   liked,
   tags,
+  score = 100,
   onToggleLike,
   onClick,
 }: ResultCardProps) {
+  const isSelected = state === 'selected'
+
   const handleHeartClick = (e: MouseEvent<SVGSVGElement>) => {
     e.stopPropagation()
     onToggleLike?.()
   }
 
   return (
-    <article onClick={onClick} className={variants({ state })}>
-      <div className="flex items-start justify-between">
+    <article
+      onClick={onClick}
+      className={
+        isSelected
+          ? 'flex w-[381px] cursor-pointer flex-col items-center justify-center gap-xs rounded-md border-[1.5px] border-border-default bg-brand-primary-tint px-md py-xs'
+          : 'flex w-[381px] cursor-pointer flex-col items-center justify-center gap-xs rounded-md border border-border-default px-md py-xs'
+      }
+    >
+      {/* Header */}
+      <div className="flex w-[345px] items-center justify-between">
         <div className="flex flex-col gap-xxs">
           <span className="text-subhead font-bold text-text-secondary">{dong}</span>
-          <span className="text-body-s text-text-tertiary">{fullAddress}</span>
+          <span className="text-body-s font-normal text-text-tertiary">{fullAddress}</span>
         </div>
         <Heart active={liked} onClick={handleHeartClick} />
       </div>
-      <div className="flex flex-wrap gap-xs">
+
+      {/* ScoreBar */}
+      <ScoreBar value={isSelected ? score : undefined} className="w-[345px]" />
+
+      {/* Tags */}
+      <div className="flex w-[345px] gap-xs overflow-clip">
         {tags.map((t) => (
-          <Chip key={t} state="active">
+          <Chip key={t} state={isSelected ? 'active' : 'default'}>
             {t}
           </Chip>
         ))}

@@ -1,8 +1,11 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 
+// Figma 1:1: Tile · StatusPill (1159:3822) > StatusPill COMPONENT_SET (12 variants)
+// pl-[8px] pr-[10px] py-[4px] rounded-full
+// Text: Noto Sans KR Regular 10px (caption)
 const pillVariants = cva(
-  'inline-flex items-center gap-xxs rounded-full px-2.5 py-xxs text-caption font-normal',
+  'inline-flex items-center rounded-full pl-[8px] pr-[10px] py-[4px] text-caption font-normal whitespace-nowrap',
   {
     variants: {
       tone: {

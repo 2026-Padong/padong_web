@@ -1,14 +1,20 @@
 import { TabBarItem } from './TabBarItem'
 
+// Figma 1:1: Tile · TabBar (838:3127) > TabBar COMPONENT
+// border border-border-default flex items-start overflow-clip w-[332px]
+// 2 TabBarItems (active 표시는 텍스트 색상 차이만)
 export interface TabBarProps {
   active: string
   tabs: { id: string; label: string }[]
   onChange?: (id: string) => void
+  className?: string
 }
 
-export function TabBar({ active, tabs, onChange }: TabBarProps) {
+export function TabBar({ active, tabs, onChange, className }: TabBarProps) {
   return (
-    <div className="flex border-b border-border-default">
+    <div
+      className={`flex w-[332px] items-start overflow-clip border border-border-default ${className ?? ''}`}
+    >
       {tabs.map((t) => (
         <TabBarItem
           key={t.id}

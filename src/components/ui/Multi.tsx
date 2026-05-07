@@ -1,8 +1,10 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 
+// Figma 1:1: Tile · Multi (430:859) > Multi COMPONENT_SET
+// h-[27px] w-[68px] — Single과 동일 구조, 라벨만 "다중"
 const multiVariants = cva(
-  'inline-flex items-center justify-center gap-xs rounded-full px-xs py-xxs text-subhead font-bold text-neutral-white transition-colors',
+  'inline-flex h-[27px] w-[68px] items-center justify-center rounded-xl py-xxs text-subhead font-bold text-neutral-white whitespace-nowrap transition-colors',
   {
     variants: {
       state: {

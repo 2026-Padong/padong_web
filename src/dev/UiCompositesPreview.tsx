@@ -119,20 +119,29 @@ export function UiCompositesPreview() {
       <section>
         <h2 className="mb-md text-h2 font-bold text-text-primary">G3. 데이터 / 결과</h2>
         <Row name="DataCard">
-          <DataCard type="Weather" title="날씨" value="맑음" />
-          <DataCard type="Temp" title="기온" value="22°" />
-          <DataCard type="Dust" title="미세먼지" value="나쁨" />
-          <DataCard type="Rain" title="강수확률" value="20%" />
+          <DataCard type="Weather" label="날씨" value="맑음" sub="21.3°C" />
+          <DataCard type="Temp" label="온도" value="21.3°C" sub="체감 22.0°C" />
+          <DataCard type="Dust" label="미세먼지" value="좋음" sub="18.0 µg/m³" />
+          <DataCard type="Rain" label="강수확률" value="10%" sub="습도 55%" />
         </Row>
         <Row name="TitleBlock">
-          <TitleBlock title="당신의 동네를 분석 중" subtitle="잠시만 기다려주세요" />
+          <TitleBlock
+            title={
+              <>
+                내 취향에 맞는 <span className="text-brand-primary">동네를 분석 중</span>이에요
+              </>
+            }
+            body="응답을 바탕으로 가장 잘 맞는 동네를 찾고 있어요"
+          />
         </Row>
         <Row name="LoadingFooter">
-          <LoadingFooter message="응답을 바탕으로 가장 잘 맞는 동네를 찾고 있어요" />
+          <div className="w-[836px]">
+            <LoadingFooter progress={45} message="결과 페이지로 곧 이동합니다" />
+          </div>
         </Row>
         <Row name="ResultSummary">
           <div className="w-[445px]">
-            <ResultSummary count={12} location="연희동" />
+            <ResultSummary countLabel="동네 전체 12개" location="연희동" />
           </div>
         </Row>
         <Row name="ResultListSummary">

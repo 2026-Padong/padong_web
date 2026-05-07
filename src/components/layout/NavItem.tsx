@@ -1,24 +1,29 @@
 import { NavIcon, type NavIconType } from '@/components/ui/NavIcon'
 import { cn } from '@/lib/cn'
 
-export type NavItemType = 'Commute' | 'LocalShop' | 'News' | 'MyPage' | 'Guide' | 'Custom'
+// Figma 1:1: Tile · NavItem (477:949) > NavItem COMPONENT_SET (Type×State)
+// w-[112px] flex flex-col gap-xs items-center justify-center p-xs
+// Active: bg-[rgba(255,255,255,0.15)] (semi-transparent white)
+// Default: bg-transparent (LocalShop default는 icon opacity-60)
+// 24x24 NavIcon + 11px Medium text-neutral-white text-center w-[96px]
+export type NavItemType = 'Commute' | 'Custom' | 'LocalShop' | 'News' | 'MyPage' | 'Guide'
 
 const TYPE_TO_ICON: Record<NavItemType, NavIconType> = {
   Commute: 'Home',
+  Custom: 'Store',
   LocalShop: 'ShoppingBag',
   News: 'Information',
   MyPage: 'User',
   Guide: 'Book',
-  Custom: 'Store',
 }
 
 const TYPE_TO_LABEL: Record<NavItemType, string> = {
-  Commute: '출퇴근',
-  LocalShop: '동네가게',
+  Commute: '출퇴근 동네 찾기',
+  Custom: '맞춤 동네 찾기',
+  LocalShop: '우리 동네 가게',
   News: '뉴스',
-  MyPage: '마이',
+  MyPage: '마이페이지',
   Guide: '가이드',
-  Custom: '맞춤',
 }
 
 export interface NavItemProps {
@@ -28,26 +33,22 @@ export interface NavItemProps {
 }
 
 export function NavItem({ type, active = false, onClick }: NavItemProps) {
+  const isLocalShopDefault = type === 'LocalShop' && !active
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        'flex w-28 flex-col items-center gap-xs px-xs py-xs',
-        active ? 'bg-neutral-white' : 'bg-transparent',
+        'flex w-[112px] flex-col items-center justify-center gap-xs p-xs transition-colors',
+        active && 'bg-white/15',
       )}
     >
       <NavIcon
         type={TYPE_TO_ICON[type]}
         size={24}
-        className={active ? 'text-brand-primary' : 'text-neutral-white'}
+        className={cn('text-neutral-white', isLocalShopDefault && 'opacity-60')}
       />
-      <span
-        className={cn(
-          'text-caption font-bold',
-          active ? 'text-brand-primary' : 'text-neutral-white',
-        )}
-      >
+      <span className="w-[96px] text-center text-body-s font-medium text-neutral-white whitespace-nowrap">
         {TYPE_TO_LABEL[type]}
       </span>
     </button>

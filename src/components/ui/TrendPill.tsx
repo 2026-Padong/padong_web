@@ -1,8 +1,12 @@
 import { Minus, TrendingDown, TrendingUp, type LucideIcon } from 'lucide-react'
 import { cva } from 'class-variance-authority'
 
+// Figma 1:1: Tile · TrendPill (1304:4053) > TrendPill COMPONENT_SET (3 variants)
+// flex gap-[5px] items-center px-[10px] py-[4px] rounded-full
+// 14x14 icon + Bold 11px text
+// Variant: 감소(critical) / 증가(positive) / 유지(neutral)
 const variants = cva(
-  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-body-s font-bold',
+  'inline-flex items-center gap-[5px] rounded-full px-[10px] py-[4px] text-body-s font-bold whitespace-nowrap',
   {
     variants: {
       trend: {

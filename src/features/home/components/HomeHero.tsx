@@ -1,44 +1,59 @@
 import { HomeHeroCTA } from './HomeHeroCTA'
 import { HomeHeroTag } from './HomeHeroTag'
+import bannerUrl from '@/assets/home-hero-banner.png'
+import badgeUrl from '@/assets/home-hero-badge.png'
 
+// Figma 1:1: Tile · HomeHero (899:3130) > HomeHero COMPONENT
+// flex flex-col gap-[35px] items-start px-[47px]
+// Top: Title group (Find your 동네 + 파동 32px Bold + subtitle 16px text-tertiary)
+// Banner (520x237 rounded-[10px]): bg image + content (HomeHeroTag + 22px Bold mixed text + features + 2 CTAs + 65px badge image)
 export interface HomeHeroProps {
-  title: string
-  subtitle?: string
-  ctaLabel: string
-  onCta?: () => void
-  tags?: string[]
-  /** 우측 배너 이미지 (Figma: 520x237) */
-  bannerImage?: string
+  /** Primary CTA 클릭 — 직장으로 추천 받기 */
+  onPrimaryCta?: () => void
+  /** Secondary CTA 클릭 — 내 취향으로 찾기 */
+  onSecondaryCta?: () => void
 }
 
-/**
- * HomePage MainBanner 영역.
- * Figma: 614x411, V pad:0/47/0/47 gap:35
- * 좌측: 텍스트 그룹 (title + subtitle + tags + CTA), 우측 또는 하단: 배너 이미지
- */
-export function HomeHero({ title, subtitle, ctaLabel, onCta, tags, bannerImage }: HomeHeroProps) {
+export function HomeHero({ onPrimaryCta, onSecondaryCta }: HomeHeroProps) {
   return (
-    <section className="flex flex-col gap-2xl px-12">
-      <div className="flex flex-col gap-md">
-        <h1 className="text-display font-bold text-text-primary">{title}</h1>
-        {subtitle && <p className="text-h4 text-text-secondary">{subtitle}</p>}
+    <section className="flex flex-col items-start gap-[35px] px-[47px]">
+      {/* Title group */}
+      <div className="grid grid-cols-1 grid-rows-1">
+        <p className="col-start-1 row-start-1 text-h1 font-bold text-text-primary whitespace-nowrap">
+          Find your 동네
+        </p>
+        <p className="col-start-1 row-start-1 mt-[49px] text-h1 font-bold text-brand-primary whitespace-nowrap">
+          파동
+        </p>
+        <p className="col-start-1 row-start-1 mt-[120px] text-subhead font-normal text-text-tertiary whitespace-nowrap">
+          서울에서 오래 머물고 싶은 동네를 찾아드릴게요
+        </p>
       </div>
-      {tags && tags.length > 0 && (
-        <div className="flex gap-xs">
-          {tags.map((t) => (
-            <HomeHeroTag key={t}>{t}</HomeHeroTag>
-          ))}
+
+      {/* Banner */}
+      <div className="relative flex h-[237px] w-[520px] items-center justify-center gap-[25px] overflow-hidden rounded-[10px]">
+        <img src={bannerUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="relative flex h-full w-[356px] flex-col items-start justify-center gap-lg px-[25px]">
+          <div className="flex h-[101px] w-[268px] flex-col items-start justify-center gap-[5px]">
+            <HomeHeroTag />
+            <p className="text-h3 font-bold text-text-primary leading-tight">
+              나에게 맞는 동네,
+              <br />
+              그리고 출퇴근에 <span className="text-brand-primary">맞는 동네</span>
+            </p>
+          </div>
+          <div className="flex w-[325px] items-center justify-between">
+            <HomeHeroCTA type="Primary" onClick={onPrimaryCta} />
+            <HomeHeroCTA type="Secondary" onClick={onSecondaryCta} />
+          </div>
         </div>
-      )}
-      <div className="flex items-center justify-between gap-xl">
-        <HomeHeroCTA onClick={onCta}>{ctaLabel}</HomeHeroCTA>
-        {bannerImage && (
+        <div className="relative h-[192px] w-[139px] overflow-clip">
           <img
-            src={bannerImage}
+            src={badgeUrl}
             alt=""
-            className="h-[237px] w-[520px] flex-shrink-0 rounded-lg object-cover"
+            className="absolute left-[57px] top-[34px] size-[65px] object-cover"
           />
-        )}
+        </div>
       </div>
     </section>
   )
