@@ -1,0 +1,100 @@
+import { Heart } from '@/components/ui/Heart'
+import { Users } from 'lucide-react'
+
+// Figma 1:1: Tile · ShopCard (1739:4663) > ShopCard COMPONENT
+// h-[131px] rounded-xl bg-white, H gap-0 items-center
+// ImageArea: 155w h-full rounded-lg
+// ContentArea: flex-1 h-full V gap-md px-md py-xxs items-start justify-center
+//   HeaderBlock (gap-xs):
+//     NameWrap (H gap-xs items-center w-full): name 16px Bold text-primary + Heart 24
+//     MenuTagRow: "카페, 디저트" 11px Medium text-tertiary
+//   MetaBlock (gap-2):
+//     description "대화하기 좋은 베이커리 카페" 11px Medium text-secondary
+//     FooterRow (justify-between):
+//       CountGroup (gap-1): Users icon 14 + "1/5명" 11px Medium text-secondary
+//       RecruitingBadge: bg #dbe5fc, dot + "모집중" 11px text #2457e8
+export interface ShopCardProps {
+  id: string
+  image?: string
+  name: string
+  category?: string
+  description?: string
+  participantCurrent?: number
+  participantTotal?: number
+  status?: 'recruiting' | null
+  liked: boolean
+  onClick?: () => void
+  onToggleLike?: () => void
+}
+
+export function ShopCard({
+  image,
+  name,
+  category = '카페, 디저트',
+  description,
+  participantCurrent,
+  participantTotal,
+  status = 'recruiting',
+  liked,
+  onClick,
+  onToggleLike,
+}: ShopCardProps) {
+  return (
+    <article
+      onClick={onClick}
+      className="flex h-[131px] w-full cursor-pointer items-center overflow-hidden rounded-xl bg-neutral-white"
+    >
+      {/* ImageArea */}
+      <div className="relative h-full w-[155px] shrink-0 rounded-lg bg-surface-subtle">
+        {image && (
+          <img
+            src={image}
+            alt={name}
+            className="absolute inset-0 h-full w-full rounded-lg object-cover"
+          />
+        )}
+      </div>
+
+      {/* ContentArea */}
+      <div className="flex h-full flex-1 flex-col items-start justify-center gap-md overflow-clip px-md py-xxs">
+        {/* HeaderBlock */}
+        <div className="flex w-full flex-col items-start gap-xs">
+          <div className="flex w-full items-center gap-xs">
+            <p className="flex-1 text-subhead font-bold text-text-primary">{name}</p>
+            <Heart
+              active={liked}
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggleLike?.()
+              }}
+            />
+          </div>
+          <p className="w-full text-body-s font-medium text-text-tertiary">{category}</p>
+        </div>
+
+        {/* MetaBlock */}
+        <div className="flex w-full flex-col items-start justify-center gap-2">
+          {description && (
+            <p className="w-full text-body-s font-medium text-text-secondary">{description}</p>
+          )}
+          <div className="flex w-full items-center justify-between">
+            {participantCurrent != null && participantTotal != null && (
+              <div className="flex items-center gap-1">
+                <Users size={14} className="text-text-secondary" />
+                <span className="text-body-s font-medium text-text-secondary">
+                  {participantCurrent}/{participantTotal}명
+                </span>
+              </div>
+            )}
+            {status === 'recruiting' && (
+              <span className="inline-flex items-center gap-[5px] rounded-full bg-[#dbe5fc] px-[9px] py-1">
+                <span className="size-[6px] rounded-full bg-[#2457e8]" />
+                <span className="text-body-s font-medium text-[#2457e8]">모집중</span>
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  )
+}
