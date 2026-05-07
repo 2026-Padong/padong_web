@@ -1,26 +1,23 @@
-import {
-  Building,
-  Building2,
-  Bus,
-  Car,
-  Footprints,
-  House,
-  Warehouse,
-  type LucideIcon,
-} from 'lucide-react'
+import KindBus from '@/assets/icons/kind-bus.svg?react'
+import KindCar from '@/assets/icons/kind-car.svg?react'
+import KindWalk from '@/assets/icons/kind-walk.svg?react'
+import KindApart from '@/assets/icons/kind-apart.svg?react'
+import KindOpistel from '@/assets/icons/kind-opistel.svg?react'
+import KindYeonlip from '@/assets/icons/kind-yeonlip.svg?react'
+import KindDandok from '@/assets/icons/kind-dandok.svg?react'
 
+// Figma 1:1: Tile · Icons / Kind (430:850) > KindIcon COMPONENT_SET (7 types)
+// 36×36 — currentColor 기반 SVG
 export type KindIconType = 'Bus' | 'Car' | 'Walk' | 'Apart' | 'Opistel' | 'Yeonlip' | 'Dandok'
 
-// 한국 주거 형태(Apart/Opistel/Yeonlip/Dandok)는 lucide에 정확한 매핑 없음.
-// 임시 매핑이며, 디자이너 확정 후 SVG 교체 예정.
-const MAP: Record<KindIconType, LucideIcon> = {
-  Bus,
-  Car,
-  Walk: Footprints,
-  Apart: Building2,
-  Opistel: Building,
-  Yeonlip: Warehouse,
-  Dandok: House,
+const MAP: Record<KindIconType, React.FC<React.SVGProps<SVGSVGElement>>> = {
+  Bus: KindBus,
+  Car: KindCar,
+  Walk: KindWalk,
+  Apart: KindApart,
+  Opistel: KindOpistel,
+  Yeonlip: KindYeonlip,
+  Dandok: KindDandok,
 }
 
 export interface KindIconProps {
@@ -31,5 +28,5 @@ export interface KindIconProps {
 
 export function KindIcon({ type, size = 36, className }: KindIconProps) {
   const Component = MAP[type]
-  return <Component size={size} className={className} />
+  return <Component width={size} height={size} className={className} aria-hidden />
 }

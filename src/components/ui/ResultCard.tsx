@@ -35,7 +35,7 @@ export function ResultCard({
 }: ResultCardProps) {
   const isSelected = state === 'selected'
 
-  const handleHeartClick = (e: MouseEvent<SVGSVGElement>) => {
+  const handleHeartClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     onToggleLike?.()
   }

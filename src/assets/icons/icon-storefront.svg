@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="StorefrontGlyph">
+<path id="Vector" d="M5 3H19L21 8H3L5 3Z" fill="var(--fill-0, #2E58E4)"/>
+<path id="Vector_2" d="M4 8H20V19C20 20.3333 19.3333 21 18 21H6C4.66667 21 4 20.3333 4 19V8Z" fill="var(--fill-0, #2E58E4)"/>
+<path id="Vector_3" d="M10 21V14C10 13.3333 10.6667 13 12 13C13.3333 13 14 13.3333 14 14V21H10Z" fill="var(--fill-0, white)"/>
+<path id="Vector_4" opacity="0.85" d="M9 3V8" stroke="var(--stroke-0, white)" stroke-width="0.9"/>
+<path id="Vector_5" opacity="0.85" d="M12 3V8" stroke="var(--stroke-0, white)" stroke-width="0.9"/>
+<path id="Vector_6" opacity="0.85" d="M15 3V8" stroke="var(--stroke-0, white)" stroke-width="0.9"/>
+</g>
+</svg>

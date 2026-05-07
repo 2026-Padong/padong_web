@@ -11,7 +11,7 @@ export interface ResultCardHeaderProps extends ResultCardAddressProps {
 }
 
 export function ResultCardHeader({ liked, onToggleLike, ...address }: ResultCardHeaderProps) {
-  const handleHeartClick = (e: MouseEvent<SVGSVGElement>) => {
+  const handleHeartClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     onToggleLike?.()
   }

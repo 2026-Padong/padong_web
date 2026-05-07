@@ -34,6 +34,11 @@ export interface NavItemProps {
 
 export function NavItem({ type, active = false, onClick }: NavItemProps) {
   const isLocalShopDefault = type === 'LocalShop' && !active
+  // NavIcon SVG가 fallback으로 brand-primary를 쓰므로, SideNav(파란 배경)에선 흰색으로 override
+  const navIconStyle = {
+    '--fill-0': 'white',
+    '--stroke-0': 'white',
+  } as React.CSSProperties
   return (
     <button
       type="button"
@@ -43,11 +48,9 @@ export function NavItem({ type, active = false, onClick }: NavItemProps) {
         active && 'bg-white/15',
       )}
     >
-      <NavIcon
-        type={TYPE_TO_ICON[type]}
-        size={24}
-        className={cn('text-neutral-white', isLocalShopDefault && 'opacity-60')}
-      />
+      <span style={navIconStyle} className={cn(isLocalShopDefault && 'opacity-60')}>
+        <NavIcon type={TYPE_TO_ICON[type]} size={24} />
+      </span>
       <span className="w-[96px] text-center text-body-s font-medium text-neutral-white whitespace-nowrap">
         {TYPE_TO_LABEL[type]}
       </span>
