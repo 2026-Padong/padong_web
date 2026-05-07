@@ -1,12 +1,14 @@
 import { useState } from 'react'
+import { HomePreview } from '@/dev/HomePreview'
 import { LayoutPreview } from '@/dev/LayoutPreview'
 import { TokensPreview } from '@/dev/TokensPreview'
 import { UiBasicsPreview } from '@/dev/UiBasicsPreview'
 import { UiCompositesPreview } from '@/dev/UiCompositesPreview'
 
-type DevPage = 'tokens' | 'ui-basics' | 'ui-composites' | 'layout'
+type DevPage = 'tokens' | 'ui-basics' | 'ui-composites' | 'layout' | 'home'
 
 const PAGES: { id: DevPage; label: string }[] = [
+  { id: 'home', label: 'Home (3)' },
   { id: 'ui-composites', label: 'UI Composites (2B)' },
   { id: 'layout', label: 'Layout (2B)' },
   { id: 'ui-basics', label: 'UI Basics (2A)' },
@@ -14,7 +16,7 @@ const PAGES: { id: DevPage; label: string }[] = [
 ]
 
 export default function App() {
-  const [page, setPage] = useState<DevPage>('ui-composites')
+  const [page, setPage] = useState<DevPage>('home')
 
   return (
     <div>
@@ -38,6 +40,7 @@ export default function App() {
       {page === 'ui-basics' && <UiBasicsPreview />}
       {page === 'ui-composites' && <UiCompositesPreview />}
       {page === 'layout' && <LayoutPreview />}
+      {page === 'home' && <HomePreview />}
     </div>
   )
 }
