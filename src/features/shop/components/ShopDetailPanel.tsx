@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Clock, MapPin, Phone, FileText, Image as ImageIcon, Minus, Plus } from 'lucide-react'
+import { Clock, MapPin, Phone, FileText, Minus, Plus } from 'lucide-react'
 import type { MockShop } from '@/data/mocks'
+import { ShopImageGallery } from './ShopImageGallery'
 
 // Figma 1:1: Tile · ShopDetailPanel (659:2019) > ShopDetailPanel COMPONENT_SET (Tab=Menu/Info)
 // 450w 900h V gap-[15px] pt-[25px] pb-[10px] px-[25px] items-center bg-white
@@ -43,24 +44,7 @@ export function ShopDetailPanel({ shop, tab, onTabChange, onBack, onJoin }: Shop
       </div>
 
       <div className="flex h-[214px] w-[400px] items-center justify-center">
-        <div className="relative h-[214px] flex-1 overflow-clip rounded-lg bg-surface-subtle">
-          {shop.images[0] ? (
-            <img
-              src={shop.images[0]}
-              alt={shop.name}
-              className="absolute inset-0 h-full w-full rounded-lg object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <ImageIcon size={48} className="text-border-default" />
-            </div>
-          )}
-          <div className="absolute left-[14px] top-[173px] flex items-end overflow-clip rounded-md bg-neutral-black px-xs py-xxs">
-            <span className="text-body-s font-medium text-neutral-white whitespace-nowrap">
-              ▧ 1 / {Math.max(1, shop.images.length)}
-            </span>
-          </div>
-        </div>
+        <ShopImageGallery images={shop.images} alt={shop.name} />
       </div>
 
       <div className="flex w-full flex-1 flex-col items-start overflow-hidden py-[10px]">

@@ -48,17 +48,28 @@ export function JobFinderPage() {
     )
   }
 
-  const items = data?.items ?? []
+  const ITEMS_PER_PAGE = 4
+  const allItems = data?.items ?? []
+  const total = data?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE))
+  const start = (page - 1) * ITEMS_PER_PAGE
+  const items = allItems.slice(start, start + ITEMS_PER_PAGE)
+  const destinations = isMulti ? ['연희동', '강남역', '시청'] : ['연희동']
+  const hint = destinations.join(' · ')
+  const summarySubtitle = isMulti
+    ? `추천 동네 ${total}개 · ${destinations.length}개 직장 종합`
+    : `추천 동네 ${total}개`
 
   return (
     <div className="flex h-screen overflow-hidden">
       <SideNav activeType="Commute" />
       <SearchListPanel
-        title="출퇴근 기반"
+        title="직장 위치 기반"
         mode={isMulti ? 'multi' : 'single'}
         onModeChange={handleModeChange}
         destination={destination}
         onDestinationChange={setDestination}
+        hint={hint}
         results={items.map((r) => ({
           id: r.id,
           dong: r.dong,
@@ -68,9 +79,10 @@ export function JobFinderPage() {
           score: r.score,
         }))}
         selectedId={items[0]?.id}
-        resultCount={data?.total ?? 0}
+        resultCount={total}
+        resultSubtitle={summarySubtitle}
         currentPage={page}
-        totalPages={5}
+        totalPages={totalPages}
         onPageChange={setPage}
       />
       <MapPlaceholder width={907} height={900} />

@@ -8,12 +8,18 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { useResults } from '@/api/queries/useResults'
 import { LIFESTYLE_TYPES } from '@/data/mocks'
 
+const ITEMS_PER_PAGE = 4
+
 export function PreferenceResultPage() {
   const [page, setPage] = useState(1)
   const { data, isLoading, error, refetch } = useResults({ lifestyleId: 'efficient' })
 
   const lifestyle = LIFESTYLE_TYPES.find((l) => l.id === data?.lifestyleId) ?? LIFESTYLE_TYPES[0]
   const resultTitle = `${lifestyle.emoji} ${lifestyle.label}`
+  const total = data?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE))
+  const start = (page - 1) * ITEMS_PER_PAGE
+  const pageItems = (data?.items ?? []).slice(start, start + ITEMS_PER_PAGE)
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -39,7 +45,7 @@ export function PreferenceResultPage() {
           title="내 취향 기반"
           resultTitle={resultTitle}
           recommendedCount={data.total}
-          cards={data.items.map((r) => ({
+          cards={pageItems.map((r) => ({
             id: r.id,
             dong: r.dong,
             fullAddress: r.fullAddress,
@@ -48,7 +54,7 @@ export function PreferenceResultPage() {
             score: r.score,
           }))}
           currentPage={page}
-          totalPages={3}
+          totalPages={totalPages}
           onPageChange={setPage}
         />
       )}

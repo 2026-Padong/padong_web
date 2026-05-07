@@ -66,6 +66,8 @@ export const handlers = [
         id: q.id,
         question: q.question,
         subtitle: q.subtitle ?? null,
+        left: q.left,
+        right: q.right,
       })),
     })
   }),

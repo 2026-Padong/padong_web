@@ -1,32 +1,19 @@
 import analyzingImg from '@/assets/analyzing-illustration.png'
 
-// Figma 1:1: Tile · CustomizedPanel2 (546:1067) > AnalyzingIllustration (545:1043)
-// w-[370px] flex flex-col gap-lg items-center
-//   분석중_IMG: aspect-[592/413] w-full overflow-clip
-//   MessageBlock (gap-lg items-center):
-//     - title: Noto Sans KR Bold 22px text-brand-primary
-//     - subtitle: 2 lines, Noto Sans KR Regular 14px text-text-secondary
-export interface AnalyzingIllustrationProps {
-  title?: string
-  subtitleLine1?: string
-  subtitleLine2?: string
-}
-
-export function AnalyzingIllustration({
-  title = '당신의 취향을 분석 중이에요',
-  subtitleLine1 = '선호하는 분위기와 라이프스타일을 기반으로',
-  subtitleLine2 = '우리동네를 분석하고 있어요',
-}: AnalyzingIllustrationProps) {
+// Figma 1:1: Tile · AnalyzingIllustration (1527:4244) > AnalyzingIllustration (master)
+// 380×265 overflow-clip
+// 내부: 분석중_IMG (380×265 absolute) > 이미지가 247.94% × 259.46% 크기로 left:-91.22% top:-49.64% offset
+// (원본 PNG가 와이드 일러스트라 380×265 영역만 cropping해서 보여줌)
+export function AnalyzingIllustration() {
   return (
-    <div className="flex w-[370px] flex-col items-center gap-lg">
-      <div className="relative aspect-[592/413] w-full overflow-clip">
-        <img src={analyzingImg} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      </div>
-      <div className="flex flex-col items-center gap-lg whitespace-nowrap">
-        <p className="text-h3 font-bold text-brand-primary">{title}</p>
-        <div className="flex flex-col items-center text-body-l font-normal text-text-secondary">
-          <p>{subtitleLine1}</p>
-          <p>{subtitleLine2}</p>
+    <div className="relative h-[265px] w-[380px] overflow-clip">
+      <div className="absolute h-[265px] left-0 top-0 w-[380px]">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <img
+            src={analyzingImg}
+            alt=""
+            className="absolute h-[247.94%] left-[-91.22%] top-[-49.64%] w-[259.46%] max-w-none"
+          />
         </div>
       </div>
     </div>

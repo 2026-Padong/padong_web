@@ -2,6 +2,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { SideNav } from '@/components/layout/SideNav'
 import { ShopListPanel } from '@/features/shop/components/ShopListPanel'
 import { ShopDetailPanel } from '@/features/shop/components/ShopDetailPanel'
+import { ShopDetailMapPanel } from '@/features/shop/components/ShopDetailMapPanel'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useShopList } from '@/api/queries/useShopList'
@@ -112,6 +113,7 @@ export function ShopDetailPage() {
         onTabChange={(t) => setParams({ tab: t })}
         onBack={() => nav('/shops')}
       />
+      <ShopDetailMapPanel shop={shop} width={tab === 'Menu' ? 458 : 418} />
     </div>
   )
 }

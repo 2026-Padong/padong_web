@@ -1,11 +1,12 @@
 import { PageHeader } from '@/components/ui/PageHeader'
 import { QuestionProgress } from './QuestionProgress'
-import { AnalyzingIllustration } from './AnalyzingIllustration'
+import { AnalyzingVisual } from './AnalyzingVisual'
 
 // Figma 1:1: Tile · CustomizedPanel2 (546:1067) > LifestyleAnalyzingPanel (545:1058)
 // w-[420px] h-[900px] flex flex-col gap-2xl items-center p-xl
 // PageHeader + AnalyzingContent (V gap-[70px] items-center w-full):
-//   QuestionProgress (showCount=false, step="02", stepLabel="취향 분석") + AnalyzingIllustration
+//   QuestionProgress (showCount=false, step="02", stepLabel="취향 분석") + AnalyzingVisual
+//   (CustomizedPanel2의 AnalyzingIllustration = AnalyzingVisual = 이미지+제목/부제)
 export interface LifestyleAnalyzingPanelProps {
   title?: string
   illustrationTitle?: string
@@ -30,7 +31,7 @@ export function LifestyleAnalyzingPanel({
           stepLabel="취향 분석"
           showCount={false}
         />
-        <AnalyzingIllustration
+        <AnalyzingVisual
           title={illustrationTitle}
           subtitleLine1={illustrationSubtitleLine1}
           subtitleLine2={illustrationSubtitleLine2}

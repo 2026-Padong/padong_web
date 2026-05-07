@@ -1,4 +1,5 @@
 import type { ResultCardProps } from '@/components/ui/ResultCard'
+import type { SubwayLine } from '@/components/ui/SubwayLineBadge'
 
 import dongYeonnam from '@/assets/dongs/dong-yeonnam.png'
 import dongMangwon from '@/assets/dongs/dong-mangwon.png'
@@ -558,5 +559,146 @@ export const MOCK_SHOPS: MockShop[] = [
       { label: '영업시간', value: '17:00 - 23:00' },
       { label: '휴무일', value: '매주 월요일' },
     ],
+  },
+]
+
+// ─────────────────────────────────────────────────────────
+// HomePage 우측 컬럼 — 동네 명소 (PlaceCard용)
+// ─────────────────────────────────────────────────────────
+
+export interface MockPlaceFacilities {
+  subway?: { station: string; lines: SubwayLine[] }
+  busStops?: number
+  bikeStations?: number
+}
+
+export interface MockPlaceData {
+  icon: 'population' | 'age' | 'composition' | 'road'
+  label: string
+  value: string
+  hint?: string
+  hintTone?: 'positive' | 'neutral'
+}
+
+export interface MockPlace {
+  id: string
+  image?: string
+  category: '관광특구' | '고궁·문화유산' | '인구밀집지역' | '발달상권' | '공원'
+  event?: string
+  name: string
+  address: string
+  facilities: MockPlaceFacilities
+  data: MockPlaceData[]
+}
+
+export const MOCK_PLACES: MockPlace[] = [
+  {
+    id: 'gwanghwamun-deoksugung',
+    category: '고궁·문화유산',
+    event: '문화재 야간개장',
+    name: '광화문 · 덕수궁',
+    address: '서울시 종로구 · 중구 일대',
+    facilities: {
+      subway: { station: '시청역', lines: ['1', '2'] },
+      busStops: 12,
+      bikeStations: 8,
+    },
+    data: [
+      {
+        icon: 'population',
+        label: '실시간 인구',
+        value: '약 32,000명',
+        hint: '여유 · ↓ 감소 예상',
+        hintTone: 'positive',
+      },
+      { icon: 'age', label: '연령대 분포', value: '30대 23.8%', hint: '40대 23.5% · 20대 18.8%' },
+      { icon: 'composition', label: '인구 구성', value: '여 50.1%', hint: '남 49.9%' },
+      { icon: 'road', label: '도로상황', value: '원활', hint: '평균 13km/h', hintTone: 'positive' },
+    ],
+  },
+  {
+    id: 'hongdae-area',
+    category: '발달상권',
+    event: '주말 거리공연',
+    name: '홍대 거리',
+    address: '서울시 마포구 서교동',
+    facilities: {
+      subway: { station: '홍대입구역', lines: ['2', 'gyeongui-jungang', 'airport'] },
+      busStops: 18,
+      bikeStations: 11,
+    },
+    data: [
+      {
+        icon: 'population',
+        label: '실시간 인구',
+        value: '약 58,400명',
+        hint: '혼잡 · ↑ 증가 추세',
+      },
+      { icon: 'age', label: '연령대 분포', value: '20대 41.2%', hint: '30대 26.7% · 10대 12.4%' },
+      { icon: 'composition', label: '인구 구성', value: '여 53.6%', hint: '남 46.4%' },
+      { icon: 'road', label: '도로상황', value: '서행', hint: '평균 8km/h' },
+    ],
+  },
+  {
+    id: 'seongsu-cafe-street',
+    category: '발달상권',
+    name: '성수 카페거리',
+    address: '서울시 성동구 성수동',
+    facilities: {
+      subway: { station: '성수역', lines: ['2'] },
+      busStops: 9,
+      bikeStations: 6,
+    },
+    data: [
+      {
+        icon: 'population',
+        label: '실시간 인구',
+        value: '약 21,300명',
+        hint: '보통 · — 안정',
+        hintTone: 'positive',
+      },
+      { icon: 'age', label: '연령대 분포', value: '20대 35.4%', hint: '30대 31.2% · 40대 16.8%' },
+      { icon: 'composition', label: '인구 구성', value: '여 56.2%', hint: '남 43.8%' },
+      { icon: 'road', label: '도로상황', value: '원활', hint: '평균 16km/h', hintTone: 'positive' },
+    ],
+  },
+]
+
+// ─────────────────────────────────────────────────────────
+// HomePage 좌측 — 뉴스 (NewsCardHorizontal용)
+// ─────────────────────────────────────────────────────────
+
+export interface MockNews {
+  id: string
+  thumbnail?: string
+  title: string
+  summary: string
+  publishedAt: string
+}
+
+export const MOCK_NEWS: MockNews[] = [
+  {
+    id: 'news-1',
+    title: '서울시, 청년안심주택 3차 사전예약 접수 시작',
+    summary: '서울특별시가 청년안심주택 3차 사전예약 접수를 시작했습니다.',
+    publishedAt: '2026-04-22',
+  },
+  {
+    id: 'news-2',
+    title: '연희동 일대 골목길 정비 사업 본격화',
+    summary: '서대문구가 연희동 골목길 보행환경 정비를 시작합니다.',
+    publishedAt: '2026-04-18',
+  },
+  {
+    id: 'news-3',
+    title: '망원시장, 주말 야시장 5월부터 운영',
+    summary: '망원시장이 5월 첫째 주말부터 야시장을 정기 운영합니다.',
+    publishedAt: '2026-04-15',
+  },
+  {
+    id: 'news-4',
+    title: '성수동 공유 오피스 신규 입점 잇따라',
+    summary: '성수동에 공유 오피스가 잇따라 입점하며 워킹스테이션 수요가 증가하고 있습니다.',
+    publishedAt: '2026-04-10',
   },
 ]

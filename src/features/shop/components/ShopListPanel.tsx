@@ -27,6 +27,8 @@ const FILTERS = [
   { id: 'liked', label: '찜' },
 ]
 
+const ITEMS_PER_PAGE = 4
+
 export function ShopListPanel({
   title = '동네 가게 추천',
   shops,
@@ -37,7 +39,9 @@ export function ShopListPanel({
   const [search, setSearch] = useState('')
   const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({})
   const [page, setPage] = useState(1)
-  const totalPages = Math.max(1, Math.ceil(shops.length / 10))
+  const totalPages = Math.max(1, Math.ceil(shops.length / ITEMS_PER_PAGE))
+  const start = (page - 1) * ITEMS_PER_PAGE
+  const visibleShops = shops.slice(start, start + ITEMS_PER_PAGE)
 
   return (
     <aside className="flex h-[900px] w-[420px] flex-col items-start gap-lg bg-neutral-white px-lg py-xl">
@@ -57,7 +61,7 @@ export function ShopListPanel({
           onToggle={(id) => setActiveFilters((s) => ({ ...s, [id]: !s[id] }))}
         />
         <div className="flex min-h-px w-full flex-1 flex-col items-center gap-lg overflow-y-auto py-xxs">
-          {shops.map((s) => (
+          {visibleShops.map((s) => (
             <ShopCard
               key={s.id}
               id={s.id}
