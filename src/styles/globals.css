@@ -1,5 +1,8 @@
 /* Pretendard는 index.html에서 jsDelivr CDN으로 로드 (variable font) */
 
+/* Leaflet 기본 스타일 */
+@import 'leaflet/dist/leaflet.css';
+
 /* Reset / base */
 *,
 *::before,
