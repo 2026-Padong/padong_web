@@ -63,10 +63,11 @@ export function ShopListPanel({
               id={s.id}
               image={s.image || undefined}
               name={s.name}
-              category={s.description}
+              category={s.category}
               description={s.description}
               participantCurrent={s.participantCurrent}
               participantTotal={s.participantTotal}
+              status={s.status === 'closed' ? null : 'recruiting'}
               liked={s.id === selectedId ? true : s.liked}
               onClick={() => onShopClick?.(s.id)}
             />
