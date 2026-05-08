@@ -1,20 +1,34 @@
-import { NavIcon, type NavIconType } from '@/components/ui/NavIcon'
+import { Link } from 'react-router'
 import { cn } from '@/lib/cn'
+import IconCommute from '@/assets/icons/navitem-commute.svg?react'
+import IconCustom from '@/assets/icons/navitem-custom.svg?react'
+import IconLocalShop from '@/assets/icons/navitem-localshop.svg?react'
+import IconNews from '@/assets/icons/navitem-news.svg?react'
+import IconMyPage from '@/assets/icons/navitem-mypage.svg?react'
+import IconGuide from '@/assets/icons/navitem-guide.svg?react'
 
-// Figma 1:1: Tile · NavItem (477:949) > NavItem COMPONENT_SET (Type×State)
-// w-[112px] flex flex-col gap-xs items-center justify-center p-xs
-// Active: bg-[rgba(255,255,255,0.15)] (semi-transparent white)
-// Default: bg-transparent (LocalShop default는 icon opacity-60)
-// 24x24 NavIcon + 11px Medium text-neutral-white text-center w-[96px]
+// Figma 1:1: Tile · NavItem (477:949) > NavItem · 6×2 COMPONENT_SET
+// Type 6종 × State 2종 — 각 variant별 SideNav 색상이 미리 적용된 SVG asset 사용
 export type NavItemType = 'Commute' | 'Custom' | 'LocalShop' | 'News' | 'MyPage' | 'Guide'
 
-const TYPE_TO_ICON: Record<NavItemType, NavIconType> = {
-  Commute: 'Home',
-  Custom: 'Store',
-  LocalShop: 'ShoppingBag',
-  News: 'Information',
-  MyPage: 'User',
-  Guide: 'Book',
+type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>
+interface IconSpec {
+  icon: IconComponent
+  /** Figma 24×24 frame 내 아이콘 native 사이즈 + offset (1:1 fidelity) */
+  width: number
+  height: number
+  left: number
+  top: number
+}
+
+// Figma native size × 1.2 (center-aligned in 24×24 wrapper)
+const TYPE_TO_ICON: Record<NavItemType, IconSpec> = {
+  Commute: { icon: IconCommute, width: 19.2, height: 22.8, left: 2.4, top: 0.6 },
+  Custom: { icon: IconCustom, width: 24, height: 21.6, left: 0, top: 1.2 },
+  LocalShop: { icon: IconLocalShop, width: 28.8, height: 28.8, left: -2.4, top: -2.4 },
+  News: { icon: IconNews, width: 21.6, height: 21.6, left: 1.2, top: 1.2 },
+  MyPage: { icon: IconMyPage, width: 21.6, height: 24, left: 1.2, top: 0 },
+  Guide: { icon: IconGuide, width: 21.6, height: 21.6, left: 1.2, top: 1.2 },
 }
 
 const TYPE_TO_LABEL: Record<NavItemType, string> = {
@@ -26,34 +40,59 @@ const TYPE_TO_LABEL: Record<NavItemType, string> = {
   Guide: '가이드',
 }
 
+const NAV_ITEM_PATH: Record<NavItemType, string> = {
+  Commute: '/finder/job',
+  Custom: '/finder/preference',
+  LocalShop: '/shops',
+  News: '/news',
+  MyPage: '/my',
+  Guide: '/guide',
+}
+
 export interface NavItemProps {
   type: NavItemType
   active?: boolean
+  /** 라우팅 대신 클릭 핸들러 우선 (preview 등) */
   onClick?: () => void
 }
 
 export function NavItem({ type, active = false, onClick }: NavItemProps) {
-  const isLocalShopDefault = type === 'LocalShop' && !active
-  // NavIcon SVG가 fallback으로 brand-primary를 쓰므로, SideNav(파란 배경)에선 흰색으로 override
-  const navIconStyle = {
-    '--fill-0': 'white',
-    '--stroke-0': 'white',
-  } as React.CSSProperties
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'flex w-[112px] flex-col items-center justify-center gap-xs p-xs transition-colors',
-        active && 'bg-white/15',
-      )}
-    >
-      <span style={navIconStyle} className={cn(isLocalShopDefault && 'opacity-60')}>
-        <NavIcon type={TYPE_TO_ICON[type]} size={24} />
+  const spec = TYPE_TO_ICON[type]
+  const Icon = spec.icon
+  const { width, height, left, top } = spec
+  const className = cn(
+    'flex w-[112px] flex-col items-center justify-center gap-xs p-xs transition-all',
+    active ? 'bg-neutral-white/15' : 'opacity-60',
+  )
+  const inner = (
+    <>
+      <span className="relative inline-block size-[24px]">
+        <Icon
+          width={width}
+          height={height}
+          aria-hidden
+          className="absolute"
+          style={{ left, top }}
+        />
       </span>
       <span className="w-[96px] text-center text-body-s font-medium text-neutral-white whitespace-nowrap">
         {TYPE_TO_LABEL[type]}
       </span>
-    </button>
+    </>
+  )
+
+  // onClick이 명시되면 button (preview/custom 흐름)
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={className}>
+        {inner}
+      </button>
+    )
+  }
+  // 기본: 라우팅 Link
+  return (
+    <Link to={NAV_ITEM_PATH[type]} className={className} aria-current={active ? 'page' : undefined}>
+      {inner}
+    </Link>
   )
 }

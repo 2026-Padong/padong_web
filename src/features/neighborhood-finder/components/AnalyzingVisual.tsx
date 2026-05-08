@@ -17,7 +17,7 @@ export function AnalyzingVisual({
   subtitleLine2 = '우리동네를 분석하고 있어요',
 }: AnalyzingVisualProps) {
   return (
-    <div className="flex w-[370px] flex-col items-center gap-lg">
+    <div className="flex w-full max-w-[370px] flex-col items-center gap-lg">
       <AnalyzingIllustration />
       <div className="flex flex-col items-center gap-lg whitespace-nowrap">
         <p className="text-h3 font-bold text-brand-primary">{title}</p>

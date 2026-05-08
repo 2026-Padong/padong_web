@@ -5,10 +5,10 @@ import { MobilityRow, type MobilityRowProps } from './MobilityRow'
 import { RentRow, type RentRowProps } from './RentRow'
 import { SafetyGradeCard, type SafetyGradeCardProps } from './SafetyGradeCard'
 import { StatCellBordered, type StatCellBorderedProps } from './StatCellBordered'
+import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · DetailPanel (432:850) > DetailPanel COMPONENT
-// w-[380px] h-[900px] border border-border-default flex flex-col gap-md items-start
-// overflow-clip p-xl
+// 380×900 (Figma 의도) — 모바일 풀폭, md+ 고정
 // BackButton + DetailHeader + StatCellBordered + SafetyGradeCard
 // SectionTitle "임대료" + 4 RentRows
 // SectionTitle "이동 시간" + MobilityRow
@@ -18,6 +18,7 @@ export interface DetailPanelProps
   rents: RentRowProps[]
   rentSectionTitle?: string
   mobilitySectionTitle?: string
+  className?: string
 }
 
 export function DetailPanel({
@@ -31,9 +32,15 @@ export function DetailPanel({
   cells,
   rentSectionTitle = '임대료',
   mobilitySectionTitle = '이동 시간',
+  className,
 }: DetailPanelProps) {
   return (
-    <aside className="flex h-[900px] w-[380px] flex-col items-start gap-md overflow-clip border border-border-default p-xl">
+    <aside
+      className={cn(
+        'flex w-full flex-col items-start gap-md overflow-clip border border-border-default p-xl md:w-[380px] md:shrink-0 md:min-h-screen',
+        className,
+      )}
+    >
       <BackButton onClick={onBack} />
       <DetailHeader score={score} dong={dong} fullAddress={fullAddress} />
       <StatCellBordered rows={rows} />

@@ -13,7 +13,7 @@ export interface TabBarProps {
 export function TabBar({ active, tabs, onChange, className }: TabBarProps) {
   return (
     <div
-      className={`flex w-[332px] items-start overflow-clip border border-border-default ${className ?? ''}`}
+      className={`flex w-full items-start overflow-clip border border-border-default ${className ?? ''}`}
     >
       {tabs.map((t) => (
         <TabBarItem

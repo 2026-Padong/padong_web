@@ -3,6 +3,7 @@ import { PageNavigation } from '@/components/ui/PageNavigation'
 import { ResultCard, type ResultCardProps } from '@/components/ui/ResultCard'
 import { QuestionProgress } from './QuestionProgress'
 import { LifestyleResultBlock } from './LifestyleResultBlock'
+import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · CustomizedPanel3 (566:1467) > LifestyleResultPanel (566:1216)
 // w-[420px] h-[900px] flex flex-col gap-2xl items-center p-xl
@@ -20,6 +21,7 @@ export interface LifestyleResultPanelProps {
   currentPage?: number
   totalPages?: number
   onPageChange?: (p: number) => void
+  className?: string
 }
 
 export function LifestyleResultPanel({
@@ -31,9 +33,15 @@ export function LifestyleResultPanel({
   currentPage = 1,
   totalPages = 3,
   onPageChange,
+  className,
 }: LifestyleResultPanelProps) {
   return (
-    <aside className="flex h-[900px] w-[420px] flex-col items-center gap-2xl p-xl">
+    <aside
+      className={cn(
+        'flex w-full flex-col items-center gap-2xl p-xl md:w-[420px] md:shrink-0 md:min-h-screen',
+        className,
+      )}
+    >
       <PageHeader type="Search" title={title} />
       <div className="flex h-[753.976px] w-full flex-col items-center justify-between">
         <QuestionProgress

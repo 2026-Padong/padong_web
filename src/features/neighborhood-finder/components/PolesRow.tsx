@@ -10,7 +10,7 @@ export interface PolesRowProps {
 
 export function PolesRow({ left, right }: PolesRowProps) {
   return (
-    <div className="flex w-full items-center gap-3xl whitespace-nowrap">
+    <div className="flex w-full flex-col items-stretch gap-md whitespace-nowrap md:flex-row md:items-center md:gap-3xl">
       <DesktopPole side="left" {...left} />
       <DesktopPole side="right" {...right} />
     </div>

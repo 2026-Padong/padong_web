@@ -5,6 +5,7 @@ import { ResultSummary } from '@/components/ui/ResultSummary'
 import { FilterChipRow } from '@/components/ui/FilterChipRow'
 import { PageNavigation } from '@/components/ui/PageNavigation'
 import { ShopCard } from './ShopCard'
+import { cn } from '@/lib/cn'
 import type { MockShop } from '@/data/mocks'
 
 // Figma 1:1: Tile · ShopListPanel (598:1662) > ShopListPanel COMPONENT (1715:6842)
@@ -19,6 +20,7 @@ export interface ShopListPanelProps {
   selectedId?: string
   location?: string
   onShopClick?: (id: string) => void
+  className?: string
 }
 
 const FILTERS = [
@@ -35,6 +37,7 @@ export function ShopListPanel({
   selectedId,
   location = '연희동',
   onShopClick,
+  className,
 }: ShopListPanelProps) {
   const [search, setSearch] = useState('')
   const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({})
@@ -44,7 +47,12 @@ export function ShopListPanel({
   const visibleShops = shops.slice(start, start + ITEMS_PER_PAGE)
 
   return (
-    <aside className="flex h-[900px] w-[420px] flex-col items-start gap-lg bg-neutral-white px-lg py-xl">
+    <aside
+      className={cn(
+        'flex w-full flex-col items-start gap-lg bg-neutral-white px-lg py-xl md:w-[420px] md:shrink-0 md:min-h-screen',
+        className,
+      )}
+    >
       <div className="flex w-full items-center gap-xs">
         <PageHeader type="Shop" title={title} />
       </div>

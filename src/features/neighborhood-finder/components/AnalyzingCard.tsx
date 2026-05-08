@@ -33,7 +33,7 @@ export function AnalyzingCard({
   loadingProgress = 30,
 }: AnalyzingCardProps) {
   return (
-    <section className="flex w-[980px] flex-col items-center justify-between gap-2xl rounded-2xl px-[72px] py-2xl">
+    <section className="flex w-full max-w-[980px] flex-col items-center justify-between gap-2xl rounded-2xl px-md py-2xl md:px-[72px]">
       <AnalyzingIllustration />
       <TitleBlock
         title={
@@ -51,9 +51,9 @@ export function AnalyzingCard({
           </>
         }
       />
-      <div className="flex w-full items-start gap-md overflow-clip">
+      <div className="flex w-full flex-col items-stretch gap-md md:flex-row md:items-start md:overflow-clip">
         {steps.map((s, i) => (
-          <div key={s.title} className="flex-1">
+          <div key={s.title} className="md:flex-1">
             <StepCard active={i === activeStep} title={s.title} description={s.description} />
           </div>
         ))}

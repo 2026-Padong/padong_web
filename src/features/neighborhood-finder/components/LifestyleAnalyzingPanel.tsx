@@ -1,6 +1,7 @@
 import { PageHeader } from '@/components/ui/PageHeader'
 import { QuestionProgress } from './QuestionProgress'
 import { AnalyzingVisual } from './AnalyzingVisual'
+import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · CustomizedPanel2 (546:1067) > LifestyleAnalyzingPanel (545:1058)
 // w-[420px] h-[900px] flex flex-col gap-2xl items-center p-xl
@@ -12,6 +13,7 @@ export interface LifestyleAnalyzingPanelProps {
   illustrationTitle?: string
   illustrationSubtitleLine1?: string
   illustrationSubtitleLine2?: string
+  className?: string
 }
 
 export function LifestyleAnalyzingPanel({
@@ -19,9 +21,15 @@ export function LifestyleAnalyzingPanel({
   illustrationTitle,
   illustrationSubtitleLine1,
   illustrationSubtitleLine2,
+  className,
 }: LifestyleAnalyzingPanelProps) {
   return (
-    <aside className="flex h-[900px] w-[420px] flex-col items-center gap-2xl p-xl">
+    <aside
+      className={cn(
+        'flex w-full flex-col items-center gap-2xl p-xl md:w-[420px] md:shrink-0 md:min-h-screen',
+        className,
+      )}
+    >
       <PageHeader type="Search" title={title} />
       <div className="flex w-full flex-col items-center gap-[70px]">
         <QuestionProgress

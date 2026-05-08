@@ -10,7 +10,7 @@ export interface ResultListPanelProps {
 
 export function ResultListPanel({ results, selectedId }: ResultListPanelProps) {
   return (
-    <div className="flex h-[565px] w-[381px] flex-col items-center justify-center gap-xs">
+    <div className="flex w-full max-w-[381px] flex-col items-center justify-center gap-xs">
       {results.map((r) => (
         <ResultCard
           key={r.id ?? r.dong}

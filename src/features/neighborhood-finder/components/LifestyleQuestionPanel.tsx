@@ -4,11 +4,10 @@ import { LikertScale } from './LikertScale'
 import { PageNavigation } from '@/components/ui/PageNavigation'
 import { QuestionProgress } from './QuestionProgress'
 import { QuestionStatement } from './QuestionStatement'
+import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · CustomizedPanel (538:1017) > LifestyleQuestionPanel COMPONENT
-// w-[420px] h-[900px] flex flex-col gap-2xl items-center p-xl
-// PageHeader + QuestionFlow (V gap-[70px] items-center w-full):
-//   QuestionProgress + QuestionStatement + LikertScale + PageNavigation
+// 420×900 (Figma 의도) — 모바일 풀폭, md+ 고정
 export interface LifestyleQuestionPanelProps {
   title?: string
   current: number
@@ -22,6 +21,7 @@ export interface LifestyleQuestionPanelProps {
   onPageChange?: (p: number) => void
   /** 커스텀 자식 — 기본 구조 대신 직접 조립 */
   children?: ReactNode
+  className?: string
 }
 
 export function LifestyleQuestionPanel({
@@ -36,9 +36,15 @@ export function LifestyleQuestionPanel({
   totalPages = 3,
   onPageChange,
   children,
+  className,
 }: LifestyleQuestionPanelProps) {
   return (
-    <aside className="flex h-[900px] w-[420px] flex-col items-center gap-2xl p-xl">
+    <aside
+      className={cn(
+        'flex w-full flex-col items-center gap-2xl p-xl md:w-[420px] md:shrink-0 md:min-h-screen',
+        className,
+      )}
+    >
       <PageHeader type="Search" title={title} />
       {children ?? (
         <div className="flex w-full flex-col items-center gap-[70px]">

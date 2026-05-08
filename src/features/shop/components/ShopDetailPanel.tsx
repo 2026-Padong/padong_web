@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Clock, MapPin, Phone, FileText, Minus, Plus } from 'lucide-react'
 import type { MockShop } from '@/data/mocks'
 import { ShopImageGallery } from './ShopImageGallery'
+import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · ShopDetailPanel (659:2019) > ShopDetailPanel COMPONENT_SET (Tab=Menu/Info)
 // 450w 900h V gap-[15px] pt-[25px] pb-[10px] px-[25px] items-center bg-white
@@ -22,15 +23,28 @@ export interface ShopDetailPanelProps {
   onTabChange?: (t: 'Menu' | 'Info') => void
   onBack?: () => void
   onJoin?: () => void
+  className?: string
 }
 
-export function ShopDetailPanel({ shop, tab, onTabChange, onBack, onJoin }: ShopDetailPanelProps) {
+export function ShopDetailPanel({
+  shop,
+  tab,
+  onTabChange,
+  onBack,
+  onJoin,
+  className,
+}: ShopDetailPanelProps) {
   const [quantities, setQuantities] = useState<Record<string, number>>({})
   const totalAmount = shop.menus.reduce((sum, m) => sum + (quantities[m.name] ?? 0) * m.price, 0)
   const fmtPrice = (n: number) => `${n.toLocaleString('ko-KR')}원`
 
   return (
-    <aside className="flex h-[900px] w-[450px] flex-col items-center gap-[15px] bg-neutral-white px-[25px] pb-[10px] pt-[25px]">
+    <aside
+      className={cn(
+        'flex w-full flex-col items-center gap-[15px] bg-neutral-white px-[25px] pb-[10px] pt-[25px] md:w-[450px] md:shrink-0 md:min-h-screen',
+        className,
+      )}
+    >
       <button
         type="button"
         onClick={onBack}
@@ -43,7 +57,7 @@ export function ShopDetailPanel({ shop, tab, onTabChange, onBack, onJoin }: Shop
         <h1 className="text-h2 font-bold text-text-primary whitespace-nowrap">{shop.name}</h1>
       </div>
 
-      <div className="flex h-[214px] w-[400px] items-center justify-center">
+      <div className="flex h-[214px] w-full max-w-[400px] items-center justify-center">
         <ShopImageGallery images={shop.images} alt={shop.name} />
       </div>
 

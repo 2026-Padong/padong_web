@@ -10,7 +10,7 @@ export interface StatCellBorderedProps {
 
 export function StatCellBordered({ rows }: StatCellBorderedProps) {
   return (
-    <div className="flex h-[160px] w-[332px] flex-col items-start justify-between whitespace-nowrap">
+    <div className="flex h-[160px] w-full flex-col items-start justify-between whitespace-nowrap">
       {rows.map((row, i) => (
         <StatCellInline key={i} cells={row} />
       ))}

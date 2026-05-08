@@ -14,7 +14,7 @@ export function ScoreBar({ value, className }: ScoreBarProps) {
   return (
     <div
       className={cn(
-        'relative h-[2px] w-[345px] overflow-clip rounded-sm bg-border-default',
+        'relative h-[2px] w-full overflow-clip rounded-sm bg-border-default',
         className,
       )}
     >

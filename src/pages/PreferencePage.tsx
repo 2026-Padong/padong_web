@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router'
 import { useEffect, useState } from 'react'
 import { SideNav } from '@/components/layout/SideNav'
+import { BottomNav } from '@/components/layout/BottomNav'
 import { LifestyleQuestionPanelWide } from '@/features/neighborhood-finder/components/LifestyleQuestionPanelWide'
 import { QHeroCard } from '@/features/neighborhood-finder/components/QHeroCard'
 import { NavButton } from '@/features/neighborhood-finder/components/NavButton'
@@ -43,19 +44,20 @@ export function PreferencePage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
         <SideNav activeType="Custom" />
         <LifestyleQuestionPanelWide current={1} total={TOTAL} step="01">
           <Skeleton className="h-[388px] w-full" />
           <Skeleton className="h-[388px] w-full" />
         </LifestyleQuestionPanelWide>
+        <BottomNav activeType="Custom" className="lg:hidden" />
       </div>
     )
   }
 
   if (error || !data) {
     return (
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
         <SideNav activeType="Custom" />
         <div className="flex flex-1 items-center justify-center">
           <ErrorState
@@ -64,6 +66,7 @@ export function PreferencePage() {
             onRetry={() => refetch()}
           />
         </div>
+        <BottomNav activeType="Custom" className="lg:hidden" />
       </div>
     )
   }
@@ -100,15 +103,17 @@ export function PreferencePage() {
           />
         )}
 
-        {/* 다음 질문 prefetch (Q1~Q9) 또는 ButtonRow (Q10) */}
+        {/* 다음 질문 prefetch (Q1~Q9) — 모바일에선 hidden, lg+ 표시 */}
         {!isLast && next && (
-          <QHeroCard
-            state="disabled"
-            number={next.id}
-            question={next.question}
-            left={next.left}
-            right={next.right}
-          />
+          <div className="hidden lg:block">
+            <QHeroCard
+              state="disabled"
+              number={next.id}
+              question={next.question}
+              left={next.left}
+              right={next.right}
+            />
+          </div>
         )}
         {isLast && (
           <div className="flex w-full items-center justify-end">
@@ -121,6 +126,7 @@ export function PreferencePage() {
           </div>
         )}
       </LifestyleQuestionPanelWide>
+      <BottomNav activeType="Custom" className="lg:hidden" />
     </div>
   )
 }

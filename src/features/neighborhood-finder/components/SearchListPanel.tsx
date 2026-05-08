@@ -3,11 +3,14 @@ import {
   ResultListPanelExpanded,
   type ResultListPanelExpandedProps,
 } from './ResultListPanelExpanded'
+import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · SearchListPanel (432:859) > SearchListPanel COMPONENT
-// w-[421px] h-[900px] flex flex-col items-center justify-between px-lg py-xl
+// 421×900 (Figma 의도) — 모바일 풀폭, md+ 고정
 // JobSearchTop + ResultListPanelExpanded
-export interface SearchListPanelProps extends JobSearchTopProps, ResultListPanelExpandedProps {}
+export interface SearchListPanelProps extends JobSearchTopProps, ResultListPanelExpandedProps {
+  className?: string
+}
 
 export function SearchListPanel({
   title,
@@ -16,10 +19,16 @@ export function SearchListPanel({
   destination,
   onDestinationChange,
   hint,
+  className,
   ...listProps
 }: SearchListPanelProps) {
   return (
-    <aside className="flex h-[900px] w-[421px] flex-col items-center justify-between px-lg py-xl">
+    <aside
+      className={cn(
+        'flex w-full flex-col items-center gap-xl px-lg py-xl md:w-[421px] md:shrink-0 md:min-h-screen',
+        className,
+      )}
+    >
       <JobSearchTop
         title={title}
         mode={mode}

@@ -81,7 +81,7 @@ export function PlaceCard({
   return (
     <article
       onClick={onClick}
-      className="flex w-[705px] cursor-pointer flex-col items-start gap-3 rounded-2xl border border-border-default bg-neutral-white px-md py-[14px]"
+      className="flex w-full cursor-pointer flex-col items-start gap-3 rounded-2xl border border-border-default bg-neutral-white px-md py-[14px]"
     >
       {/* Hero */}
       <div className="flex w-full items-center gap-[18px] overflow-clip">

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
+import { BottomNav } from '@/components/layout/BottomNav'
 import { HomeHero } from '@/features/home/components/HomeHero'
 import { GroupPurchaseCardHorizontal } from '@/features/home/components/GroupPurchaseCardHorizontal'
 import { NewsCardHorizontal } from '@/features/home/components/NewsCardHorizontal'
@@ -25,11 +26,11 @@ export function HomePage() {
   const recruiting = (shopList?.items ?? []).filter((s) => s.status === 'recruiting').slice(0, 2)
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-white">
+    <div className="flex min-h-screen flex-col bg-neutral-white pb-[56px] lg:pb-0">
       <HeaderNav activeType="Commute" />
-      <main className="flex w-full justify-center">
-        <div className="grid w-full max-w-[1440px] grid-cols-2 px-[15px] py-[35px]">
-          {/* LeftColumn (705w) */}
+      <main className="mx-auto w-full max-w-screen-2xl px-4 py-9">
+        <div className="flex flex-col gap-12 lg:grid lg:grid-cols-2 lg:gap-md">
+          {/* LeftColumn */}
           <section className="flex flex-col gap-[50px]">
             <HomeHero
               onPrimaryCta={() => nav('/finder/job')}
@@ -92,7 +93,7 @@ export function HomePage() {
             <div className="flex flex-col gap-md">
               <CityDataHeading />
               <DataMap />
-              <div className="flex w-full justify-between">
+              <div className="grid w-full grid-cols-2 gap-md md:grid-cols-4 md:justify-between md:gap-0">
                 <DataCard type="Weather" label="날씨" value="맑음" sub="21.3°C" />
                 <DataCard type="Temp" label="온도" value="21.3°C" sub="체감 22.0°C" />
                 <DataCard type="Dust" label="미세먼지" value="좋음" sub="18.0 ㎍/㎥" />
@@ -124,6 +125,7 @@ export function HomePage() {
           </section>
         </div>
       </main>
+      <BottomNav activeType="Commute" className="lg:hidden" />
     </div>
   )
 }

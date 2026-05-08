@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { SideNav } from '@/components/layout/SideNav'
+import { BottomNav } from '@/components/layout/BottomNav'
 import { SearchListPanel } from '@/features/neighborhood-finder/components/SearchListPanel'
 import { MapPlaceholder } from '@/components/ui/MapPlaceholder'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -22,28 +23,30 @@ export function JobFinderPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
         <SideNav activeType="Commute" />
-        <div className="flex h-[900px] w-[421px] flex-col gap-md p-xl">
+        <div className="flex w-full flex-col gap-md p-xl md:w-[421px] md:shrink-0 md:min-h-screen">
           <Skeleton className="h-[60px] w-full" />
           <Skeleton className="h-[34px] w-full" />
           {[0, 1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-[100px] w-full" />
           ))}
         </div>
-        <MapPlaceholder width={907} height={900} />
+        <MapPlaceholder className="hidden md:block flex-1 min-w-0" />
+        <BottomNav activeType="Commute" className="lg:hidden" />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
         <SideNav activeType="Commute" />
-        <div className="flex h-[900px] w-[421px] items-center justify-center">
+        <div className="flex w-full items-center justify-center p-xl md:w-[421px] md:shrink-0 md:min-h-screen">
           <ErrorState onRetry={() => refetch()} />
         </div>
-        <MapPlaceholder width={907} height={900} />
+        <MapPlaceholder className="hidden md:block flex-1 min-w-0" />
+        <BottomNav activeType="Commute" className="lg:hidden" />
       </div>
     )
   }
@@ -85,7 +88,8 @@ export function JobFinderPage() {
         totalPages={totalPages}
         onPageChange={setPage}
       />
-      <MapPlaceholder width={907} height={900} />
+      <MapPlaceholder className="hidden md:block flex-1 min-w-0" />
+      <BottomNav activeType="Commute" className="lg:hidden" />
     </div>
   )
 }

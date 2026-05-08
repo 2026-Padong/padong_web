@@ -1,16 +1,15 @@
 import { Marker, Tooltip } from 'react-leaflet'
 import { LeafletMap } from '@/lib/map/LeafletMap'
 import { MapOverlayCard } from './MapOverlayCard'
+import { cn } from '@/lib/cn'
 import type { MockShop } from '@/data/mocks'
 
 // Figma 1:1: ShopDetailPage MenuGroup·InfoGroup의 Map Panel (591:10795 / 1691:6381)
-// 458w(Menu) / 418w(Info) × 900h
+// Phase 8: width/height props 제거 — fluid (`flex-1 min-w-0` 등 부모에서 제어)
 // 내용: Leaflet 지도 + POI 라벨 4종 + 가게 마커 + MapOverlayCard 절대 위치
-// (Figma의 정적 SVG cluster 패턴은 OpenStreetMap 타일로 대체)
 export interface ShopDetailMapPanelProps {
   shop: MockShop
-  width?: number
-  height?: number
+  className?: string
   onJoin?: () => void
 }
 
@@ -23,17 +22,12 @@ const POI: Array<{ id: string; name: string; coord: [number, number] }> = [
   { id: 'hongje-stream', name: '홍제천', coord: [37.5728, 126.9325] },
 ]
 
-export function ShopDetailMapPanel({
-  shop,
-  width = 458,
-  height = 900,
-  onJoin,
-}: ShopDetailMapPanelProps) {
+export function ShopDetailMapPanel({ shop, className, onJoin }: ShopDetailMapPanelProps) {
   const address =
     shop.infoRows.find((r) => r.label === '주소')?.value ?? '서울특별시 서대문구 연희동'
 
   return (
-    <div className="relative bg-surface-cool" style={{ width, height }}>
+    <div className={cn('relative bg-surface-cool', className)}>
       <LeafletMap center={SHOP_COORD} zoom={15} className="h-full w-full">
         {POI.map((p) => (
           <Marker key={p.id} position={p.coord}>

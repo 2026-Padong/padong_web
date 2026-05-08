@@ -1,5 +1,6 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { SideNav } from '@/components/layout/SideNav'
+import { BottomNav } from '@/components/layout/BottomNav'
 import { ShopListPanel } from '@/features/shop/components/ShopListPanel'
 import { ShopDetailPanel } from '@/features/shop/components/ShopDetailPanel'
 import { ShopDetailMapPanel } from '@/features/shop/components/ShopDetailMapPanel'
@@ -65,25 +66,26 @@ export function ShopDetailPage() {
 
   if (detail.isLoading || list.isLoading) {
     return (
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
         <SideNav activeType="LocalShop" />
-        <div className="flex h-[900px] w-[420px] flex-col gap-md p-xl">
+        <div className="hidden flex-col gap-md p-xl xl:flex xl:w-[420px] xl:shrink-0 xl:min-h-screen">
           <Skeleton className="h-[131px] w-full" />
           <Skeleton className="h-[131px] w-full" />
         </div>
-        <div className="flex h-[900px] w-[450px] flex-col gap-md p-xl">
+        <div className="flex w-full flex-col gap-md p-xl md:w-[450px] md:shrink-0 md:min-h-screen">
           <Skeleton className="h-[19px] w-[80px]" />
           <Skeleton className="h-[40px] w-[200px]" />
           <Skeleton className="h-[214px] w-full" />
           <Skeleton className="h-[300px] w-full" />
         </div>
+        <BottomNav activeType="LocalShop" className="lg:hidden" />
       </div>
     )
   }
 
   if (detail.error || !detail.data) {
     return (
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
         <SideNav activeType="LocalShop" />
         <div className="flex flex-1 items-center justify-center">
           <ErrorState
@@ -92,6 +94,7 @@ export function ShopDetailPage() {
             onRetry={() => detail.refetch()}
           />
         </div>
+        <BottomNav activeType="LocalShop" className="lg:hidden" />
       </div>
     )
   }
@@ -100,12 +103,13 @@ export function ShopDetailPage() {
   const sidebarShops = (list.data?.items ?? []).map(dtoToShop)
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
       <SideNav activeType="LocalShop" />
       <ShopListPanel
         shops={sidebarShops}
         selectedId={shop.id}
         onShopClick={(sid) => nav(`/shops/${sid}`)}
+        className="hidden xl:flex"
       />
       <ShopDetailPanel
         shop={shop}
@@ -113,7 +117,8 @@ export function ShopDetailPage() {
         onTabChange={(t) => setParams({ tab: t })}
         onBack={() => nav('/shops')}
       />
-      <ShopDetailMapPanel shop={shop} width={tab === 'Menu' ? 458 : 418} />
+      <ShopDetailMapPanel shop={shop} className="hidden md:block flex-1 min-w-0" />
+      <BottomNav activeType="LocalShop" className="lg:hidden" />
     </div>
   )
 }

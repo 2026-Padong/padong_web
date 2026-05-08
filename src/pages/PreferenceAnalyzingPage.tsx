@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { SideNav } from '@/components/layout/SideNav'
+import { BottomNav } from '@/components/layout/BottomNav'
 import { LifestyleQuestionPanelWide } from '@/features/neighborhood-finder/components/LifestyleQuestionPanelWide'
 import { AnalyzingCard } from '@/features/neighborhood-finder/components/AnalyzingCard'
 
@@ -16,7 +17,7 @@ export function PreferenceAnalyzingPage() {
   }, [nav])
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
       <SideNav activeType="Custom" />
       <LifestyleQuestionPanelWide
         title="내 취향 기반"
@@ -26,6 +27,7 @@ export function PreferenceAnalyzingPage() {
       >
         <AnalyzingCard activeStep={1} />
       </LifestyleQuestionPanelWide>
+      <BottomNav activeType="Custom" className="lg:hidden" />
     </div>
   )
 }

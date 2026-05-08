@@ -18,7 +18,7 @@ export function LikertScale({
   rightLabel = '밖에 나가야 살아나요',
 }: LikertScaleProps) {
   return (
-    <div className="flex h-[161px] w-[370px] flex-col items-center justify-between rounded-xl bg-brand-primary-tint py-xl">
+    <div className="flex h-[161px] w-full max-w-[370px] flex-col items-center justify-between rounded-xl bg-brand-primary-tint py-xl">
       <div className="flex w-full items-center justify-between px-2xl">
         {([1, 2, 3, 4, 5] as const).map((v) => (
           <RadioOption

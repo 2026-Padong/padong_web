@@ -24,7 +24,7 @@ export function ResultListPanelExpanded({
   onPageChange,
 }: ResultListPanelExpandedProps) {
   return (
-    <div className="flex h-[666px] w-[381px] flex-col items-start gap-md">
+    <div className="flex w-full max-w-[381px] flex-col items-start gap-md">
       <ResultListSummary resultCount={resultCount} subtitle={resultSubtitle} />
       <ResultListPanel results={results} selectedId={selectedId} />
       <PageNavigation current={currentPage} total={totalPages} onChange={onPageChange} />

@@ -170,7 +170,7 @@ export function UiCompositesPreview() {
           </div>
         </Row>
         <Row name="MapPlaceholder">
-          <MapPlaceholder width={400} height={300} />
+          <MapPlaceholder className="h-[300px] w-[400px]" />
         </Row>
       </section>
 
