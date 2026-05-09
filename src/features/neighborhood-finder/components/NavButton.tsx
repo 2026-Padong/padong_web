@@ -18,9 +18,10 @@ export function NavButton({ type, label, onClick, disabled }: NavButtonProps) {
       onClick={onClick}
       disabled={disabled}
       className={
-        isNext
-          ? 'inline-flex items-center justify-center gap-xs rounded-lg bg-brand-primary px-xl py-3 text-neutral-white drop-shadow-[0px_8px_9px_rgba(37,88,232,0.32)] disabled:opacity-50'
-          : 'inline-flex items-center justify-center gap-xs rounded-lg bg-surface-cool px-xl py-3 text-text-secondary disabled:opacity-50'
+        'inline-flex cursor-pointer items-center justify-center gap-xs rounded-lg px-xl py-3 transition-all duration-[var(--duration-base)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 active:scale-[0.97] disabled:scale-100 disabled:opacity-50 disabled:cursor-not-allowed ' +
+        (isNext
+          ? 'bg-brand-primary text-neutral-white drop-shadow-[0px_8px_9px_rgba(37,88,232,0.32)] hover:bg-brand-primary-hover'
+          : 'bg-surface-cool text-text-secondary hover:bg-border-default')
       }
     >
       {!isNext && <span className="text-[20px]">←</span>}

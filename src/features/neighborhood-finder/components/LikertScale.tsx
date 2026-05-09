@@ -20,13 +20,18 @@ export function LikertScale({
   return (
     <div className="flex h-[161px] w-full max-w-[370px] flex-col items-center justify-between rounded-xl bg-brand-primary-tint py-xl">
       <div className="flex w-full items-center justify-between px-2xl">
-        {([1, 2, 3, 4, 5] as const).map((v) => (
-          <RadioOption
+        {([1, 2, 3, 4, 5] as const).map((v, i) => (
+          <span
             key={v}
-            number={v}
-            state={value === v ? 'selected' : 'default'}
-            onClick={() => onChange?.(v)}
-          />
+            className="animate-fade-in-up opacity-0"
+            style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'forwards' }}
+          >
+            <RadioOption
+              number={v}
+              state={value === v ? 'selected' : 'default'}
+              onClick={() => onChange?.(v)}
+            />
+          </span>
         ))}
       </div>
       <div className="flex w-full items-center justify-between px-lg whitespace-nowrap">

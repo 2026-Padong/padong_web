@@ -11,7 +11,7 @@ export function BackButton({ onClick, label = '← 목록' }: BackButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-start text-body-l font-bold text-brand-primary whitespace-nowrap"
+      className="inline-flex cursor-pointer items-start rounded-sm text-body-l font-bold text-brand-primary whitespace-nowrap transition-colors duration-[var(--duration-fast)] hover:text-brand-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
     >
       {label}
     </button>

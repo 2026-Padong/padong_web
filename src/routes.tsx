@@ -12,6 +12,8 @@ import { UiBasicsPreview } from '@/dev/UiBasicsPreview'
 import { UiCompositesPreview } from '@/dev/UiCompositesPreview'
 import { LayoutPreview } from '@/dev/LayoutPreview'
 import { HomePreview } from '@/dev/HomePreview'
+import { InteractionsPreview } from '@/dev/InteractionsPreview'
+import { IconsPreview } from '@/dev/IconsPreview'
 
 export const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
@@ -34,4 +36,6 @@ export const router = createBrowserRouter([
   { path: '/dev/ui-composites', element: <UiCompositesPreview /> },
   { path: '/dev/layout', element: <LayoutPreview /> },
   { path: '/dev/home', element: <HomePreview /> },
+  { path: '/dev/interactions', element: <InteractionsPreview /> },
+  { path: '/dev/icons', element: <IconsPreview /> },
 ])

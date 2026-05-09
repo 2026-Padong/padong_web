@@ -71,6 +71,16 @@ const SECTIONS: Section[] = [
       { path: '/dev/ui-composites', label: 'UI Composites', desc: 'Phase 2B — Molecule 컴포넌트' },
       { path: '/dev/layout', label: 'Layout', desc: 'SideNav + HeaderNav' },
       { path: '/dev/home', label: 'Home Feature', desc: 'Phase 3 — HomeHero·DataMap 등' },
+      {
+        path: '/dev/interactions',
+        label: 'Interactions',
+        desc: 'Phase 9 Day 1 — hover/focus/active/disabled 검증',
+      },
+      {
+        path: '/dev/icons',
+        label: 'Icons',
+        desc: 'Phase 9.5 Day 0 — Icon 레지스트리 카탈로그',
+      },
     ],
   },
 ]

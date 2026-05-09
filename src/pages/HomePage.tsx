@@ -33,8 +33,8 @@ export function HomePage() {
           {/* LeftColumn */}
           <section className="flex flex-col gap-[50px]">
             <HomeHero
-              onPrimaryCta={() => nav('/finder/job')}
-              onSecondaryCta={() => nav('/finder/preference')}
+              onPrimaryCta={() => nav('/finder/job', { viewTransition: true })}
+              onSecondaryCta={() => nav('/finder/preference', { viewTransition: true })}
             />
 
             {/* GroupPurchaseSection */}
@@ -56,7 +56,7 @@ export function HomePage() {
                       price={0}
                       participantCurrent={s.participantCurrent}
                       participantTotal={s.participantTotal}
-                      onClick={() => nav(`/shops/${s.id}`)}
+                      onClick={() => nav(`/shops/${s.id}`, { viewTransition: true })}
                     />
                   ))
                 ) : (

@@ -1,9 +1,9 @@
-import { Minus, TrendingDown, TrendingUp, type LucideIcon } from 'lucide-react'
 import { cva } from 'class-variance-authority'
+import { Icon, type IconName } from './Icon'
 
 // Figma 1:1: Tile · TrendPill (1304:4053) > TrendPill COMPONENT_SET (3 variants)
 // flex gap-[5px] items-center px-[10px] py-[4px] rounded-full
-// 14x14 icon + Bold 11px text
+// 14x14 자체 SVG (trend-*) + Bold 11px text
 // Variant: 감소(critical) / 증가(positive) / 유지(neutral)
 const variants = cva(
   'inline-flex items-center gap-[5px] rounded-full px-[10px] py-[4px] text-body-s font-bold whitespace-nowrap',
@@ -18,10 +18,14 @@ const variants = cva(
   },
 )
 
-const ICON: Record<NonNullable<TrendPillProps['trend']>, LucideIcon> = {
-  down: TrendingDown,
-  up: TrendingUp,
-  flat: Minus,
+export interface TrendPillProps {
+  trend?: 'down' | 'up' | 'flat'
+}
+
+const ICON: Record<NonNullable<TrendPillProps['trend']>, IconName> = {
+  down: 'trend-down',
+  up: 'trend-up',
+  flat: 'trend-flat',
 }
 
 const LABEL: Record<NonNullable<TrendPillProps['trend']>, string> = {
@@ -30,15 +34,10 @@ const LABEL: Record<NonNullable<TrendPillProps['trend']>, string> = {
   flat: '평소 수준',
 }
 
-export interface TrendPillProps {
-  trend?: 'down' | 'up' | 'flat'
-}
-
 export function TrendPill({ trend = 'flat' }: TrendPillProps) {
-  const IconComponent = ICON[trend]
   return (
     <span className={variants({ trend })}>
-      <IconComponent size={14} />
+      <Icon name={ICON[trend]} size={14} aria-hidden />
       {LABEL[trend]}
     </span>
   )

@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { NavItem, type NavItemType } from './NavItem'
 import { cn } from '@/lib/cn'
 import logoUrl from '@/assets/logo-sidenav.png'
@@ -17,12 +18,20 @@ export interface SideNavProps {
 export function SideNav({ activeType, onNavigate, className }: SideNavProps) {
   return (
     <nav
+      aria-label="주 내비게이션"
       className={cn(
-        'hidden w-[112px] shrink-0 flex-col items-center gap-xs bg-brand-primary pt-xs lg:flex lg:min-h-screen',
+        'hidden w-[112px] shrink-0 flex-col items-stretch bg-brand-primary pt-xs lg:flex lg:min-h-screen',
         className,
       )}
     >
-      <img src={logoUrl} alt="파동" className="h-[70px] w-full rounded-sm object-cover" />
+      <Link
+        to="/"
+        viewTransition
+        aria-label="홈으로"
+        className="block w-full cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-primary"
+      >
+        <img src={logoUrl} alt="파동" className="h-[70px] w-full rounded-sm object-cover" />
+      </Link>
       {ITEMS.map((t) => (
         <NavItem
           key={t}

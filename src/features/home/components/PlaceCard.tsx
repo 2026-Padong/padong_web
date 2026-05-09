@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
-import { Train, Bus, Bike, Sparkles, Users, BarChart3, Activity, Car } from 'lucide-react'
 import { CategoryBadge, type CategoryType } from '@/components/ui/CategoryBadge'
+import { FacilityChip } from '@/components/ui/FacilityChip'
+import { Icon, type IconName } from '@/components/ui/Icon'
 import { SubwayLineBadge, type SubwayLine } from '@/components/ui/SubwayLineBadge'
 
 // Figma 1:1: Tile · PlaceCard (926:3130) > PlaceCard COMPONENT (926:3122)
@@ -52,20 +52,11 @@ export interface PlaceCardProps {
   onClick?: () => void
 }
 
-const ICON_MAP: Record<PlaceDataColumn['icon'], ReactNode> = {
-  population: <Users size={16} className="text-text-secondary" />,
-  age: <BarChart3 size={16} className="text-text-secondary" />,
-  composition: <Activity size={16} className="text-text-secondary" />,
-  road: <Car size={16} className="text-text-secondary" />,
-}
-
-function FacilityChip({ type }: { type: 'subway' | 'bus' | 'bike' }) {
-  const Icon = type === 'bike' ? Bike : type === 'bus' ? Bus : Train
-  return (
-    <span className="inline-flex size-[22px] items-center justify-center rounded-full bg-brand-primary-tint">
-      <Icon size={11} className="text-brand-primary" />
-    </span>
-  )
+const DATA_ICON: Record<PlaceDataColumn['icon'], IconName> = {
+  population: 'place-data-population',
+  age: 'place-data-age',
+  composition: 'place-data-composition',
+  road: 'place-data-road',
 }
 
 export function PlaceCard({
@@ -81,7 +72,14 @@ export function PlaceCard({
   return (
     <article
       onClick={onClick}
-      className="flex w-full cursor-pointer flex-col items-start gap-3 rounded-2xl border border-border-default bg-neutral-white px-md py-[14px]"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.()
+        }
+      }}
+      className="flex w-full cursor-pointer flex-col items-start gap-3 rounded-2xl border border-border-default bg-neutral-white px-md py-[14px] transition-all duration-[var(--duration-base)] hover:-translate-y-0.5 hover:border-border-medium hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
     >
       {/* Hero */}
       <div className="flex w-full items-center gap-[18px] overflow-clip">
@@ -108,7 +106,7 @@ export function PlaceCard({
             </div>
             {event && (
               <span className="inline-flex items-center gap-1 overflow-clip rounded-full bg-brand-primary-tint pl-2 pr-[10px] py-1">
-                <Sparkles size={11} className="text-brand-primary" />
+                <Icon name="place-event-sparkles" size={11} className="text-brand-primary" aria-hidden />
                 <span className="text-body-s font-bold text-brand-primary whitespace-nowrap">
                   {event}
                 </span>
@@ -170,7 +168,7 @@ export function PlaceCard({
             {i > 0 && <span className="h-full w-px self-stretch bg-border-default" />}
             <div className="flex flex-1 flex-col items-center gap-1 overflow-clip px-[14px]">
               <div className="flex items-center gap-[6px]">
-                {ICON_MAP[col.icon]}
+                <Icon name={DATA_ICON[col.icon]} size={16} className="text-text-secondary" aria-hidden />
                 <span className="text-body-s font-medium text-text-secondary whitespace-nowrap">
                   {col.label}
                 </span>

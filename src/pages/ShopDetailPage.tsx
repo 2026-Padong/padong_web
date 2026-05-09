@@ -66,7 +66,12 @@ export function ShopDetailPage() {
 
   if (detail.isLoading || list.isLoading) {
     return (
-      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
+      <div
+        className="flex min-h-screen w-full pb-[56px] lg:pb-0"
+        aria-busy="true"
+        aria-live="polite"
+        aria-label="가게 상세 불러오는 중"
+      >
         <SideNav activeType="LocalShop" />
         <div className="hidden flex-col gap-md p-xl xl:flex xl:w-[420px] xl:shrink-0 xl:min-h-screen">
           <Skeleton className="h-[131px] w-full" />
@@ -108,14 +113,14 @@ export function ShopDetailPage() {
       <ShopListPanel
         shops={sidebarShops}
         selectedId={shop.id}
-        onShopClick={(sid) => nav(`/shops/${sid}`)}
+        onShopClick={(sid) => nav(`/shops/${sid}`, { viewTransition: true })}
         className="hidden xl:flex"
       />
       <ShopDetailPanel
         shop={shop}
         tab={tab}
         onTabChange={(t) => setParams({ tab: t })}
-        onBack={() => nav('/shops')}
+        onBack={() => nav('/shops', { viewTransition: true })}
       />
       <ShopDetailMapPanel shop={shop} className="hidden md:block flex-1 min-w-0" />
       <BottomNav activeType="LocalShop" className="lg:hidden" />

@@ -23,7 +23,7 @@ export interface PageHeaderProps {
 export function PageHeader({ type, title }: PageHeaderProps) {
   return (
     <div className={headerVariants({ type })}>
-      <Icon type={type === 'Shop' ? 'Storefront' : 'Location'} size={24} />
+      <Icon name={type === 'Shop' ? 'icon-storefront' : 'icon-location'} size={24} aria-hidden />
       <h1 className="text-h2 font-bold text-text-primary whitespace-nowrap">{title}</h1>
     </div>
   )

@@ -1,10 +1,10 @@
-import { Search } from 'lucide-react'
+import { Icon } from '@/components/ui/Icon'
 
 // Figma 1:1: Tile · DestinationBar (431:886) > DestinationBar COMPONENT
 // w-[381px] border-2 border-brand-primary-hover flex items-center justify-between
 // px-md py-xs rounded-md
 // Placeholder: 14px Regular text-text-tertiary
-// Search icon: 24x24
+// Search icon: Figma SearchGlyph (= icon-search 24×24, 자체 SVG 재사용)
 export interface DestinationBarProps {
   value?: string
   onChange?: (v: string) => void
@@ -24,7 +24,7 @@ export function DestinationBar({
         placeholder={placeholder}
         className="flex-1 bg-transparent text-body-l font-normal text-text-secondary outline-none placeholder:text-text-tertiary"
       />
-      <Search size={24} className="shrink-0 text-text-tertiary" />
+      <Icon name="icon-search" size={24} className="shrink-0 text-text-tertiary" aria-hidden />
     </div>
   )
 }

@@ -61,8 +61,9 @@ export function NavItem({ type, active = false, onClick }: NavItemProps) {
   const Icon = spec.icon
   const { width, height, left, top } = spec
   const className = cn(
-    'flex w-[112px] flex-col items-center justify-center gap-xs p-xs transition-all',
-    active ? 'bg-neutral-white/15' : 'opacity-60',
+    'flex w-full cursor-pointer flex-col items-center justify-center gap-xs px-xs py-sm transition-all duration-[var(--duration-fast)]',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-primary',
+    active ? 'bg-neutral-white/15' : 'opacity-60 hover:opacity-100 hover:bg-neutral-white/10',
   )
   const inner = (
     <>
@@ -91,7 +92,12 @@ export function NavItem({ type, active = false, onClick }: NavItemProps) {
   }
   // 기본: 라우팅 Link
   return (
-    <Link to={NAV_ITEM_PATH[type]} className={className} aria-current={active ? 'page' : undefined}>
+    <Link
+      to={NAV_ITEM_PATH[type]}
+      className={className}
+      aria-current={active ? 'page' : undefined}
+      viewTransition
+    >
       {inner}
     </Link>
   )

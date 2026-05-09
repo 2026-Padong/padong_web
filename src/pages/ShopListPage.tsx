@@ -38,7 +38,12 @@ export function ShopListPage() {
     <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
       <SideNav activeType="LocalShop" />
       {isLoading ? (
-        <div className="flex w-full flex-col gap-md p-xl md:w-[420px] md:shrink-0 md:min-h-screen">
+        <div
+          className="flex w-full flex-col gap-md p-xl md:w-[420px] md:shrink-0 md:min-h-screen"
+          aria-busy="true"
+          aria-live="polite"
+          aria-label="가게 목록 불러오는 중"
+        >
           <Skeleton className="h-[40px] w-full" />
           <Skeleton className="h-[34px] w-full" />
           {[0, 1, 2, 3].map((i) => (
@@ -54,7 +59,10 @@ export function ShopListPage() {
           <EmptyState title="가게가 없어요" />
         </div>
       ) : (
-        <ShopListPanel shops={data.items.map(toShop)} onShopClick={(id) => nav(`/shops/${id}`)} />
+        <ShopListPanel
+          shops={data.items.map(toShop)}
+          onShopClick={(id) => nav(`/shops/${id}`, { viewTransition: true })}
+        />
       )}
       <MapPlaceholder className="hidden md:block flex-1 min-w-0" />
       <BottomNav activeType="LocalShop" className="lg:hidden" />

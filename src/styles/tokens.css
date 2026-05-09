@@ -101,4 +101,67 @@
   --text-body: 0.8125rem; /* 13px — 본문 기본 */
   --text-body-s: 0.6875rem; /* 11px — Chip/Pill 보조 */
   --text-caption: 0.625rem; /* 10px — 캡션 */
+
+  /* ============================================ */
+  /* TRANSITION — Phase 9 Interaction              */
+  /* ============================================ */
+  --duration-fast: 120ms; /* hover, focus 색 전환 */
+  --duration-base: 200ms; /* 일반 state 전환, transform */
+  --duration-slow: 320ms; /* panel slide, drawer */
+  --duration-slower: 500ms; /* 페이지 전환 */
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* default — 자연스러운 멈춤 */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* 약한 bounce */
+
+  /* ============================================ */
+  /* KEYFRAMES — Phase 9 G3 micro animations       */
+  /* ============================================ */
+  --animate-heart-pop: heart-pop 320ms var(--ease-spring);
+  --animate-fade-in-up: fade-in-up 200ms var(--ease-out);
+}
+
+@keyframes heart-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================ */
+/* View Transitions — Phase 9 G5                  */
+/* ============================================ */
+/* 기본: cross-fade (200ms) — react-router 7 viewTransition 진입 시 적용 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* prefers-reduced-motion 환경 — 전역 즉시 완료 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

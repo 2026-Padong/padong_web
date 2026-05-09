@@ -14,10 +14,11 @@ export function TabBarItem({ state, label, onClick }: TabBarItemProps) {
     <button
       type="button"
       onClick={onClick}
+      role="tab"
+      aria-selected={isActive}
       className={
-        isActive
-          ? 'flex w-[162px] flex-col items-center justify-center py-md text-body-l font-bold text-brand-primary whitespace-nowrap transition-colors'
-          : 'flex w-[162px] flex-col items-center justify-center py-md text-body-l font-bold text-text-tertiary whitespace-nowrap transition-colors'
+        'flex w-[162px] cursor-pointer flex-col items-center justify-center py-md text-body-l font-bold whitespace-nowrap transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ' +
+        (isActive ? 'text-brand-primary' : 'text-text-tertiary hover:text-text-secondary')
       }
     >
       {label}

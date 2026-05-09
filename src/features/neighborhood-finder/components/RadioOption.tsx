@@ -16,7 +16,9 @@ export function RadioOption({ state = 'default', number, onClick }: RadioOptionP
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-col items-center gap-xs rounded-md bg-brand-primary-tint px-md py-xs"
+      role="radio"
+      aria-checked={isSelected}
+      className="flex cursor-pointer flex-col items-center gap-xs rounded-md bg-brand-primary-tint px-md py-xs transition-all duration-[var(--duration-base)] hover:bg-brand-primary/10 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
     >
       <span className="text-h3 font-bold text-text-secondary text-center whitespace-nowrap">
         {number}

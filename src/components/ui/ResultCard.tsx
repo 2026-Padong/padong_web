@@ -1,4 +1,5 @@
 import type { MouseEvent } from 'react'
+import { cn } from '@/lib/cn'
 import { Chip } from './Chip'
 import { Heart } from './Heart'
 import { ScoreBar } from './ScoreBar'
@@ -43,11 +44,21 @@ export function ResultCard({
   return (
     <article
       onClick={onClick}
-      className={
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.()
+        }
+      }}
+      className={cn(
+        'flex w-full cursor-pointer flex-col items-center justify-center gap-xs rounded-md px-md py-xs',
+        'transition-all duration-[var(--duration-base)]',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1',
         isSelected
-          ? 'flex w-full cursor-pointer flex-col items-center justify-center gap-xs rounded-md border-[1.5px] border-border-default bg-brand-primary-tint px-md py-xs'
-          : 'flex w-full cursor-pointer flex-col items-center justify-center gap-xs rounded-md border border-border-default px-md py-xs'
-      }
+          ? 'border-[1.5px] border-border-default bg-brand-primary-tint'
+          : 'border border-border-default hover:-translate-y-0.5 hover:border-border-medium hover:shadow-sm',
+      )}
     >
       {/* Header */}
       <div className="flex w-full items-center justify-between">

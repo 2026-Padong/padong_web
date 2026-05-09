@@ -25,7 +25,12 @@ export function JobFinderPage() {
     return (
       <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
         <SideNav activeType="Commute" />
-        <div className="flex w-full flex-col gap-md p-xl md:w-[421px] md:shrink-0 md:min-h-screen">
+        <div
+          className="flex w-full flex-col gap-md p-xl md:w-[421px] md:shrink-0 md:min-h-screen"
+          aria-busy="true"
+          aria-live="polite"
+          aria-label="결과 불러오는 중"
+        >
           <Skeleton className="h-[60px] w-full" />
           <Skeleton className="h-[34px] w-full" />
           {[0, 1, 2, 3].map((i) => (

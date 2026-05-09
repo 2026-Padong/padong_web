@@ -36,10 +36,11 @@ export function BottomNav({ activeType, className }: BottomNavProps) {
             key={item.type}
             to={item.to}
             className={cn(
-              'flex flex-1 flex-col items-center justify-center gap-1',
+              'flex flex-1 cursor-pointer flex-col items-center justify-center gap-1',
               isActive ? 'text-brand-primary' : 'text-text-tertiary',
             )}
             aria-current={isActive ? 'page' : undefined}
+            viewTransition
           >
             <NavIcon type={item.icon} size={24} />
             <span className="text-caption font-medium whitespace-nowrap">{item.label}</span>

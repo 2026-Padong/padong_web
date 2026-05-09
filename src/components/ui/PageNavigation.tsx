@@ -14,17 +14,35 @@ export function PageNavigation({ current, total, onChange }: PageNavigationProps
   const goNext = () => current < total && onChange?.(current + 1)
 
   return (
-    <div className="flex items-center justify-center gap-xxs">
-      <PageButton state="default" page="←" onClick={goPrev} />
+    <nav
+      className="flex items-center justify-center gap-xxs"
+      role="navigation"
+      aria-label="페이지네이션"
+    >
+      <PageButton
+        state="default"
+        page="←"
+        onClick={goPrev}
+        ariaLabel="이전 페이지"
+        disabled={current === 1}
+      />
       {Array.from({ length: total }, (_, i) => i + 1).map((p) => (
         <PageButton
           key={p}
           page={p}
           state={p === current ? 'active' : 'default'}
           onClick={() => onChange?.(p)}
+          ariaLabel={p === current ? `현재 페이지 ${p}` : `${p} 페이지로 이동`}
+          ariaCurrent={p === current ? 'page' : undefined}
         />
       ))}
-      <PageButton state="default" page="→" onClick={goNext} />
-    </div>
+      <PageButton
+        state="default"
+        page="→"
+        onClick={goNext}
+        ariaLabel="다음 페이지"
+        disabled={current === total}
+      />
+    </nav>
   )
 }

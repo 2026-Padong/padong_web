@@ -11,12 +11,17 @@ export interface ResultListPanelProps {
 export function ResultListPanel({ results, selectedId }: ResultListPanelProps) {
   return (
     <div className="flex w-full max-w-[381px] flex-col items-center justify-center gap-xs">
-      {results.map((r) => (
-        <ResultCard
+      {results.map((r, i) => (
+        <div
           key={r.id ?? r.dong}
-          {...r}
-          state={r.id === selectedId ? 'selected' : 'default'}
-        />
+          className="w-full animate-fade-in-up opacity-0"
+          style={{
+            animationDelay: `${i * 60}ms`,
+            animationFillMode: 'forwards',
+          }}
+        >
+          <ResultCard {...r} state={r.id === selectedId ? 'selected' : 'default'} />
+        </div>
       ))}
     </div>
   )

@@ -1,9 +1,9 @@
-import { Users } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { Icon } from './Icon'
 
 // Figma 1:1: Tile · PeopleIcon (1739:4659) > PeopleIcon COMPONENT
 // h-[14px] flex items-center justify-center overflow-clip
-// Icon: 14x14 (Figma raster — lucide Users로 대체)
+// Icon: 14×14 자체 SVG (`people`)
 export interface PeopleIconProps {
   className?: string
 }
@@ -16,7 +16,7 @@ export function PeopleIcon({ className }: PeopleIconProps) {
         className,
       )}
     >
-      <Users size={14} />
+      <Icon name="people" size={14} aria-hidden />
     </div>
   )
 }

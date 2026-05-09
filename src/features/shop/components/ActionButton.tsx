@@ -15,7 +15,7 @@ export function ActionButton({ children, className, ...rest }: ActionButtonProps
       type="button"
       {...rest}
       className={
-        'w-full rounded-md bg-brand-primary py-sm text-subhead font-bold text-neutral-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 ' +
+        'w-full cursor-pointer rounded-md bg-brand-primary py-sm text-subhead font-bold text-neutral-white transition-all duration-[var(--duration-base)] hover:bg-brand-primary-hover active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand-primary disabled:active:scale-100 ' +
         (className ?? '')
       }
     >

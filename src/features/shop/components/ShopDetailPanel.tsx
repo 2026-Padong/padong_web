@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Clock, MapPin, Phone, FileText, Minus, Plus } from 'lucide-react'
+import { Icon } from '@/components/ui/Icon'
 import type { MockShop } from '@/data/mocks'
 import { ShopImageGallery } from './ShopImageGallery'
 import { cn } from '@/lib/cn'
@@ -93,11 +93,11 @@ export function ShopDetailPanel({
 
           {tab === 'Info' ? (
             <div className="flex w-full flex-col items-center gap-[5px] overflow-clip px-[15px] py-[10px]">
-              <InfoLine icon={<Clock size={20} className="text-brand-primary" />}>
+              <InfoLine icon={<Icon name="shop-detail-clock" size={20} className="text-brand-primary" aria-hidden />}>
                 <span className="text-body-l font-medium text-text-primary">영업 중</span>
                 <span className="text-body-l font-medium text-text-primary">· 22:00까지</span>
               </InfoLine>
-              <InfoLine icon={<MapPin size={20} className="text-brand-primary" />}>
+              <InfoLine icon={<Icon name="icon-location" size={20} className="text-brand-primary" aria-hidden />}>
                 <div className="flex flex-1 flex-col gap-[3px]">
                   {shop.infoRows
                     .find((r) => r.label === '주소')
@@ -116,12 +116,12 @@ export function ShopDetailPanel({
                     ))}
                 </div>
               </InfoLine>
-              <InfoLine icon={<Phone size={20} className="text-brand-primary" />}>
+              <InfoLine icon={<Icon name="shop-detail-phone" size={20} className="text-brand-primary" aria-hidden />}>
                 <span className="flex-1 text-body-l font-medium text-text-primary">
                   {shop.infoRows.find((r) => r.label === '전화')?.value ?? '-'}
                 </span>
               </InfoLine>
-              <InfoLine icon={<FileText size={20} className="text-brand-primary" />} alignStart>
+              <InfoLine icon={<Icon name="shop-detail-doc" size={20} className="text-brand-primary" aria-hidden />} alignStart>
                 <p className="flex-1 text-body-l font-medium text-text-primary">
                   {shop.description ?? ''}
                 </p>
@@ -147,9 +147,11 @@ export function ShopDetailPanel({
                           setQuantities((s) => ({ ...s, [m.name]: Math.max(0, qty - 1) }))
                         }
                       >
-                        <Minus
+                        <Icon
+                          name="stepper-minus"
                           size={16}
                           className={qty > 0 ? 'text-text-primary' : 'text-text-tertiary'}
+                          aria-hidden
                         />
                       </button>
                       <span
@@ -165,7 +167,7 @@ export function ShopDetailPanel({
                         aria-label="증가"
                         onClick={() => setQuantities((s) => ({ ...s, [m.name]: qty + 1 }))}
                       >
-                        <Plus size={16} className="text-text-primary" />
+                        <Icon name="stepper-plus" size={16} className="text-text-primary" aria-hidden />
                       </button>
                     </div>
                   </div>

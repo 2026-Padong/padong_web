@@ -39,7 +39,10 @@ export function PreferencePage() {
       setParams({ q: String(q + 1) })
       return
     }
-    analyze.mutate({ answers }, { onSuccess: () => nav('/finder/preference/analyzing') })
+    analyze.mutate(
+      { answers },
+      { onSuccess: () => nav('/finder/preference/analyzing', { viewTransition: true }) },
+    )
   }
 
   if (isLoading) {

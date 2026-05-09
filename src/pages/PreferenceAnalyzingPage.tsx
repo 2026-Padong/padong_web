@@ -12,7 +12,10 @@ import { AnalyzingCard } from '@/features/neighborhood-finder/components/Analyzi
 export function PreferenceAnalyzingPage() {
   const nav = useNavigate()
   useEffect(() => {
-    const t = setTimeout(() => nav('/finder/preference/result'), 3000)
+    const t = setTimeout(
+      () => nav('/finder/preference/result', { viewTransition: true }),
+      3000,
+    )
     return () => clearTimeout(t)
   }, [nav])
 

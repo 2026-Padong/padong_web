@@ -46,13 +46,13 @@ export function UiBasicsPreview() {
       <section>
         <h2 className="mb-md text-h2 font-bold text-text-primary">Foundations</h2>
         <Row name="Icon (7)">
-          <Icon type="Store" />
-          <Icon type="Search" />
-          <Icon type="Back" />
-          <Icon type="Home" />
-          <Icon type="Info" />
-          <Icon type="Location" />
-          <Icon type="Storefront" />
+          <Icon name="icon-store" />
+          <Icon name="icon-search" />
+          <Icon name="icon-back" />
+          <Icon name="icon-home" />
+          <Icon name="icon-info" />
+          <Icon name="icon-location" />
+          <Icon name="icon-storefront" />
         </Row>
         <Row name="NavIcon (6)">
           <NavIcon type="Store" />

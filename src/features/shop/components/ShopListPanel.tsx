@@ -69,20 +69,25 @@ export function ShopListPanel({
           onToggle={(id) => setActiveFilters((s) => ({ ...s, [id]: !s[id] }))}
         />
         <div className="flex min-h-px w-full flex-1 flex-col items-center gap-lg overflow-y-auto py-xxs">
-          {visibleShops.map((s) => (
-            <ShopCard
+          {visibleShops.map((s, i) => (
+            <div
               key={s.id}
-              id={s.id}
-              image={s.image || undefined}
-              name={s.name}
-              category={s.category}
-              description={s.description}
-              participantCurrent={s.participantCurrent}
-              participantTotal={s.participantTotal}
-              status={s.status === 'closed' ? null : 'recruiting'}
-              liked={s.id === selectedId ? true : s.liked}
-              onClick={() => onShopClick?.(s.id)}
-            />
+              className="w-full animate-fade-in-up opacity-0"
+              style={{ animationDelay: `${i * 60}ms`, animationFillMode: 'forwards' }}
+            >
+              <ShopCard
+                id={s.id}
+                image={s.image || undefined}
+                name={s.name}
+                category={s.category}
+                description={s.description}
+                participantCurrent={s.participantCurrent}
+                participantTotal={s.participantTotal}
+                status={s.status === 'closed' ? null : 'recruiting'}
+                liked={s.id === selectedId ? true : s.liked}
+                onClick={() => onShopClick?.(s.id)}
+              />
+            </div>
           ))}
         </div>
         <PageNavigation current={page} total={totalPages} onChange={setPage} />

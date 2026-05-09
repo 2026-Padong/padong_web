@@ -1,5 +1,5 @@
-import { Search } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { Icon } from './Icon'
 
 // Figma 1:1: Tile · SearchInput (598:1647) > SearchInput COMPONENT
 // h-[34px] w-[445px] bg-neutral-white border-[1.5px] border-border-default
@@ -32,7 +32,7 @@ export function SearchInput({
         placeholder={placeholder}
         className="flex-1 bg-transparent text-body-l font-normal text-text-secondary outline-none placeholder:text-text-tertiary"
       />
-      <Search size={24} className="shrink-0 text-text-tertiary" />
+      <Icon name="icon-search" size={24} className="shrink-0 text-text-tertiary" aria-hidden />
     </div>
   )
 }

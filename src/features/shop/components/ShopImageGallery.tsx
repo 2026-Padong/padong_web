@@ -5,6 +5,7 @@ import { Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react'
 // 단일 이미지 슬라이더 — 한 번에 한 장 + "▧ N / total" 카운터 좌하단 + 좌/우 화살표
 // width prop: 컨테이너 폭 (Figma는 ShopDetailPanel 안에서 flex-1)
 // height: 214 고정
+// 의도적 deviation: ChevronLeft/Right, Image placeholder 모두 Figma에 없는 UX utility (슬라이더 네비게이션)이므로 lucide 유지
 export interface ShopImageGalleryProps {
   images: string[]
   alt?: string

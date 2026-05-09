@@ -1,4 +1,5 @@
-import { MapPin, Image as ImageIcon } from 'lucide-react'
+import { Image as ImageIcon } from 'lucide-react'
+import { Icon } from '@/components/ui/Icon'
 
 // Figma 1:1: Tile · MapOverlayCard (660:1998) > MapOverlayCard COMPONENT
 // w-[400px] V gap-lg items-start justify-center p-md rounded-xl border bg-white
@@ -41,7 +42,7 @@ export function MapOverlayCard({
           <div className="flex h-[38px] w-full flex-col items-start justify-between">
             <p className="text-h4 font-bold text-text-primary whitespace-nowrap">{name}</p>
             <div className="flex w-full items-center gap-xxs">
-              <MapPin size={11} className="shrink-0 text-text-secondary" />
+              <Icon name="icon-location" size={11} className="shrink-0 text-text-secondary" aria-hidden />
               <span className="text-body-s font-medium text-text-secondary whitespace-nowrap">
                 {address}
               </span>

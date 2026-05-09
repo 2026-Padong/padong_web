@@ -1,5 +1,5 @@
 import { Heart } from '@/components/ui/Heart'
-import { Users } from 'lucide-react'
+import { Icon } from '@/components/ui/Icon'
 
 // Figma 1:1: Tile · ShopCard (1739:4663) > ShopCard COMPONENT
 // h-[131px] rounded-xl bg-white, H gap-0 items-center
@@ -42,7 +42,14 @@ export function ShopCard({
   return (
     <article
       onClick={onClick}
-      className="flex h-[131px] w-full cursor-pointer items-center overflow-hidden rounded-xl bg-neutral-white"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.()
+        }
+      }}
+      className="flex h-[131px] w-full cursor-pointer items-center overflow-hidden rounded-xl bg-neutral-white transition-all duration-[var(--duration-base)] hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
     >
       {/* ImageArea */}
       <div className="relative h-full w-[155px] shrink-0 rounded-lg bg-surface-subtle">
@@ -80,7 +87,7 @@ export function ShopCard({
           <div className="flex w-full items-center justify-between">
             {participantCurrent != null && participantTotal != null && (
               <div className="flex items-center gap-1">
-                <Users size={14} className="text-text-secondary" />
+                <Icon name="people" size={14} className="text-text-secondary" aria-hidden />
                 <span className="text-body-s font-medium text-text-secondary">
                   {participantCurrent}/{participantTotal}명
                 </span>
