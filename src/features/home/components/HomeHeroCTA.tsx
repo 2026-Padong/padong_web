@@ -2,17 +2,21 @@ import { cva } from 'class-variance-authority'
 import { Icon, type IconName } from '@/components/ui/Icon'
 
 // Figma 1:1: Tile · HomeHeroCTA (898:3120) > HomeHeroCta COMPONENT_SET (Primary/Secondary)
-// h-[41px] w-[154.688px] flex gap-[5px] items-center justify-center px-[20px] py-[10px] rounded-[24px]
-// Primary: bg-brand-primary, ShoppingBag icon (20×15 — Figma `imgShoppingBag`) + "직장으로 추천 받기"
-// Secondary: bg-brand-primary-soft, Heart icon (19.333×11.889 — Figma `imgHeart`) + "내 취향으로 찾기"
-// Text: 11px Medium text-neutral-white
+// h-[41px] flex gap-xxs items-center justify-center px-lg py-sm rounded-[24px]
+// Phase 9 interaction: hover 색 어두워짐, active scale-[0.98], focus-visible outline
 const variants = cva(
-  'inline-flex h-[41px] items-center justify-center gap-[5px] rounded-[24px] px-[20px] py-[10px] whitespace-nowrap transition-colors',
+  [
+    'inline-flex h-[41px] items-center justify-center gap-xxs rounded-[24px] px-lg py-sm whitespace-nowrap',
+    'cursor-pointer select-none',
+    'transition-[background-color,transform] duration-[var(--duration-fast)] ease-[var(--ease-out)]',
+    'active:scale-[0.98]',
+    'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary',
+  ].join(' '),
   {
     variants: {
       type: {
-        Primary: 'bg-brand-primary',
-        Secondary: 'bg-brand-primary-soft',
+        Primary: 'bg-brand-primary hover:bg-brand-primary-hover',
+        Secondary: 'bg-brand-primary-soft hover:bg-brand-primary',
       },
     },
     defaultVariants: { type: 'Primary' },
@@ -41,7 +45,7 @@ export function HomeHeroCTA({ type = 'Primary', label, onClick, className }: Hom
   return (
     <button type="button" onClick={onClick} className={`${variants({ type })} ${className ?? ''}`}>
       <Icon name={ICON[type]} aria-hidden />
-      <span className="text-body-s font-medium text-neutral-white">{label ?? LABEL[type]}</span>
+      <span className="text-body font-medium text-neutral-white">{label ?? LABEL[type]}</span>
     </button>
   )
 }

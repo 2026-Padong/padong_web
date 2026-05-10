@@ -1,6 +1,6 @@
 // Figma 1:1: Tile · QuestionProgress (538:1011) > QuestionProgress COMPONENT
 // w-[600px] flex flex-col items-start
-// ProgressBlock (gap-[14px] items-center w-full):
+// ProgressBlock (gap-md items-center w-full):
 //   - LabelRow (justify-between): StepLabel + Counter
 //     - StepLabel (gap-2 items-baseline): "01" 28px Bold brand-primary + "취향 질문" 18px text-text-primary
 //     - Counter (items-baseline): count 28px Bold brand-primary + "/ 10" 22px Regular text-text-secondary
@@ -23,7 +23,7 @@ export function QuestionProgress({
   const stepText = step ?? String(current).padStart(2, '0')
   return (
     <div className="flex w-full flex-col items-start">
-      <div className="flex w-full flex-col items-center justify-center gap-[14px]">
+      <div className="flex w-full flex-col items-center justify-center gap-md">
         <div className="flex w-full items-center justify-between whitespace-nowrap">
           <div className="flex flex-1 items-baseline gap-2">
             <span className="text-h2 font-bold text-brand-primary">{stepText}</span>

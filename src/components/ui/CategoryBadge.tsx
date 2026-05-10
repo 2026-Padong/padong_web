@@ -1,18 +1,21 @@
 import { cva } from 'class-variance-authority'
 
 // Figma 1:1: Tile · CategoryBadge (1178:3790) > CategoryBadge COMPONENT_SET
-// flex items-center px-[10px] py-[4px] rounded-full
+// flex items-center px-sm py-xxs rounded-full
 // Text: Noto Sans KR Bold 11px
 const variants = cva(
-  'inline-flex items-center rounded-full px-[10px] py-[4px] text-body-s font-bold whitespace-nowrap',
+  'inline-flex items-center rounded-full px-sm py-xxs text-body-s font-bold whitespace-nowrap',
   {
     variants: {
       category: {
-        관광특구: 'bg-[#eff4ff] text-[#3875f5]',
-        '고궁·문화유산': 'bg-[#fff2dd] text-[#c67f19]',
-        인구밀집지역: 'bg-[#fdeded] text-[#c72e2e]',
-        발달상권: 'bg-[#f1edff] text-[#8045d4]',
-        공원: 'bg-[#d4f4de] text-[#1b9e5a]',
+        관광특구: 'bg-category-tourism-bg text-category-tourism',
+        // 고궁·문화유산 = status/warning 재사용 (보존/주의 의미 결합)
+        '고궁·문화유산': 'bg-status-warning-bg text-status-warning',
+        // 인구밀집 = status/critical 재사용 (위험 신호 의미 결합)
+        인구밀집지역: 'bg-status-critical-bg text-status-critical',
+        발달상권: 'bg-category-commercial-bg text-category-commercial',
+        // 공원 = status/positive 재사용 (긍정 의미 결합)
+        공원: 'bg-status-positive-bg text-status-positive',
       },
     },
   },

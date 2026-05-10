@@ -13,7 +13,7 @@ export function ErrorState({
 }: ErrorStateProps) {
   return (
     <div className="flex w-full flex-col items-center justify-center gap-md p-xl">
-      <AlertCircle size={36} className="text-[#c72e2e]" />
+      <AlertCircle size={36} className="text-status-critical" />
       <div className="flex flex-col items-center gap-xs">
         <p className="text-subhead font-bold text-text-primary">{title}</p>
         <p className="text-body-l text-text-tertiary">{message}</p>

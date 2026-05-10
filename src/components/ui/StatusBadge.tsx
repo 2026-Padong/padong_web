@@ -2,17 +2,17 @@ import type { ReactNode } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 // Figma 1:1: Tile · StatusBadge (1315:4051) > StatusBadge COMPONENT_SET
-// flex items-center px-[10px] py-[4px] rounded-full
+// flex items-center px-sm py-xxs rounded-full
 // Text: Noto Sans KR Bold 11px
 const variants = cva(
-  'inline-flex items-center rounded-full px-[10px] py-[4px] text-body-s font-bold whitespace-nowrap',
+  'inline-flex items-center rounded-full px-sm py-xxs text-body-s font-bold whitespace-nowrap',
   {
     variants: {
       state: {
-        positive: 'bg-[#d9f2de] text-[#218c45]',
-        neutral: 'bg-[#ebf0f5] text-[#5c6980]',
-        warning: 'bg-[#fff0c7] text-[#8c660d]',
-        critical: 'bg-[#fce3e3] text-[#c72e2e]',
+        positive: 'bg-status-positive-bg text-status-positive',
+        neutral: 'bg-status-neutral-bg text-status-neutral',
+        warning: 'bg-status-warning-bg text-status-warning',
+        critical: 'bg-status-critical-bg text-status-critical',
       },
     },
   },

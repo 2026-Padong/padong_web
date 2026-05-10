@@ -2,17 +2,17 @@ import { cva } from 'class-variance-authority'
 import { Icon, type IconName } from './Icon'
 
 // Figma 1:1: Tile · TrendPill (1304:4053) > TrendPill COMPONENT_SET (3 variants)
-// flex gap-[5px] items-center px-[10px] py-[4px] rounded-full
+// flex gap-xxs items-center px-sm py-xxs rounded-full
 // 14x14 자체 SVG (trend-*) + Bold 11px text
 // Variant: 감소(critical) / 증가(positive) / 유지(neutral)
 const variants = cva(
-  'inline-flex items-center gap-[5px] rounded-full px-[10px] py-[4px] text-body-s font-bold whitespace-nowrap',
+  'inline-flex items-center gap-xxs rounded-full px-sm py-xxs text-body-s font-bold whitespace-nowrap',
   {
     variants: {
       trend: {
-        down: 'bg-[#fce3e3] text-[#c72e2e]',
-        up: 'bg-[#d9f2de] text-[#218c45]',
-        flat: 'bg-[#ebf0f5] text-[#5c6980]',
+        down: 'bg-status-critical-bg text-status-critical',
+        up: 'bg-status-positive-bg text-status-positive',
+        flat: 'bg-status-neutral-bg text-status-neutral',
       },
     },
   },

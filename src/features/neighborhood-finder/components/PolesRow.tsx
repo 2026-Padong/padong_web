@@ -1,7 +1,7 @@
 import { DesktopPole, type DesktopPoleProps } from './DesktopPole'
 
 // Figma 1:1: Tile · PolesRow (1490:4161) > PolesRow COMPONENT
-// w-[1112px] flex gap-3xl items-center
+// w-full + md:flex-row gap-3xl items-center (Phase 9.6 fluid)
 // 2개 DesktopPole (Left + Right)
 export interface PolesRowProps {
   left: Omit<DesktopPoleProps, 'side'>

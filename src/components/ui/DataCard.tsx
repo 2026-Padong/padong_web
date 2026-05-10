@@ -2,7 +2,7 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · DataCard (925:3151) > DataCard COMPONENT_SET (4 variants)
-// w-[180px] h-[96px] flex gap-[14px] p-md rounded-lg border border-border-default bg-neutral-white
+// w-[180px] h-[96px] flex gap-md p-md rounded-lg border border-border-default bg-neutral-white
 // IconWrap: size-[48px] rounded-lg (variant별 bg) + emoji 24px
 // Content: label 11px Medium tertiary + value 18px Bold brand-primary + sub 12px Regular secondary
 const iconBgVariants = cva(
@@ -39,12 +39,20 @@ export function DataCard({ type, label, value, sub, className }: DataCardProps) 
   return (
     <div
       className={cn(
-        'flex h-[96px] w-[180px] items-center gap-[14px] rounded-lg border border-border-default bg-neutral-white p-md',
+        'flex h-[96px] w-[180px] items-center gap-md rounded-lg border border-border-default bg-neutral-white p-md',
         className,
       )}
     >
       <div className={iconBgVariants({ type })}>
-        <span className="text-[24px] leading-none">{EMOJI[type]}</span>
+        <span
+          className="text-[24px] leading-none"
+          style={{
+            fontFamily:
+              '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif',
+          }}
+        >
+          {EMOJI[type]}
+        </span>
       </div>
       <div className="flex flex-col gap-xxs overflow-clip whitespace-nowrap">
         <span className="text-body-s font-medium text-text-tertiary">{label}</span>

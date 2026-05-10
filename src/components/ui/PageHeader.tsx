@@ -2,7 +2,7 @@ import { cva } from 'class-variance-authority'
 import { Icon } from './Icon'
 
 // Figma 1:1: Tile · PageHeader (841:3094) > PageHeader COMPONENT_SET (Search/Shop)
-// flex gap-[8px] items-center justify-center bg-neutral-white p-0
+// flex gap-xs items-center justify-center bg-neutral-white p-0
 // Search: rounded-lg + Location(Pin) icon
 // Shop: no rounded + Storefront icon
 // Title: Noto Sans KR Bold 28px text-text-primary

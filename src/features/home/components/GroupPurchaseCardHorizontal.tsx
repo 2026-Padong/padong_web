@@ -34,7 +34,7 @@ export function GroupPurchaseCardHorizontal({
       onClick={onClick}
       className="flex w-full cursor-pointer items-center gap-lg rounded-lg border border-border-default p-md"
     >
-      <div className="flex h-[90px] w-[180px] shrink-0 items-center justify-center overflow-clip rounded-md bg-[#f0e8e8]">
+      <div className="flex h-[110px] w-[180px] shrink-0 items-center justify-center overflow-clip rounded-md bg-[#f0e8e8]">
         {thumbnail ? (
           <img src={thumbnail} alt={shopName} className="h-full w-full object-cover" />
         ) : (

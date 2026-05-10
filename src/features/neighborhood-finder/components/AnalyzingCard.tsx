@@ -38,7 +38,7 @@ export function AnalyzingCard({
       <TitleBlock
         title={
           <>
-            내 취향에 맞는 <span className="text-[#2458e8]">동네를 분석 중</span>이에요
+            내 취향에 맞는 <span className="text-status-recruiting">동네를 분석 중</span>이에요
           </>
         }
         body={

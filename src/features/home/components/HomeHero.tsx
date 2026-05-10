@@ -9,8 +9,8 @@ import FeatureBook from '@/assets/icons/home-hero-feature-book.svg?react'
 import SeparatorIcon from '@/assets/icons/home-hero-separator.svg?react'
 
 // Figma 1:1: Tile · HomeHero (899:3130) > HomeHero COMPONENT
-// flex flex-col gap-[35px] items-start px-[47px]
-// Top: Title group (Find your 동네 + 파동 32px Bold + subtitle 16px text-tertiary)
+// V auto-layout, gap 35, 좌우 패딩 0 (페이지/컬럼 컨테이너가 horizontal 여백 책임)
+// Title group (V auto-layout, gap 33): TitleStack (V, gap 11) [Find your 동네 + 파동 32px Bold] + subtitle 16px text-tertiary
 // Banner (520x237 rounded-[10px]): bg image (cropped) + content (Tag + 22px title with underline + 3-feature row + 2 CTAs + 65px badge)
 export interface HomeHeroProps {
   /** Primary CTA 클릭 — 직장으로 추천 받기 */
@@ -26,33 +26,36 @@ interface FeatureItemProps {
 
 function FeatureItem({ Icon, label }: FeatureItemProps) {
   return (
-    <div className="flex items-center justify-center gap-[5px]">
+    <div className="flex items-center justify-center gap-xxs">
       <span className="inline-block h-[14px] w-[15px]">
         <Icon width={15} height={14} aria-hidden />
       </span>
-      <p className="text-[10px] font-normal whitespace-nowrap text-[#273142]">{label}</p>
+      <p className="text-body-s font-normal whitespace-nowrap text-[#273142]">{label}</p>
     </div>
   )
 }
 
 export function HomeHero({ onPrimaryCta, onSecondaryCta }: HomeHeroProps) {
   return (
-    <section className="flex flex-col items-start gap-[35px] px-[47px]">
-      {/* Title group */}
-      <div className="grid grid-cols-1 grid-rows-1">
-        <p className="col-start-1 row-start-1 text-h1 font-bold text-text-primary whitespace-nowrap">
-          Find your 동네
-        </p>
-        <p className="col-start-1 row-start-1 mt-[49px] text-h1 font-bold text-brand-primary whitespace-nowrap">
-          파동
-        </p>
-        <p className="col-start-1 row-start-1 mt-[120px] text-subhead font-normal text-text-tertiary whitespace-nowrap">
+    <section className="flex w-full flex-col items-start gap-2xl">
+      {/* Title group — Figma auto-layout: 외곽 V gap-33, 내부 TitleStack V gap-11 */}
+      {/* leading은 Figma 박스 높이(32→38, 16→19)를 픽셀로 고정 — Pretendard 렌더 결과를 Figma 레이아웃과 정렬 */}
+      <div className="flex flex-col gap-2xl">
+        <div className="flex flex-col gap-sm">
+          <p className="text-h1 leading-[38px] font-bold text-text-primary whitespace-nowrap">
+            Find your 동네
+          </p>
+          <p className="text-h1 leading-[38px] font-bold text-brand-primary whitespace-nowrap">
+            파동
+          </p>
+        </div>
+        <p className="text-subhead leading-[19px] font-normal text-text-tertiary whitespace-nowrap">
           서울에서 오래 머물고 싶은 동네를 찾아드릴게요
         </p>
       </div>
 
-      {/* Banner */}
-      <div className="relative flex h-[237px] w-[520px] items-center justify-center gap-[25px] overflow-hidden rounded-[10px]">
+      {/* Banner — Figma 495:237 종횡비, 컬럼 풀폭 채움 (Figma 인스턴스 FILL 동작과 매칭) */}
+      <div className="relative flex aspect-[495/237] w-full items-center justify-between overflow-hidden rounded-[10px]">
         {/* Background banner image (Figma: h-[109.7%] top-[-4.22%]) */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[10px]">
           <img
@@ -63,31 +66,30 @@ export function HomeHero({ onPrimaryCta, onSecondaryCta }: HomeHeroProps) {
           />
         </div>
 
-        {/* Inner content (356×237) */}
-        <div className="relative flex h-full w-[356px] flex-col items-start justify-center gap-lg px-[25px]">
-          {/* Tag + Title + decorative underline */}
-          <div className="flex h-[101px] w-[268px] flex-col items-start justify-center gap-[5px]">
+        {/* Inner content (Figma 356×237) — Title block과 Feature/CTA block 사이 gap 확장 */}
+        <div className="relative flex h-full w-[356px] flex-col items-start justify-center gap-2xl px-xl">
+          {/* Tag + Title + decorative underline — Tag 아래 여백 확대 (gap-xxs→gap-sm) */}
+          <div className="flex w-fit flex-col items-start justify-center gap-sm">
             <HomeHeroTag />
-            <div className="relative h-[76.531px] w-[267.875px]">
-              <p className="text-[22px] font-bold text-text-primary leading-tight">
-                나에게 맞는 동네,
-                <br />
-                그리고 출퇴근에 <span className="text-brand-primary">맞는 동네</span>
-              </p>
-              {/* Decorative underline under "맞는 동네" — Figma ml-[169.94px] mt-[64.74px] w-[90px] h-[3px] */}
-              <span
-                aria-hidden
-                className="absolute h-[3px] w-[90px]"
-                style={{ left: '169.94px', top: '64.74px' }}
-              >
-                <UnderlineIcon width={90} height={3} />
+            <p className="text-h2 font-bold text-text-primary leading-tight">
+              나에게 맞는 동네,
+              <br />
+              그리고 출퇴근에{' '}
+              <span className="relative inline-block text-brand-primary">
+                맞는 동네
+                <UnderlineIcon
+                  aria-hidden
+                  className="absolute -bottom-1 left-0 w-full"
+                  preserveAspectRatio="none"
+                  height={3}
+                />
               </span>
-            </div>
+            </p>
           </div>
 
           {/* Feature row + CTAs */}
-          <div className="flex w-full flex-col items-start justify-center gap-[15px]">
-            <div className="flex h-[20px] items-center justify-center gap-[10px] overflow-clip py-[14px]">
+          <div className="flex w-full flex-col items-start justify-center gap-md">
+            <div className="flex h-[20px] items-center justify-center gap-sm overflow-clip py-md">
               <FeatureItem Icon={FeatureBag} label="직장 위치 기반 추천" />
               <span className="inline-block h-[36px] w-px">
                 <SeparatorIcon width={1} height={36} aria-hidden />
@@ -105,7 +107,7 @@ export function HomeHero({ onPrimaryCta, onSecondaryCta }: HomeHeroProps) {
           </div>
         </div>
 
-        {/* Badge image (139×192 box, 65×65 image at left-[57px] top-[34.5px]) */}
+        {/* Badge (Figma 139×192 + 65×65 image at left-[57px] top-[34.5px]) */}
         <div className="relative h-[192px] w-[139px] overflow-clip">
           <img
             src={badgeUrl}

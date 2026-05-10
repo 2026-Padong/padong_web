@@ -3,7 +3,7 @@ import { QBadge } from './QBadge'
 // Figma 1:1: Tile · QuestionHero (1490:4158) > QuestionHero COMPONENT
 // w-[1112px] flex flex-col gap-md items-center
 // QBadge + TitleGroup (V gap-xs items-center overflow-clip):
-//   - QuestionTitle (H gap-[10px] items-center): " (#3d70ef) + 본문 (#081d49) + " (#3d70ef) — 28px Bold
+//   - QuestionTitle (H gap-sm items-center): " (#3d70ef) + 본문 (#081d49) + " (#3d70ef) — 28px Bold
 //   - TitleUnderline: w-[78px] h-[7px] gradient #b3c9ff → #5c8cff rounded-full
 export interface QuestionHeroProps {
   number: number

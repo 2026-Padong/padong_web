@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Bookmark } from '@/components/ui/Bookmark'
 import { CategoryBadge } from '@/components/ui/CategoryBadge'
 import { Chip } from '@/components/ui/Chip'
-import { CityDataHeading } from '@/components/ui/CityDataHeading'
+import { SectionHeader } from '@/components/ui/SectionHeader'
 import { AreaSectionTitle } from '@/components/ui/AreaSectionTitle'
 import { FacilityChip } from '@/components/ui/FacilityChip'
 import { Heart } from '@/components/ui/Heart'
@@ -201,9 +201,9 @@ export function UiBasicsPreview() {
 
       <section>
         <h2 className="mb-md text-h2 font-bold text-text-primary">Atoms — 단순 텍스트</h2>
-        <Row name="CityDataHeading">
-          <CityDataHeading />
-          <CityDataHeading>서울특별시 도시데이터</CityDataHeading>
+        <Row name="SectionHeader (Title)">
+          <SectionHeader type="Title" title="실시간 도시데이터" />
+          <SectionHeader type="Title" title="서울특별시 도시데이터" />
         </Row>
         <Row name="AreaSectionTitle">
           <AreaSectionTitle>마포구 연남동</AreaSectionTitle>

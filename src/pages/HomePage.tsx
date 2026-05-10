@@ -6,7 +6,6 @@ import { GroupPurchaseCardHorizontal } from '@/features/home/components/GroupPur
 import { NewsCardHorizontal } from '@/features/home/components/NewsCardHorizontal'
 import { PlaceCard } from '@/features/home/components/PlaceCard'
 import { SectionHeader } from '@/components/ui/SectionHeader'
-import { CityDataHeading } from '@/components/ui/CityDataHeading'
 import { DataCard } from '@/components/ui/DataCard'
 import { AreaSectionTitle } from '@/components/ui/AreaSectionTitle'
 import { TimePill } from '@/components/ui/TimePill'
@@ -22,23 +21,24 @@ import { useState } from 'react'
 export function HomePage() {
   const nav = useNavigate()
   const [search, setSearch] = useState('')
+  const [selectedDistrict, setSelectedDistrict] = useState('용산구')
   const { data: shopList } = useShopList()
-  const recruiting = (shopList?.items ?? []).filter((s) => s.status === 'recruiting').slice(0, 2)
+  const recruiting = (shopList?.items ?? []).filter((s) => s.status === 'recruiting').slice(0, 3)
 
   return (
     <div className="flex min-h-screen flex-col bg-neutral-white pb-[56px] lg:pb-0">
-      <HeaderNav activeType="Commute" />
-      <main className="mx-auto w-full max-w-screen-2xl px-4 py-9">
-        <div className="flex flex-col gap-12 lg:grid lg:grid-cols-2 lg:gap-md">
+      <HeaderNav activeType="Home" />
+      <main className="mx-auto w-full max-w-[1440px] px-8 py-9">
+        <div className="flex flex-col gap-12 lg:grid lg:grid-cols-2 lg:gap-10">
           {/* LeftColumn */}
-          <section className="flex flex-col gap-[50px]">
+          <section className="flex flex-col gap-3xl">
             <HomeHero
               onPrimaryCta={() => nav('/finder/job', { viewTransition: true })}
               onSecondaryCta={() => nav('/finder/preference', { viewTransition: true })}
             />
 
             {/* GroupPurchaseSection */}
-            <div className="flex w-[635px] flex-col gap-md self-center">
+            <div className="flex w-full flex-col gap-md">
               <SectionHeader
                 type="TitleSearch"
                 title="공동구매"
@@ -60,8 +60,9 @@ export function HomePage() {
                     />
                   ))
                 ) : (
-                  // 로딩 시 placeholder 2개
+                  // 로딩 시 placeholder 3개
                   <>
+                    <GroupPurchaseCardHorizontal shopName="로딩 중..." category="-" price={0} />
                     <GroupPurchaseCardHorizontal shopName="로딩 중..." category="-" price={0} />
                     <GroupPurchaseCardHorizontal shopName="로딩 중..." category="-" price={0} />
                   </>
@@ -71,10 +72,10 @@ export function HomePage() {
             </div>
 
             {/* NewsSection */}
-            <div className="flex w-[635px] flex-col gap-md self-center">
+            <div className="flex w-full flex-col gap-md">
               <SectionHeader type="Title" title="뉴스" />
               <div className="flex flex-col gap-[28px]">
-                {MOCK_NEWS.slice(0, 2).map((n) => (
+                {MOCK_NEWS.slice(0, 3).map((n) => (
                   <NewsCardHorizontal
                     key={n.id}
                     thumbnail={n.thumbnail}
@@ -91,8 +92,8 @@ export function HomePage() {
           <section className="flex flex-col gap-[60px]">
             {/* CityDataSection */}
             <div className="flex flex-col gap-md">
-              <CityDataHeading />
-              <DataMap />
+              <SectionHeader type="Title" title="실시간 도시데이터" />
+              <DataMap selectedDistrict={selectedDistrict} onDistrictClick={setSelectedDistrict} />
               <div className="grid w-full grid-cols-2 gap-md md:grid-cols-4 md:justify-between md:gap-0">
                 <DataCard type="Weather" label="날씨" value="맑음" sub="21.3°C" />
                 <DataCard type="Temp" label="온도" value="21.3°C" sub="체감 22.0°C" />
@@ -104,10 +105,10 @@ export function HomePage() {
             {/* PlaceSection */}
             <div className="flex flex-col gap-md">
               <div className="flex items-center justify-between">
-                <AreaSectionTitle>용산구 지역 정보</AreaSectionTitle>
+                <AreaSectionTitle>{selectedDistrict} 지역 정보</AreaSectionTitle>
                 <TimePill>19:15 기준</TimePill>
               </div>
-              <div className="flex flex-col gap-[18px]">
+              <div className="flex flex-col gap-lg">
                 {MOCK_PLACES.map((p) => (
                   <PlaceCard
                     key={p.id}

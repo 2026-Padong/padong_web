@@ -4,20 +4,20 @@ import { Icon, type IconName } from '@/components/ui/Icon'
 import { SubwayLineBadge, type SubwayLine } from '@/components/ui/SubwayLineBadge'
 
 // Figma 1:1: Tile · PlaceCard (926:3130) > PlaceCard COMPONENT (926:3122)
-// w-[705px] V gap-[12px] items-start px-md py-[14px] rounded-2xl border bg-white
-// Hero (H gap-[18px] items-center w-full):
+// w-[705px] V gap-sm items-start px-md py-md rounded-2xl border bg-white
+// Hero (H gap-lg items-center w-full):
 //   Photo 240x160 rounded-lg with gradient bg + 일러스트 placeholder
 //   InfoColumn (flex-1 self-stretch V justify-between):
 //     TopRow (justify-between): CategoryBadge + EventBadge (Sparkles + 이벤트명, brand-primary)
 //     TitleBlock (V gap-[2px]): name 18px Bold + address 12px Regular text-tertiary
-//     FacilitiesRow (H gap-[14px] pt-1):
-//       SubwayItem (gap-[7px]): FacilityChip(subway) + 역명 + SubwayLineBadge(s)
+//     FacilitiesRow (H gap-md pt-1):
+//       SubwayItem (gap-xs): FacilityChip(subway) + 역명 + SubwayLineBadge(s)
 //       Divider 1px x 14px
 //       BusItem: FacilityChip(bus) + "버스 정류장 N개"
 //       Divider
 //       BikeItem: FacilityChip(bike) + "따릉이 대여소 N개"
 // DataGrid (H items-center py-2 w-full): 4 columns + dividers
-//   각 column V gap-1 items-center px-[14px]: header(IconSlot 16 + 라벨 11px) + 값 16px Bold + 보조 10px
+//   각 column V gap-1 items-center px-md: header(IconSlot 16 + 라벨 11px) + 값 16px Bold + 보조 10px
 
 export interface PlaceSubway {
   station: string
@@ -79,10 +79,10 @@ export function PlaceCard({
           onClick?.()
         }
       }}
-      className="flex w-full cursor-pointer flex-col items-start gap-3 rounded-2xl border border-border-default bg-neutral-white px-md py-[14px] transition-all duration-[var(--duration-base)] hover:-translate-y-0.5 hover:border-border-medium hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
+      className="flex w-full cursor-pointer flex-col items-start gap-3 rounded-2xl border border-border-default bg-neutral-white px-md py-md transition-all duration-[var(--duration-base)] hover:-translate-y-0.5 hover:border-border-medium hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
     >
       {/* Hero */}
-      <div className="flex w-full items-center gap-[18px] overflow-clip">
+      <div className="flex w-full items-center gap-lg overflow-clip">
         {/* Photo */}
         <div
           className="relative h-[160px] w-[240px] shrink-0 overflow-clip rounded-lg"
@@ -105,7 +105,7 @@ export function PlaceCard({
               <CategoryBadge category={category} />
             </div>
             {event && (
-              <span className="inline-flex items-center gap-1 overflow-clip rounded-full bg-brand-primary-tint pl-2 pr-[10px] py-1">
+              <span className="inline-flex items-center gap-1 overflow-clip rounded-full bg-brand-primary-tint pl-2 pr-sm py-1">
                 <Icon name="place-event-sparkles" size={11} className="text-brand-primary" aria-hidden />
                 <span className="text-body-s font-bold text-brand-primary whitespace-nowrap">
                   {event}
@@ -121,11 +121,11 @@ export function PlaceCard({
           </div>
 
           {/* FacilitiesRow */}
-          <div className="flex items-center gap-[14px] overflow-clip pt-1">
+          <div className="flex items-center gap-md overflow-clip pt-1">
             {facilities.subway && (
-              <div className="flex items-center gap-[7px]">
+              <div className="flex items-center gap-xs">
                 <FacilityChip type="subway" />
-                <div className="flex items-center gap-[5px]">
+                <div className="flex items-center gap-xxs">
                   <span className="text-body-s font-medium text-text-secondary whitespace-nowrap">
                     {facilities.subway.station}
                   </span>
@@ -138,7 +138,7 @@ export function PlaceCard({
             {facilities.busStops != null && (
               <>
                 <span className="h-[14px] w-px bg-border-default" />
-                <div className="flex items-center gap-[7px]">
+                <div className="flex items-center gap-xs">
                   <FacilityChip type="bus" />
                   <span className="text-body-s font-medium text-text-secondary whitespace-nowrap">
                     버스 정류장 {facilities.busStops}개
@@ -149,7 +149,7 @@ export function PlaceCard({
             {facilities.bikeStations != null && (
               <>
                 <span className="h-[14px] w-px bg-border-default" />
-                <div className="flex items-center gap-[7px]">
+                <div className="flex items-center gap-xs">
                   <FacilityChip type="bike" />
                   <span className="text-body-s font-medium text-text-secondary whitespace-nowrap">
                     따릉이 대여소 {facilities.bikeStations}개
@@ -166,8 +166,8 @@ export function PlaceCard({
         {data.map((col, i) => (
           <div key={col.label} className="contents">
             {i > 0 && <span className="h-full w-px self-stretch bg-border-default" />}
-            <div className="flex flex-1 flex-col items-center gap-1 overflow-clip px-[14px]">
-              <div className="flex items-center gap-[6px]">
+            <div className="flex flex-1 flex-col items-center gap-1 overflow-clip px-md">
+              <div className="flex items-center gap-xs">
                 <Icon name={DATA_ICON[col.icon]} size={16} className="text-text-secondary" aria-hidden />
                 <span className="text-body-s font-medium text-text-secondary whitespace-nowrap">
                   {col.label}
@@ -180,7 +180,7 @@ export function PlaceCard({
                 <p
                   className={
                     col.hintTone === 'positive'
-                      ? 'text-caption font-medium text-[#218c45] whitespace-nowrap'
+                      ? 'text-caption font-medium text-status-positive whitespace-nowrap'
                       : 'text-caption font-medium text-text-tertiary whitespace-nowrap'
                   }
                 >

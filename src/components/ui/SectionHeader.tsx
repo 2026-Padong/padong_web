@@ -41,7 +41,11 @@ export function SectionHeader({
     return (
       <div className="flex items-center justify-between gap-md">
         <h2 className="text-h3 font-bold text-brand-primary whitespace-nowrap">{title}</h2>
-        <SearchInput value={searchValue} onChange={onSearchChange} />
+        <SearchInput
+          value={searchValue}
+          onChange={onSearchChange}
+          className="w-[445px] shrink-0"
+        />
       </div>
     )
   }

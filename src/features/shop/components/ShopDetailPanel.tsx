@@ -5,12 +5,12 @@ import { ShopImageGallery } from './ShopImageGallery'
 import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · ShopDetailPanel (659:2019) > ShopDetailPanel COMPONENT_SET (Tab=Menu/Info)
-// 450w 900h V gap-[15px] pt-[25px] pb-[10px] px-[25px] items-center bg-white
+// 450w 900h V gap-md pt-xl pb-sm px-xl items-center bg-white
 // BackButton (h-[19px] w-full): "← 목록" 16px Bold brand-primary
 // ShopTitle (V py-xs items-start w-full): 28px Bold
 // ShopImageGallery (400x214): image flex-1 rounded-lg + "▧ 1 / 6" overlay
-// MenuCardWrap (V py-[10px] w-full):
-//   MenuCard (V border bg-white pb-[15px] w-full):
+// MenuCardWrap (V py-sm w-full):
+//   MenuCard (V border bg-white pb-md w-full):
 //     ShopTabBar [메뉴, 가게 정보]
 //     if Info: InfoList (Clock/Pin/Phone/Doc rows)
 //     if Menu: MenuItems (이름 16px Medium + 가격 14px + QuantityStepper rounded-2xl)
@@ -41,7 +41,7 @@ export function ShopDetailPanel({
   return (
     <aside
       className={cn(
-        'flex w-full flex-col items-center gap-[15px] bg-neutral-white px-[25px] pb-[10px] pt-[25px] md:w-[450px] md:shrink-0 md:min-h-screen',
+        'flex w-full flex-col items-center gap-md bg-neutral-white px-xl pb-sm pt-xl md:w-[450px] md:shrink-0 md:min-h-screen',
         className,
       )}
     >
@@ -61,15 +61,15 @@ export function ShopDetailPanel({
         <ShopImageGallery images={shop.images} alt={shop.name} />
       </div>
 
-      <div className="flex w-full flex-1 flex-col items-start overflow-hidden py-[10px]">
-        <div className="flex w-full flex-1 flex-col items-start overflow-hidden rounded-lg border border-border-default bg-neutral-white pb-[15px]">
+      <div className="flex w-full flex-1 flex-col items-start overflow-hidden py-sm">
+        <div className="flex w-full flex-1 flex-col items-start overflow-hidden rounded-lg border border-border-default bg-neutral-white pb-md">
           {/* ShopTabBar */}
           <div className="flex w-full items-start overflow-clip">
             <button
               type="button"
               onClick={() => onTabChange?.('Menu')}
               className={
-                'flex flex-1 flex-col items-center pb-[12px] pt-[16px] text-body-l font-bold whitespace-nowrap ' +
+                'flex flex-1 flex-col items-center pb-sm pt-md text-body-l font-bold whitespace-nowrap ' +
                 (tab === 'Menu'
                   ? 'border-b-2 border-brand-primary text-brand-primary'
                   : 'border-b border-border-default text-text-tertiary')
@@ -81,7 +81,7 @@ export function ShopDetailPanel({
               type="button"
               onClick={() => onTabChange?.('Info')}
               className={
-                'flex flex-1 flex-col items-center pb-[12px] pt-[16px] text-body-l font-bold whitespace-nowrap ' +
+                'flex flex-1 flex-col items-center pb-sm pt-md text-body-l font-bold whitespace-nowrap ' +
                 (tab === 'Info'
                   ? 'border-b-2 border-brand-primary text-brand-primary'
                   : 'border-b border-border-default text-text-tertiary')
@@ -92,13 +92,13 @@ export function ShopDetailPanel({
           </div>
 
           {tab === 'Info' ? (
-            <div className="flex w-full flex-col items-center gap-[5px] overflow-clip px-[15px] py-[10px]">
+            <div className="flex w-full flex-col items-center gap-xxs overflow-clip px-md py-sm">
               <InfoLine icon={<Icon name="shop-detail-clock" size={20} className="text-brand-primary" aria-hidden />}>
                 <span className="text-body-l font-medium text-text-primary">영업 중</span>
                 <span className="text-body-l font-medium text-text-primary">· 22:00까지</span>
               </InfoLine>
               <InfoLine icon={<Icon name="icon-location" size={20} className="text-brand-primary" aria-hidden />}>
-                <div className="flex flex-1 flex-col gap-[3px]">
+                <div className="flex flex-1 flex-col gap-xxs">
                   {shop.infoRows
                     .find((r) => r.label === '주소')
                     ?.value.split(/\s/)
@@ -128,18 +128,18 @@ export function ShopDetailPanel({
               </InfoLine>
             </div>
           ) : (
-            <div className="flex w-full flex-1 flex-col items-start gap-xxs overflow-y-auto py-[10px] pl-[20px] pr-[10px]">
+            <div className="flex w-full flex-1 flex-col items-start gap-xxs overflow-y-auto py-sm pl-lg pr-sm">
               {shop.menus.map((m) => {
                 const qty = quantities[m.name] ?? 0
                 return (
-                  <div key={m.name} className="flex w-full items-center gap-[14px] py-[12px]">
+                  <div key={m.name} className="flex w-full items-center gap-md py-sm">
                     <span className="flex-1 text-subhead font-medium text-text-primary">
                       {m.name}
                     </span>
                     <span className="text-body-l font-medium text-text-primary whitespace-nowrap">
                       {fmtPrice(m.price)}
                     </span>
-                    <div className="flex items-center justify-center gap-[14px] rounded-2xl border border-border-default px-[14px] py-[8px]">
+                    <div className="flex items-center justify-center gap-md rounded-2xl border border-border-default px-md py-xs">
                       <button
                         type="button"
                         aria-label="감소"
@@ -219,7 +219,7 @@ function InfoLine({
   return (
     <div
       className={
-        'flex w-full gap-[15px] overflow-clip px-[5px] py-[7px] ' +
+        'flex w-full gap-md overflow-clip px-xxs py-xs ' +
         (alignStart ? 'items-start' : 'items-center')
       }
     >

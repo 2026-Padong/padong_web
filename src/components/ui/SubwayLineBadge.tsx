@@ -1,7 +1,7 @@
 import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · SubwayLineBadge (1087:3413) > SubwayLineBadge COMPONENT_SET
-// 숫자 노선 (1~9): size-[16px] 원형, 이름 노선 (경의중앙 등): pill px-[6px] py-px
+// 숫자 노선 (1~9): size-[16px] 원형, 이름 노선 (경의중앙 등): pill px-xs py-px
 // Text: Noto Sans KR Bold 10px text-white
 export type SubwayLine =
   | '1'
@@ -78,7 +78,7 @@ export function SubwayLineBadge({ line, label }: SubwayLineBadgeProps) {
     <span
       className={cn(
         'inline-flex items-center justify-center rounded-full text-caption font-bold text-neutral-white whitespace-nowrap',
-        isNumbered ? 'size-[16px]' : 'px-[6px] py-px',
+        isNumbered ? 'size-[16px]' : 'px-xs py-px',
         TOKEN[line],
       )}
     >

@@ -94,9 +94,9 @@ export function ShopCard({
               </div>
             )}
             {status === 'recruiting' && (
-              <span className="inline-flex items-center gap-[5px] rounded-full bg-[#dbe5fc] px-[9px] py-1">
-                <span className="size-[6px] rounded-full bg-[#2457e8]" />
-                <span className="text-body-s font-medium text-[#2457e8]">모집중</span>
+              <span className="inline-flex items-center gap-xxs rounded-full bg-status-recruiting-bg px-xs py-1">
+                <span className="size-[6px] rounded-full bg-status-recruiting" />
+                <span className="text-body-s font-medium text-status-recruiting">모집중</span>
               </span>
             )}
           </div>

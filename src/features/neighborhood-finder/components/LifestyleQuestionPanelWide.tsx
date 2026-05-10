@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn'
 
 // Figma 1:1: PreferencePage 가로형 LifestyleQuestionPanel (1429:3818)
 // 가로형 메인 영역 — flex-1로 남는 공간 차지
-// Topbar (V gap-[18px] items-start w-full): PageHeader + QuestionProgress
+// Topbar (V gap-lg items-start w-full): PageHeader + QuestionProgress
 // children — Q-HeroCard들 또는 AnalyzingCard
 export interface LifestyleQuestionPanelWideProps {
   title?: string
@@ -36,7 +36,7 @@ export function LifestyleQuestionPanelWide({
         className,
       )}
     >
-      <div className="flex w-full flex-col items-start gap-[18px]">
+      <div className="flex w-full flex-col items-start gap-lg">
         <PageHeader type="Search" title={title} />
         <QuestionProgress
           current={current}

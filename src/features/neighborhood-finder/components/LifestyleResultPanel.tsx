@@ -6,7 +6,7 @@ import { LifestyleResultBlock } from './LifestyleResultBlock'
 import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · CustomizedPanel3 (566:1467) > LifestyleResultPanel (566:1216)
-// w-[420px] h-[900px] flex flex-col gap-2xl items-center p-xl
+// 모바일: w-full / md+: w-[420px] md:min-h-screen — Phase 8 fluid (h-[900px]은 Figma frame 잔재, 코드는 min-h-screen 사용)
 // PageHeader + ResultFlow (V gap-xs h-[753.976px] items-center justify-between w-full):
 //   QuestionProgress (showCount=false, step="03", stepLabel="분석 결과")
 //   ResultContent (V gap-md items-center px-0 py-md w-full flex-1):

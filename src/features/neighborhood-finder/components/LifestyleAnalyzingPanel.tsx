@@ -4,7 +4,7 @@ import { AnalyzingVisual } from './AnalyzingVisual'
 import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · CustomizedPanel2 (546:1067) > LifestyleAnalyzingPanel (545:1058)
-// w-[420px] h-[900px] flex flex-col gap-2xl items-center p-xl
+// 모바일: w-full / md+: w-[420px] md:min-h-screen — Phase 8 fluid (h-[900px]은 Figma frame 잔재)
 // PageHeader + AnalyzingContent (V gap-[70px] items-center w-full):
 //   QuestionProgress (showCount=false, step="02", stepLabel="취향 분석") + AnalyzingVisual
 //   (CustomizedPanel2의 AnalyzingIllustration = AnalyzingVisual = 이미지+제목/부제)
