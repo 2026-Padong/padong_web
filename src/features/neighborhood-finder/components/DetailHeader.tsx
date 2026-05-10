@@ -10,7 +10,7 @@ export interface DetailHeaderProps extends DetailAddressProps {
 
 export function DetailHeader({ score, dong, fullAddress }: DetailHeaderProps) {
   return (
-    <div className="flex items-center gap-sm overflow-clip">
+    <div className="flex w-full items-center gap-sm overflow-clip">
       <ScoreBadgeLarge value={score} />
       <DetailAddress dong={dong} fullAddress={fullAddress} />
     </div>

@@ -25,7 +25,7 @@ export function SearchListPanel({
   return (
     <aside
       className={cn(
-        'flex w-full flex-col items-center gap-xl px-lg py-xl md:w-[421px] md:shrink-0 md:min-h-screen',
+        'flex w-full flex-col items-center gap-sm px-lg py-xl md:w-[421px] md:shrink-0 md:min-h-screen',
         className,
       )}
     >

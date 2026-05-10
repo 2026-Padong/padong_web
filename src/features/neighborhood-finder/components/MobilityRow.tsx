@@ -9,7 +9,7 @@ export interface MobilityRowProps {
 
 export function MobilityRow({ cells }: MobilityRowProps) {
   return (
-    <div className="flex items-start gap-xs">
+    <div className="flex w-full items-start gap-xs">
       {cells.map((c) => (
         <MobilityCell key={c.type} {...c} />
       ))}

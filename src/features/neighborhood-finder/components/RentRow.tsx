@@ -9,13 +9,13 @@ import { KindIcon, type KindIconType } from '@/components/ui/KindIcon'
 export interface RentRowProps {
   iconType?: KindIconType
   title: string
-  /** 가격 정보 — 예: "월세 200/30 · 전세 8,000 만원" */
+  /** 가격 정보 — 예: "월세 200/30 · 전세 8,000 만원 · 매매 18,000 만원" */
   meta?: string
 }
 
 export function RentRow({ iconType = 'Apart', title, meta }: RentRowProps) {
   return (
-    <div className="flex items-center gap-sm py-xs">
+    <div className="flex w-full items-center gap-sm py-xs">
       <KindIcon type={iconType} size={36} className="shrink-0 text-text-secondary" />
       <div className="flex flex-1 flex-col items-start gap-xxs overflow-clip whitespace-nowrap">
         <span className="text-subhead font-bold text-text-secondary">{title}</span>

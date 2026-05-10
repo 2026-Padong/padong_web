@@ -10,7 +10,7 @@ export interface SafetyGradeCardProps extends SafetyBadgeRowProps {
 
 export function SafetyGradeCard({ title = '안전지수', badges }: SafetyGradeCardProps) {
   return (
-    <div className="flex flex-col items-start gap-md">
+    <div className="flex w-full flex-col items-start gap-md">
       <h3 className="text-subhead font-bold text-text-secondary">{title}</h3>
       <SafetyBadgeRow badges={badges} />
     </div>

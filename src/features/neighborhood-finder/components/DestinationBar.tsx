@@ -17,14 +17,19 @@ export function DestinationBar({
   placeholder = '목적지(출근지, 회사 등)의 지역명을 검색해보세요',
 }: DestinationBarProps) {
   return (
-    <div className="flex items-center justify-between rounded-md border-2 border-brand-primary-hover px-md py-xs">
+    <div className="group flex w-full items-center gap-xs rounded-md border-2 border-brand-primary-hover px-md py-xs transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] focus-within:border-brand-primary focus-within:shadow-[0_0_0_3px_var(--color-brand-primary-tint)] hover:border-brand-primary">
       <input
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
-        className="flex-1 bg-transparent text-body-l font-normal text-text-secondary outline-none placeholder:text-text-tertiary"
+        className="flex-1 bg-transparent text-body font-normal text-text-secondary outline-none placeholder:text-text-tertiary"
       />
-      <Icon name="icon-search" size={24} className="shrink-0 text-text-tertiary" aria-hidden />
+      <Icon
+        name="icon-search"
+        size={24}
+        className="shrink-0 text-text-tertiary transition-colors duration-[var(--duration-fast)] group-focus-within:text-brand-primary"
+        aria-hidden
+      />
     </div>
   )
 }

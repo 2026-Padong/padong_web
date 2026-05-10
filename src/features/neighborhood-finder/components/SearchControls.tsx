@@ -9,6 +9,8 @@ export interface SearchControlsProps {
   onModeChange?: (m: 'single' | 'multi') => void
   destination?: string
   onDestinationChange?: (v: string) => void
+  /** Enter 또는 자동완성 선택 시 호출 — 다중 모드에서 칩 추가 트리거로 활용 */
+  onSubmitDestination?: (v: string) => void
   hint?: string
 }
 
@@ -17,12 +19,18 @@ export function SearchControls({
   onModeChange,
   destination,
   onDestinationChange,
+  onSubmitDestination,
   hint,
 }: SearchControlsProps) {
   return (
     <div className="flex w-full flex-col items-start gap-xs">
       <SearchToggle mode={mode} onChange={onModeChange} />
-      <SearchDestinationBox value={destination} onChange={onDestinationChange} hint={hint} />
+      <SearchDestinationBox
+        value={destination}
+        onChange={onDestinationChange}
+        onSubmit={onSubmitDestination}
+        hint={hint}
+      />
     </div>
   )
 }

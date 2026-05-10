@@ -6,9 +6,11 @@ import { ResultCard, type ResultCardProps } from '@/components/ui/ResultCard'
 export interface ResultListPanelProps {
   results: ResultCardProps[]
   selectedId?: string
+  /** 카드 클릭 시 선택 — 결과 id 전달 */
+  onSelect?: (id: string) => void
 }
 
-export function ResultListPanel({ results, selectedId }: ResultListPanelProps) {
+export function ResultListPanel({ results, selectedId, onSelect }: ResultListPanelProps) {
   return (
     <div className="flex w-full max-w-[381px] flex-col items-center justify-center gap-xs">
       {results.map((r, i) => (
@@ -20,7 +22,11 @@ export function ResultListPanel({ results, selectedId }: ResultListPanelProps) {
             animationFillMode: 'forwards',
           }}
         >
-          <ResultCard {...r} state={r.id === selectedId ? 'selected' : 'default'} />
+          <ResultCard
+            {...r}
+            state={r.id === selectedId ? 'selected' : 'default'}
+            onClick={r.id ? () => onSelect?.(r.id!) : r.onClick}
+          />
         </div>
       ))}
     </div>

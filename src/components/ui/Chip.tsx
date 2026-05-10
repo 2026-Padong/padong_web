@@ -8,7 +8,7 @@ import { cn } from '@/lib/cn'
 // Active: bg-brand-primary text-neutral-white
 // Text: Noto Sans KR Medium 11px
 const chipVariants = cva(
-  'inline-flex items-start justify-center rounded-xl px-xs py-xxs text-body-s font-medium whitespace-nowrap',
+  'inline-flex items-center justify-center rounded-xl px-xs py-xxs text-body-s leading-none font-medium whitespace-nowrap',
   {
     variants: {
       state: {

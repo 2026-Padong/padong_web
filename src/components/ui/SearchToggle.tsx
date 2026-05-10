@@ -2,8 +2,8 @@ import { Multi } from './Multi'
 import { Single } from './Single'
 
 // Figma 1:1: Tile · SearchToogle (431:868) > SearchToggle COMPONENT
-// flex gap-xs items-center
-// Single + Multi instances (Phase 2A에서 작성됨)
+// w-full flex gap-xs items-center (Figma 381 FIXED — 부모 폭에 맞춰 fill)
+// Single + Multi instances
 export interface SearchToggleProps {
   mode: 'single' | 'multi'
   onChange?: (mode: 'single' | 'multi') => void
@@ -11,7 +11,7 @@ export interface SearchToggleProps {
 
 export function SearchToggle({ mode, onChange }: SearchToggleProps) {
   return (
-    <div className="inline-flex items-center gap-xs">
+    <div className="flex w-full items-center gap-xs">
       <Single
         state={mode === 'single' ? 'selected' : 'default'}
         onClick={() => onChange?.('single')}

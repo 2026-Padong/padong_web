@@ -26,9 +26,16 @@ body {
   background: var(--color-neutral-white);
 }
 
+/* font shorthand는 font-size까지 inherit로 강제 → Tailwind text-* 토큰 무시됨. family만 inherit */
 input,
 button,
 textarea,
 select {
-  font: inherit;
+  font-family: inherit;
+}
+
+/* Kakao Maps 컨트롤(줌/지도타입/마커) — Tailwind preflight의 img display:block 영향 차단 */
+.kakao-map-wrap img {
+  display: inline-block;
+  max-width: none;
 }

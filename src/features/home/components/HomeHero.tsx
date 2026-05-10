@@ -30,7 +30,7 @@ function FeatureItem({ Icon, label }: FeatureItemProps) {
       <span className="inline-block h-[14px] w-[15px]">
         <Icon width={15} height={14} aria-hidden />
       </span>
-      <p className="text-body-s font-normal whitespace-nowrap text-[#273142]">{label}</p>
+      <p className="text-body-s font-normal whitespace-nowrap text-text-primary">{label}</p>
     </div>
   )
 }

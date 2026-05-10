@@ -17,6 +17,7 @@ export interface ResultListPanelExpandedProps extends ResultListPanelProps {
 export function ResultListPanelExpanded({
   results,
   selectedId,
+  onSelect,
   resultCount,
   resultSubtitle,
   currentPage,
@@ -26,7 +27,7 @@ export function ResultListPanelExpanded({
   return (
     <div className="flex w-full max-w-[381px] flex-col items-start gap-md">
       <ResultListSummary resultCount={resultCount} subtitle={resultSubtitle} />
-      <ResultListPanel results={results} selectedId={selectedId} />
+      <ResultListPanel results={results} selectedId={selectedId} onSelect={onSelect} />
       <PageNavigation current={currentPage} total={totalPages} onChange={onPageChange} />
     </div>
   )

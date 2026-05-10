@@ -15,7 +15,7 @@ export function PageNavigation({ current, total, onChange }: PageNavigationProps
 
   return (
     <nav
-      className="flex items-center justify-center gap-xxs"
+      className="flex w-full items-center justify-center gap-xxs"
       role="navigation"
       aria-label="페이지네이션"
     >
