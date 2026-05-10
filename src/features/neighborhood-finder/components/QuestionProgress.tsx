@@ -36,7 +36,7 @@ export function QuestionProgress({
             </div>
           )}
         </div>
-        <div className="h-[2px] w-full rounded-full bg-border-strong opacity-40" />
+        <div className="h-0.5 w-full rounded-full bg-border-strong opacity-40" />
       </div>
     </div>
   )

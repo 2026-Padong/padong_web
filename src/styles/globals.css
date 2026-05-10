@@ -39,3 +39,9 @@ select {
   display: inline-block;
   max-width: none;
 }
+
+/* Indeterminate progress bar — 분석중 페이지 LoadingFooter */
+@keyframes loading-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}

@@ -1,8 +1,8 @@
 import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · ScoreBadgeLarge (430:865) > ScoreBadgeLarge COMPONENT
-// size-[56px] flex items-center justify-center rounded-lg bg-brand-primary
-// Text: Noto Sans KR Bold 22px text-neutral-white
+// size-9 (36px) flex items-center justify-center rounded-md bg-brand-primary
+// Text: Noto Sans KR Bold 16px text-neutral-white (1~2자리 rank 표시 기준)
 export interface ScoreBadgeLargeProps {
   value: number
   className?: string
@@ -12,11 +12,11 @@ export function ScoreBadgeLarge({ value, className }: ScoreBadgeLargeProps) {
   return (
     <div
       className={cn(
-        'inline-flex size-[56px] items-center justify-center rounded-lg bg-brand-primary',
+        'inline-flex size-9 items-center justify-center rounded-md bg-brand-primary',
         className,
       )}
     >
-      <span className="text-h3 font-bold text-neutral-white whitespace-nowrap">{value}</span>
+      <span className="text-subhead font-bold text-neutral-white whitespace-nowrap">{value}</span>
     </div>
   )
 }

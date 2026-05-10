@@ -45,7 +45,9 @@ export function LifestyleQuestionPanel({
         className,
       )}
     >
-      <PageHeader type="Search" title={title} />
+      <div className="flex w-full">
+        <PageHeader type="Search" title={title} />
+      </div>
       {children ?? (
         <div className="flex w-full flex-col items-center gap-[70px]">
           <QuestionProgress current={current} total={total} step="01" stepLabel="취향 질문" />

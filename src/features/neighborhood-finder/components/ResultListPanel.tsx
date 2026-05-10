@@ -1,8 +1,10 @@
 import { ResultCard, type ResultCardProps } from '@/components/ui/ResultCard'
 
 // Figma 1:1: Tile · ResultListPanel · v1 (432:853) > ResultListPanel COMPONENT
-// w-[381px] h-[565px] flex flex-col gap-xs items-center justify-center
 // 5 ResultCards (첫 번째 selected, 나머지 default)
+// 페이지당 카드 수 — 결과 페이지(JobFinder/Preference)에서 import해 동일 값 사용
+export const RESULTS_PAGE_SIZE = 5
+
 export interface ResultListPanelProps {
   results: ResultCardProps[]
   selectedId?: string

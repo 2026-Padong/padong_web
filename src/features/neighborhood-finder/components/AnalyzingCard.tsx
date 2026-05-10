@@ -24,6 +24,8 @@ export interface AnalyzingCardProps {
   steps?: { title: string; description: string }[]
   loadingMessage?: string
   loadingProgress?: number
+  /** true 시 progress 무시하고 sweep 애니메이션 */
+  loadingIndeterminate?: boolean
 }
 
 export function AnalyzingCard({
@@ -31,6 +33,7 @@ export function AnalyzingCard({
   steps = DEFAULT_STEPS,
   loadingMessage = '결과 페이지로 곧 이동합니다',
   loadingProgress = 30,
+  loadingIndeterminate = false,
 }: AnalyzingCardProps) {
   return (
     <section className="flex w-full max-w-[980px] flex-col items-center justify-between gap-2xl rounded-2xl px-md py-2xl md:px-[72px]">
@@ -52,13 +55,17 @@ export function AnalyzingCard({
         }
       />
       <div className="flex w-full flex-col items-stretch gap-md md:flex-row md:items-start md:overflow-clip">
-        {steps.map((s, i) => (
+        {steps.map((s) => (
           <div key={s.title} className="md:flex-1">
-            <StepCard active={i === activeStep} title={s.title} description={s.description} />
+            <StepCard active title={s.title} description={s.description} />
           </div>
         ))}
       </div>
-      <LoadingFooter progress={loadingProgress} message={loadingMessage} />
+      <LoadingFooter
+        progress={loadingProgress}
+        indeterminate={loadingIndeterminate}
+        message={loadingMessage}
+      />
     </section>
   )
 }

@@ -1,5 +1,5 @@
-import { useNavigate, useSearchParams } from 'react-router'
-import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
+import { useState } from 'react'
 import { SideNav } from '@/components/layout/SideNav'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { LifestyleQuestionPanelWide } from '@/features/neighborhood-finder/components/LifestyleQuestionPanelWide'
@@ -15,30 +15,22 @@ const TOTAL = 10
 type Likert = 1 | 2 | 3 | 4 | 5
 
 // Figma 1:1: Card · 동네찾기 - 취향 (가로버전) (1492:4158)
-// SideNav (112) + LifestyleQuestionPanelWide (1328 × 900):
-//   Topbar: PageHeader + QuestionProgress
-//   Q-HeroCard (current, active) + Q-HeroCard (next, disabled)
-//   Q10에선 두번째 슬롯이 ButtonRow (NavButton "분석 시작")
+// 전체 10개 질문을 세로 스택으로 한 페이지에 나열, 사용자가 각자 답변 후 마지막에 분석 시작
 export function PreferencePage() {
   const nav = useNavigate()
-  const [params, setParams] = useSearchParams()
-  const q = Number(params.get('q') ?? 1)
   const [answers, setAnswers] = useState<Record<number, Likert>>({})
 
   const { data, isLoading, error, refetch } = usePreferenceQuestions()
   const analyze = useAnalyze()
 
-  useEffect(() => {
-    if (q < 1 || q > TOTAL) setParams({ q: '1' })
-  }, [q, setParams])
+  const setAnswer = (q: number, v: Likert) =>
+    setAnswers((prev) => ({ ...prev, [q]: v }))
 
-  const setAnswer = (v: Likert) => setAnswers((a) => ({ ...a, [q]: v }))
+  const answeredCount = Object.keys(answers).length
+  const allAnswered = answeredCount === TOTAL
 
-  const goNext = () => {
-    if (q < TOTAL) {
-      setParams({ q: String(q + 1) })
-      return
-    }
+  const submit = () => {
+    if (!allAnswered) return
     analyze.mutate(
       { answers },
       { onSuccess: () => nav('/finder/preference/analyzing', { viewTransition: true }) },
@@ -47,9 +39,9 @@ export function PreferencePage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
+      <div className="flex min-h-screen w-full pb-14 lg:pb-0">
         <SideNav activeType="Custom" />
-        <LifestyleQuestionPanelWide current={1} total={TOTAL} step="01">
+        <LifestyleQuestionPanelWide current={0} total={TOTAL} step="01">
           <Skeleton className="h-[388px] w-full" />
           <Skeleton className="h-[388px] w-full" />
         </LifestyleQuestionPanelWide>
@@ -60,7 +52,7 @@ export function PreferencePage() {
 
   if (error || !data) {
     return (
-      <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
+      <div className="flex min-h-screen w-full pb-14 lg:pb-0">
         <SideNav activeType="Custom" />
         <div className="flex flex-1 items-center justify-center">
           <ErrorState
@@ -74,60 +66,49 @@ export function PreferencePage() {
     )
   }
 
-  const safeQ = Math.max(1, Math.min(TOTAL, q))
-  const current = data.items[safeQ - 1]
-  const next = data.items[safeQ] ?? null
-  const isLast = safeQ === TOTAL
-
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex min-h-screen">
       <SideNav activeType="Custom" />
       <LifestyleQuestionPanelWide
         title="내 취향 기반"
-        current={safeQ}
+        current={answeredCount}
         total={TOTAL}
         step="01"
         stepLabel="취향 질문"
         showCount
       >
-        {/* 현재 질문 — active */}
-        {current && (
+        {data.items.map((item) => (
           <QHeroCard
+            key={item.id}
             state="active"
-            number={current.id}
-            question={current.question}
-            left={current.left}
-            right={current.right}
-            selected={answers[safeQ]}
-            onSelect={(v) => {
-              setAnswer(v)
-              setTimeout(goNext, 200)
-            }}
+            number={item.id}
+            question={item.question}
+            left={item.left}
+            right={item.right}
+            selected={answers[item.id]}
+            onSelect={(v) => setAnswer(item.id, v)}
           />
-        )}
-
-        {/* 다음 질문 prefetch (Q1~Q9) — 모바일에선 hidden, lg+ 표시 */}
-        {!isLast && next && (
-          <div className="hidden lg:block">
-            <QHeroCard
-              state="disabled"
-              number={next.id}
-              question={next.question}
-              left={next.left}
-              right={next.right}
-            />
-          </div>
-        )}
-        {isLast && (
-          <div className="flex w-full items-center justify-end">
-            <NavButton
-              type="next"
-              label="분석 시작"
-              onClick={goNext}
-              disabled={!answers[safeQ] || analyze.isPending}
-            />
-          </div>
-        )}
+        ))}
+        <div className="flex w-full max-w-[840px] items-center justify-end gap-md pb-14 lg:pb-0">
+          {!allAnswered && (
+            <p
+              className="text-body-l font-normal text-status-warning"
+              aria-live="polite"
+            >
+              {data.items
+                .filter((q) => !(q.id in answers))
+                .map((q) => `Q${q.id}`)
+                .join(', ')}
+              <span className="text-text-tertiary"> 답변해주세요</span>
+            </p>
+          )}
+          <NavButton
+            type="next"
+            label={analyze.isPending ? '분석 중...' : '다음으로'}
+            onClick={submit}
+            disabled={!allAnswered || analyze.isPending}
+          />
+        </div>
       </LifestyleQuestionPanelWide>
       <BottomNav activeType="Custom" className="lg:hidden" />
     </div>

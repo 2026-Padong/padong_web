@@ -4,55 +4,13 @@ import { SideNav } from '@/components/layout/SideNav'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { JobSearchTop } from '@/features/neighborhood-finder/components/JobSearchTop'
 import { ResultListPanelExpanded } from '@/features/neighborhood-finder/components/ResultListPanelExpanded'
+import { RESULTS_PAGE_SIZE } from '@/features/neighborhood-finder/components/ResultListPanel'
 import { DetailPanel } from '@/features/neighborhood-finder/components/DetailPanel'
 import { KakaoMap } from '@/components/map/KakaoMap'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useResults } from '@/api/queries/useResults'
-import type { ResultDto } from '@/api/contracts/results'
-
-// 결과 카드 1개 → DetailPanel 표시용 풀 데이터로 변환 (mock — 일부는 tags 파싱, 일부는 sample)
-function buildDetailProps(r: ResultDto) {
-  const safetyGrade = (r.tags[0]?.match(/[A-E]/) ?? ['A'])[0]
-  const commute = r.tags[1] ?? '35분'
-  const rentTag = r.tags[2] ?? '월세 500/45'
-  const flow = r.tags[3]?.replace(/[^0-9,]/g, '') || '8,920'
-  // hash-based 변주 (id 기반 결정적 점수)
-  const hash = [...r.id].reduce((a, c) => a + c.charCodeAt(0), 0)
-  const grade = (offset: number) => ['A', 'A', 'B', 'B', 'C'][((hash + offset) % 5)]
-  return {
-    score: r.score,
-    dong: r.dong,
-    fullAddress: r.fullAddress,
-    rows: [
-      [
-        { label: '출퇴근', value: commute },
-        { label: '안전등급', value: safetyGrade },
-      ],
-      [
-        { label: '인구밀도', value: '12,340' },
-        { label: '유동인구', value: flow },
-      ],
-    ],
-    badges: [
-      { category: '생활', grade: grade(0) },
-      { category: '교통', grade: grade(1) },
-      { category: '화재', grade: grade(2) },
-      { category: '범죄', grade: grade(3) },
-    ],
-    rents: [
-      { iconType: 'Dandok' as const, title: '단독/다가구', meta: '월세 200/30 · 전세 8,000 만원 · 매매 18,000 만원' },
-      { iconType: 'Yeonlip' as const, title: '연립/다세대', meta: '월세 250/32 · 전세 9,500 만원 · 매매 22,000 만원' },
-      { iconType: 'Apart' as const, title: '아파트', meta: `${rentTag} · 전세 18,000 만원 · 매매 45,000 만원` },
-      { iconType: 'Opistel' as const, title: '오피스텔', meta: '월세 300/38 · 전세 12,000 만원 · 매매 28,000 만원' },
-    ],
-    cells: [
-      { type: 'transit' as const, value: commute },
-      { type: 'car' as const, value: `${(parseInt(commute) * 0.7).toFixed(1)}분` },
-      { type: 'walk' as const, value: `${(parseInt(commute) * 4).toFixed(1)}분` },
-    ],
-  }
-}
+import { buildDetailProps } from '@/features/neighborhood-finder/utils/buildDetailProps'
 
 export function JobFinderPage() {
   const [params, setParams] = useSearchParams()
@@ -117,17 +75,19 @@ export function JobFinderPage() {
     setSelectedId(undefined) // 검색 변경 → 선택 초기화
   }
 
-  const ITEMS_PER_PAGE = 5
   const allItems = data?.items ?? []
   const total = data?.total ?? 0
-  const totalPages = Math.max(1, Math.ceil(total / ITEMS_PER_PAGE))
-  const start = (page - 1) * ITEMS_PER_PAGE
-  const items = allItems.slice(start, start + ITEMS_PER_PAGE)
+  const totalPages = Math.max(1, Math.ceil(total / RESULTS_PAGE_SIZE))
+  const start = (page - 1) * RESULTS_PAGE_SIZE
+  const items = allItems.slice(start, start + RESULTS_PAGE_SIZE)
   // 자동 선택 X — 명시적 클릭 시에만 selected
   const effectiveSelectedId = selectedId
   const selectedResult = effectiveSelectedId
     ? allItems.find((r) => r.id === effectiveSelectedId)
     : undefined
+  const selectedRank = selectedResult
+    ? allItems.findIndex((r) => r.id === selectedResult.id) + 1
+    : 0
   // hint: 단일은 없음 / 다중은 0개일 때만 안내
   const hint = isMulti && destinations.length === 0
     ? `최대 ${MAX_DESTINATIONS}개 선택 가능`
@@ -248,6 +208,7 @@ export function JobFinderPage() {
           <DetailPanel
             onBack={() => setSelectedId(undefined)}
             {...buildDetailProps(selectedResult)}
+            score={selectedRank}
           />
         </div>
       )}

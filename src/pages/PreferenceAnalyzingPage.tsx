@@ -6,11 +6,10 @@ import { LifestyleQuestionPanelWide } from '@/features/neighborhood-finder/compo
 import { AnalyzingCard } from '@/features/neighborhood-finder/components/AnalyzingCard'
 
 // Figma 1:1: Card · 동네찾기 - 분석중 (1511:4243)
-// SideNav (112) + LifestyleQuestionPanelWide:
-//   Topbar: PageHeader + QuestionProgress (showCount=false, step="02", stepLabel="취향 분석")
-//   AnalyzingCard (1232×595)
+// 3개 step은 "여기서 이런 작업을 합니다" 정보 표시 (모두 active), 진행 인디케이터는 sweep 애니메이션
 export function PreferenceAnalyzingPage() {
   const nav = useNavigate()
+
   useEffect(() => {
     const t = setTimeout(
       () => nav('/finder/preference/result', { viewTransition: true }),
@@ -20,7 +19,7 @@ export function PreferenceAnalyzingPage() {
   }, [nav])
 
   return (
-    <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
+    <div className="flex min-h-screen w-full pb-14 lg:pb-0">
       <SideNav activeType="Custom" />
       <LifestyleQuestionPanelWide
         title="내 취향 기반"
@@ -28,7 +27,10 @@ export function PreferenceAnalyzingPage() {
         stepLabel="취향 분석"
         showCount={false}
       >
-        <AnalyzingCard activeStep={1} />
+        <AnalyzingCard
+          loadingIndeterminate
+          loadingMessage="결과 페이지로 곧 이동합니다"
+        />
       </LifestyleQuestionPanelWide>
       <BottomNav activeType="Custom" className="lg:hidden" />
     </div>

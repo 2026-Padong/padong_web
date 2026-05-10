@@ -29,11 +29,11 @@ export function QHeroCard({
   return (
     <section
       className={cn(
-        'flex w-full max-w-[1160px] flex-col items-center gap-xl overflow-clip rounded-[22px] border border-[#e0e8f6]/95 bg-white/92 px-md pt-xl pb-7 shadow-[0px_18px_45px_0px_rgba(45,78,130,0.14)] md:px-12',
+        'flex w-full max-w-[840px] flex-col items-center gap-lg overflow-clip rounded-[22px] border border-[#e0e8f6]/95 bg-white/92 px-md pt-md pb-lg shadow-[0px_18px_45px_0px_rgba(45,78,130,0.14)] md:px-12',
         state === 'disabled' && 'opacity-45',
       )}
     >
-      <QuestionHero number={number} question={question} />
+      <QuestionHero number={number} question={question} state={state} />
       <div className="h-px w-full bg-[#e4eaf5]" />
       <PolesRow left={left} right={right} />
       <DesktopLikertScale selected={selected} onSelect={onSelect} />

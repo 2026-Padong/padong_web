@@ -13,7 +13,7 @@ export interface SurveyStatusPillProps {
 
 export function SurveyStatusPill({ current, total, title = '취향 질문' }: SurveyStatusPillProps) {
   return (
-    <div className="inline-flex h-[52px] w-[248px] items-center justify-between rounded-[14px] border border-border-default bg-neutral-white px-xl drop-shadow-[0px_8px_9px_rgba(33,64,110,0.06)]">
+    <div className="inline-flex h-[52px] w-[248px] items-center justify-between rounded-[14px] border border-border-default bg-neutral-white px-xl drop-shadow-[0px_4px_24px_rgba(33,64,110,0.03)]">
       <div className="inline-flex items-center gap-2.5">
         <span className="inline-flex h-[22px] items-center justify-center rounded-md bg-brand-primary px-xs shadow-[0px_7px_14px_0px_rgba(37,88,232,0.22)]">
           <span className="text-body font-black not-italic text-neutral-white">✓</span>

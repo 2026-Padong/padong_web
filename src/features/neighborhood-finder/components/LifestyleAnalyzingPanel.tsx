@@ -30,7 +30,9 @@ export function LifestyleAnalyzingPanel({
         className,
       )}
     >
-      <PageHeader type="Search" title={title} />
+      <div className="flex w-full">
+        <PageHeader type="Search" title={title} />
+      </div>
       <div className="flex w-full flex-col items-center gap-[70px]">
         <QuestionProgress
           current={0}
