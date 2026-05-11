@@ -22,6 +22,7 @@ import IconBack from '@/assets/icons/icon-back.svg?react'
 import IconHome from '@/assets/icons/icon-home.svg?react'
 import IconInfo from '@/assets/icons/icon-info.svg?react'
 import IconLocation from '@/assets/icons/icon-location.svg?react'
+import IconLocationSquare from '@/assets/icons/icon-location-square.svg?react'
 import IconSearch from '@/assets/icons/icon-search.svg?react'
 import IconStore from '@/assets/icons/icon-store.svg?react'
 import IconStorefront from '@/assets/icons/icon-storefront.svg?react'
@@ -97,6 +98,9 @@ const ICONS = {
   'icon-home': { Component: IconHome, width: 24, height: 24 },
   'icon-info': { Component: IconInfo, width: 24, height: 24 },
   'icon-location': { Component: IconLocation, width: 18, height: 25.7143 },
+  // 정사각 viewBox 20×20 — 핀 머리가 정중앙, 꼬리는 하단 가장자리에 닿음
+  // 다른 정사각 info 아이콘 (clock/phone/doc) 과 시각 정렬 맞추기 위한 별도 버전
+  'icon-location-square': { Component: IconLocationSquare, width: 20, height: 20 },
   'icon-search': { Component: IconSearch, width: 24, height: 24 },
   'icon-store': { Component: IconStore, width: 24, height: 24 },
   'icon-storefront': { Component: IconStorefront, width: 24, height: 24 },

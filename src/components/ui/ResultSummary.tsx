@@ -7,12 +7,13 @@ import { LocationChip } from './LocationChip'
 export interface ResultSummaryProps {
   title?: string
   countLabel?: string
-  location: string
+  /** 미지정 시 LocationChip 안 보임 */
+  location?: string
 }
 
 export function ResultSummary({ title = '검색 결과', countLabel, location }: ResultSummaryProps) {
   return (
-    <div className="flex items-end justify-between">
+    <div className="flex w-full items-end justify-between">
       <div className="flex flex-col gap-xxs">
         <h3 className="text-h4 font-bold text-text-primary whitespace-nowrap">{title}</h3>
         {countLabel && (
@@ -21,7 +22,7 @@ export function ResultSummary({ title = '검색 결과', countLabel, location }:
           </span>
         )}
       </div>
-      <LocationChip name={location} />
+      {location && <LocationChip name={location} />}
     </div>
   )
 }

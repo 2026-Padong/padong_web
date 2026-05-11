@@ -68,7 +68,7 @@ export function HeaderNav({
 
   return (
     <header className={cn('w-full bg-brand-primary', className)}>
-      <div className="flex w-full items-center px-4 lg:px-8 xl:px-16 2xl:px-24">
+      <div className="flex w-full items-center px-md lg:px-2xl xl:px-16 2xl:px-24">
         <div className="flex h-full items-center justify-center py-sm">
           <button
             type="button"

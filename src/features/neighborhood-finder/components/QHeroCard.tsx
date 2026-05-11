@@ -29,7 +29,7 @@ export function QHeroCard({
   return (
     <section
       className={cn(
-        'flex w-full max-w-[840px] flex-col items-center gap-lg overflow-clip rounded-[22px] border border-[#e0e8f6]/95 bg-white/92 px-md pt-md pb-lg shadow-[0px_18px_45px_0px_rgba(45,78,130,0.14)] md:px-12',
+        'flex w-full max-w-[840px] flex-col items-center gap-lg overflow-clip rounded-[22px] border border-[#e0e8f6]/95 bg-white/92 px-md pt-md pb-lg shadow-[0px_18px_45px_0px_rgba(45,78,130,0.14)] md:px-3xl',
         state === 'disabled' && 'opacity-45',
       )}
     >

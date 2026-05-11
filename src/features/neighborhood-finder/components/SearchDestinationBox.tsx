@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { DestinationBar, type DestinationBarProps } from './DestinationBar'
 import { useDongSuggestions } from '@/api/queries/useDongSuggestions'
+import { Highlight } from '@/components/ui/Highlight'
 
 // Figma 1:1: Tile · SearchDestinationBox (431:889) > SearchDestinationBox COMPONENT
 // DestinationBar + 자동완성 드롭다운 + hint
@@ -28,7 +29,6 @@ export function SearchDestinationBox({
     if (onSubmit) onSubmit(v)
     else onChange?.(v)
     // setFocused(false) 안 함 — input 포커스 유지되어 다음 타이핑 시 dropdown 다시 뜨도록
-    // submit이 input을 비우면 query.length===0이 되어 dropdown 자연스럽게 사라짐
   }
 
   return (
@@ -41,7 +41,7 @@ export function SearchDestinationBox({
           // Enter는 자동완성 매칭이 있을 때만 첫 항목 추가 — 임의 입력값은 추가 X
           if (e.key === 'Enter' && suggestions.length > 0) {
             e.preventDefault()
-            submit(suggestions[0])
+            submit(suggestions[0].name)
           }
         }}
       >
@@ -53,19 +53,24 @@ export function SearchDestinationBox({
           aria-label="행정동 자동완성"
           className="absolute left-0 right-0 top-full z-10 mt-xs flex w-full flex-col items-stretch overflow-clip rounded-md border border-border-default bg-neutral-white shadow-md"
         >
-          {suggestions.map((name) => (
-            <li key={name}>
+          {suggestions.map((item) => (
+            <li key={item.adminDongCode}>
               <button
                 type="button"
                 role="option"
-                aria-selected={name === query}
+                aria-selected={item.name === query}
                 onMouseDown={(e) => {
                   e.preventDefault()
-                  submit(name)
+                  submit(item.name)
                 }}
-                className="flex w-full cursor-pointer items-center px-md py-sm text-left text-body font-normal text-text-secondary transition-colors hover:bg-surface-subtle hover:text-text-primary"
+                className="flex w-full flex-col items-start gap-xxs px-md py-sm text-left transition-colors hover:bg-surface-subtle"
               >
-                <Highlight text={name} match={query.trim()} />
+                <span className="text-body font-medium text-text-primary">
+                  <Highlight text={item.name} match={query.trim()} />
+                </span>
+                <span className="text-body-s font-normal text-text-tertiary">
+                  <Highlight text={item.fullAddress} match={query.trim()} />
+                </span>
               </button>
             </li>
           ))}
@@ -78,15 +83,3 @@ export function SearchDestinationBox({
   )
 }
 
-function Highlight({ text, match }: { text: string; match: string }) {
-  if (!match) return <>{text}</>
-  const idx = text.indexOf(match)
-  if (idx < 0) return <>{text}</>
-  return (
-    <>
-      {text.slice(0, idx)}
-      <span className="font-bold text-brand-primary">{text.slice(idx, idx + match.length)}</span>
-      {text.slice(idx + match.length)}
-    </>
-  )
-}

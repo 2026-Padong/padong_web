@@ -25,7 +25,7 @@ export function QuestionProgress({
     <div className="flex w-full flex-col items-start">
       <div className="flex w-full flex-col items-center justify-center gap-md">
         <div className="flex w-full items-center justify-between whitespace-nowrap">
-          <div className="flex flex-1 items-baseline gap-2">
+          <div className="flex flex-1 items-baseline gap-xs">
             <span className="text-h2 font-bold text-brand-primary">{stepText}</span>
             <span className="text-h4 font-bold text-text-primary">{stepLabel}</span>
           </div>

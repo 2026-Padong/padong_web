@@ -46,3 +46,20 @@ export async function createStore(req: CreateStoreRequest): Promise<StoreRegistr
   const res = await apiPost<ResponseDTO<StoreRegistrationResponse>>(`/stores?${qs}`, null)
   return res.data
 }
+
+// 백엔드 spec: POST /stores/likes?storeId={id} — JWT 필수, userId 는 토큰에서 추출
+// 같은 사용자가 같은 가게에 다시 호출하면 좋아요 취소
+export interface StoreLikeToggleResponse {
+  storeId: number
+  userId: number
+  liked: boolean
+  likeCount: number
+}
+
+export async function toggleStoreLike(storeId: number): Promise<StoreLikeToggleResponse> {
+  const res = await apiPost<ResponseDTO<StoreLikeToggleResponse>>(
+    `/stores/likes?storeId=${storeId}`,
+    null,
+  )
+  return res.data
+}

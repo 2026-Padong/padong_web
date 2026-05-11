@@ -29,7 +29,7 @@ function HeaderShell({ label, children }: { label: string; children: ReactNode }
     <section className="flex flex-col gap-sm">
       <h3 className="text-body-l font-bold text-text-primary">{label}</h3>
       <header className="relative w-full bg-brand-primary">
-        <div className="flex w-full items-center px-4 lg:px-8">
+        <div className="flex w-full items-center px-md lg:px-2xl">
           <div className="flex h-full items-center justify-center py-sm">
             <div className="size-[42px] rounded bg-white/20" aria-label="logo placeholder" />
           </div>

@@ -8,50 +8,52 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useShopList } from '@/api/queries/useShopList'
 import { useShopDetail } from '@/api/queries/useShopDetail'
-import type { ShopDto, ShopDetailDto } from '@/api/contracts/shops'
-import type { MockShop } from '@/data/mocks'
+import type { ShopSummaryResponse, ShopDetailResponse } from '@/api/contracts/shops'
+import type { MockShop, ShopStatus } from '@/data/mocks'
 
-function dtoToShop(dto: ShopDto): MockShop {
+function dtoToShop(dto: ShopSummaryResponse): MockShop {
   return {
-    id: dto.id,
-    image: dto.image,
+    id: String(dto.id),
+    image: dto.imageUrl,
     name: dto.name,
     category: dto.category,
-    description: dto.description ?? undefined,
-    status: dto.status,
+    description: dto.description || undefined,
+    status: dto.status.toLowerCase() as ShopStatus,
     participantCurrent: dto.participantCurrent,
     participantTotal: dto.participantTotal,
-    liked: dto.liked,
+    liked: dto.likedByCurrentUser,
     bookmarked: false,
-    images: [dto.image],
+    images: [dto.imageUrl],
     menuCategories: [],
     menus: [],
     infoRows: [],
   }
 }
 
-function detailToShop(dto: ShopDetailDto): MockShop {
+// 백엔드 ShopDetailResponse (GET /stores/{id}) → 내부 MockShop 형태로 매핑
+// 추후 ShopDetailPanel 이 ShopDetailResponse 직접 받게 리팩토링 시 제거 가능
+function detailToShop(dto: ShopDetailResponse): MockShop {
   return {
-    id: dto.id,
-    image: dto.image,
+    id: String(dto.id),
+    image: dto.imageUrl,
     name: dto.name,
     category: dto.category,
-    description: dto.description ?? undefined,
-    status: dto.status,
+    description: dto.description || undefined,
+    status: dto.status.toLowerCase() as ShopStatus,
     participantCurrent: dto.participantCurrent,
     participantTotal: dto.participantTotal,
-    liked: dto.liked,
-    bookmarked: dto.bookmarked,
+    liked: dto.likedByCurrentUser,
+    bookmarked: false,
     images: dto.images,
     menuCategories: dto.menuCategories,
     menus: dto.menus.map((m) => ({
       name: m.name,
-      description: m.description ?? undefined,
       price: m.price,
-      originalPrice: m.originalPrice ?? undefined,
-      image: m.image ?? undefined,
     })),
-    infoRows: dto.infoRows,
+    infoRows: [
+      { label: '주소', value: dto.address },
+      { label: '전화', value: dto.phoneNumber },
+    ],
   }
 }
 
@@ -64,7 +66,8 @@ export function ShopDetailPage() {
   const list = useShopList()
   const detail = useShopDetail(id)
 
-  if (detail.isLoading || list.isLoading) {
+  // detail 만으로 렌더 결정 — list는 사이드바 보조 데이터라 실패해도 페이지는 떠야 함
+  if (detail.isLoading) {
     return (
       <div
         className="flex min-h-screen w-full pb-[56px] lg:pb-0"
@@ -105,17 +108,20 @@ export function ShopDetailPage() {
   }
 
   const shop = detailToShop(detail.data)
-  const sidebarShops = (list.data?.items ?? []).map(dtoToShop)
+  const sidebarShops = (list.data?.content ?? []).map(dtoToShop)
 
   return (
     <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
       <SideNav activeType="LocalShop" />
-      <ShopListPanel
-        shops={sidebarShops}
-        selectedId={shop.id}
-        onShopClick={(sid) => nav(`/shops/${sid}`, { viewTransition: true })}
-        className="hidden xl:flex"
-      />
+      {/* 사이드바 — list 데이터 있을 때만 표시 (없어도 detail은 정상 렌더) */}
+      {sidebarShops.length > 0 && (
+        <ShopListPanel
+          shops={sidebarShops}
+          selectedId={shop.id}
+          onShopClick={(sid) => nav(`/shops/${sid}`, { viewTransition: true })}
+          className="hidden xl:flex"
+        />
+      )}
       <ShopDetailPanel
         shop={shop}
         tab={tab}

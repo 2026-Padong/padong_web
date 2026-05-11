@@ -1,5 +1,6 @@
 import { Heart } from '@/components/ui/Heart'
 import { Icon } from '@/components/ui/Icon'
+import { ShopStatusBadge, type ShopStatus } from './ShopStatusBadge'
 
 // Figma 1:1: Tile · ShopCard (1739:4663) > ShopCard COMPONENT
 // h-[131px] rounded-xl bg-white, H gap-0 items-center
@@ -21,7 +22,7 @@ export interface ShopCardProps {
   description?: string
   participantCurrent?: number
   participantTotal?: number
-  status?: 'recruiting' | null
+  status?: ShopStatus | null
   liked: boolean
   onClick?: () => void
   onToggleLike?: () => void
@@ -80,28 +81,24 @@ export function ShopCard({
         </div>
 
         {/* MetaBlock */}
-        <div className="flex w-full flex-col items-start justify-center gap-2">
+        <div className="flex w-full flex-col items-start justify-center gap-xs">
           {description && (
             <p className="w-full text-body-s font-medium text-text-secondary">{description}</p>
           )}
           <div className="flex w-full items-center justify-between">
             {participantCurrent != null && participantTotal != null && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-xxs">
                 <Icon name="people" size={14} className="text-text-secondary" aria-hidden />
                 <span className="text-body-s font-medium text-text-secondary">
                   {participantCurrent}/{participantTotal}명
                 </span>
               </div>
             )}
-            {status === 'recruiting' && (
-              <span className="inline-flex items-center gap-xxs rounded-full bg-status-recruiting-bg px-xs py-1">
-                <span className="size-[6px] rounded-full bg-status-recruiting" />
-                <span className="text-body-s font-medium text-status-recruiting">모집중</span>
-              </span>
-            )}
+            {status && <ShopStatusBadge status={status} />}
           </div>
         </div>
       </div>
     </article>
   )
 }
+

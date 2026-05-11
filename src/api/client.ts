@@ -93,7 +93,11 @@ async function request<T>(input: string, init: RequestInit, retry = true): Promi
   }
   if (!res.ok) {
     const payload = await safeJson(res)
-    console.error(`[api] ${init.method ?? 'GET'} ${input} → ${res.status}`, payload)
+    // 401 은 인증 흐름의 정상 경로 (만료된 JWT 정리, 비로그인 endpoint 시도 등)
+    // 호출자가 catch 로 처리하므로 console.error 노이즈 안 찍음
+    if (res.status !== 401) {
+      console.error(`[api] ${init.method ?? 'GET'} ${input} → ${res.status}`, payload)
+    }
     throw new ApiError(res.status, payload)
   }
   return parseBody<T>(res)

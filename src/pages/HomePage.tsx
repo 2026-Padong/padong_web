@@ -25,7 +25,7 @@ export function HomePage() {
   const [search, setSearch] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('용산구')
   const { data: shopList } = useShopList()
-  const recruiting = (shopList?.items ?? []).filter((s) => s.status === 'recruiting').slice(0, 3)
+  const recruiting = (shopList?.content ?? []).filter((s) => s.status === 'RECRUITING').slice(0, 3)
 
   return (
     <div className="flex min-h-screen flex-col bg-neutral-white pb-[56px] lg:pb-0">
@@ -36,8 +36,8 @@ export function HomePage() {
         onMyPage={() => nav('/mypage', { viewTransition: true })}
         onLogout={logout}
       />
-      <main className="mx-auto w-full max-w-[1440px] px-8 py-9">
-        <div className="flex flex-col gap-12 lg:grid lg:grid-cols-2 lg:gap-10">
+      <main className="mx-auto w-full max-w-[1440px] px-2xl py-9">
+        <div className="flex flex-col gap-3xl lg:grid lg:grid-cols-2 lg:gap-10">
           {/* LeftColumn */}
           <section className="flex flex-col gap-3xl">
             <HomeHero
@@ -58,7 +58,7 @@ export function HomePage() {
                   recruiting.map((s) => (
                     <GroupPurchaseCardHorizontal
                       key={s.id}
-                      thumbnail={s.image}
+                      thumbnail={s.imageUrl}
                       shopName={s.name}
                       category={s.category}
                       price={0}

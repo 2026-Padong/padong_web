@@ -79,7 +79,7 @@ export function PlaceCard({
           onClick?.()
         }
       }}
-      className="flex w-full cursor-pointer flex-col items-start gap-3 rounded-2xl border border-border-default bg-neutral-white px-md py-md transition-all duration-[var(--duration-base)] hover:-translate-y-0.5 hover:border-border-medium hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
+      className="flex w-full cursor-pointer flex-col items-start gap-sm rounded-2xl border border-border-default bg-neutral-white px-md py-md transition-all duration-[var(--duration-base)] hover:-translate-y-0.5 hover:border-border-medium hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
     >
       {/* Hero */}
       <div className="flex w-full items-center gap-lg overflow-clip">
@@ -105,7 +105,7 @@ export function PlaceCard({
               <CategoryBadge category={category} />
             </div>
             {event && (
-              <span className="inline-flex items-center gap-1 overflow-clip rounded-full bg-brand-primary-tint pl-2 pr-sm py-1">
+              <span className="inline-flex items-center gap-xxs overflow-clip rounded-full bg-brand-primary-tint pl-xs pr-sm py-xxs">
                 <Icon name="place-event-sparkles" size={11} className="text-brand-primary" aria-hidden />
                 <span className="text-body-s font-bold text-brand-primary whitespace-nowrap">
                   {event}
@@ -121,7 +121,7 @@ export function PlaceCard({
           </div>
 
           {/* FacilitiesRow */}
-          <div className="flex items-center gap-md overflow-clip pt-1">
+          <div className="flex items-center gap-md overflow-clip pt-xxs">
             {facilities.subway && (
               <div className="flex items-center gap-xs">
                 <FacilityChip type="subway" />
@@ -162,11 +162,11 @@ export function PlaceCard({
       </div>
 
       {/* DataGrid */}
-      <div className="flex w-full items-center overflow-clip py-2">
+      <div className="flex w-full items-center overflow-clip py-xs">
         {data.map((col, i) => (
           <div key={col.label} className="contents">
             {i > 0 && <span className="h-full w-px self-stretch bg-border-default" />}
-            <div className="flex flex-1 flex-col items-center gap-1 overflow-clip px-md">
+            <div className="flex flex-1 flex-col items-center gap-xxs overflow-clip px-md">
               <div className="flex items-center gap-xs">
                 <Icon name={DATA_ICON[col.icon]} size={16} className="text-text-secondary" aria-hidden />
                 <span className="text-body-s font-medium text-text-secondary whitespace-nowrap">

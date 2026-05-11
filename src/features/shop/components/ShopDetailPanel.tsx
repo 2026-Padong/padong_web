@@ -1,7 +1,13 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
+import { Heart } from '@/components/ui/Heart'
 import { Icon } from '@/components/ui/Icon'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { toggleStoreLike } from '@/api/stores'
+import { useAuth } from '@/lib/auth'
 import type { MockShop } from '@/data/mocks'
 import { ShopImageGallery } from './ShopImageGallery'
+import { ShopStatusBadge } from './ShopStatusBadge'
 import { cn } from '@/lib/cn'
 
 // Figma 1:1: Tile · ShopDetailPanel (659:2019) > ShopDetailPanel COMPONENT_SET (Tab=Menu/Info)
@@ -37,27 +43,55 @@ export function ShopDetailPanel({
   const [quantities, setQuantities] = useState<Record<string, number>>({})
   const totalAmount = shop.menus.reduce((sum, m) => sum + (quantities[m.name] ?? 0) * m.price, 0)
   const fmtPrice = (n: number) => `${n.toLocaleString('ko-KR')}원`
+  const isMenuTab = tab === 'Menu'
+  const [liked, setLiked] = useState(shop.liked)
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false)
+  const { user } = useAuth()
+  const nav = useNavigate()
+
+  const handleToggleLike = async () => {
+    if (!user) {
+      setLoginPromptOpen(true)
+      return
+    }
+    const prev = liked
+    setLiked(!prev) // 낙관적 업데이트
+    try {
+      const result = await toggleStoreLike(Number(shop.id))
+      setLiked(result.liked) // 서버 응답으로 sync
+    } catch (e) {
+      console.error('[store:like-toggle] failed:', e)
+      setLiked(prev) // 실패 시 롤백
+    }
+  }
 
   return (
     <aside
       className={cn(
-        'flex w-full flex-col items-center gap-md bg-neutral-white px-xl pb-sm pt-xl md:w-[450px] md:shrink-0 md:min-h-screen',
+        'flex w-full flex-col items-center gap-md bg-neutral-white px-xl pb-sm pt-xl md:w-[450px] md:shrink-0',
+        // Menu 탭: 100vh 고정 + 내부 스크롤
+        // Info 탭: self-start로 부모 flex의 cross-axis stretch 옵트아웃 → 컨텐츠 hug
+        isMenuTab ? 'md:h-screen md:min-h-0 md:overflow-hidden' : 'md:self-start',
         className,
       )}
     >
       <button
         type="button"
         onClick={onBack}
-        className="flex h-[19px] w-full items-start text-subhead font-bold text-brand-primary"
+        className="flex w-full items-start text-subhead font-bold text-brand-primary"
       >
         ← 목록
       </button>
 
-      <div className="flex w-full flex-col items-start py-xs">
+      <div className="flex w-full flex-col items-start gap-xxs py-xs">
         <h1 className="text-h2 font-bold text-text-primary whitespace-nowrap">{shop.name}</h1>
+        <div className="flex w-full items-center justify-between gap-xs">
+          <p className="text-body font-normal text-text-tertiary">{shop.category}</p>
+          <Heart active={liked} onClick={handleToggleLike} />
+        </div>
       </div>
 
-      <div className="flex h-[214px] w-full max-w-[400px] items-center justify-center">
+      <div className="flex w-full max-w-[400px] items-center justify-center">
         <ShopImageGallery images={shop.images} alt={shop.name} />
       </div>
 
@@ -93,35 +127,29 @@ export function ShopDetailPanel({
 
           {tab === 'Info' ? (
             <div className="flex w-full flex-col items-center gap-xxs overflow-clip px-md py-sm">
-              <InfoLine icon={<Icon name="shop-detail-clock" size={20} className="text-brand-primary" aria-hidden />}>
+              <InfoLine icon={<Icon name="shop-detail-clock" size={20} className="text-text-secondary" aria-hidden />}>
                 <span className="text-body-l font-medium text-text-primary">영업 중</span>
                 <span className="text-body-l font-medium text-text-primary">· 22:00까지</span>
               </InfoLine>
-              <InfoLine icon={<Icon name="icon-location" size={20} className="text-brand-primary" aria-hidden />}>
-                <div className="flex flex-1 flex-col gap-xxs">
-                  {shop.infoRows
-                    .find((r) => r.label === '주소')
-                    ?.value.split(/\s/)
-                    .reduce<string[]>((acc, w) => {
-                      if (acc.length === 0) return [w]
-                      const last = acc[acc.length - 1]
-                      if ((last + ' ' + w).length > 20) acc.push(w)
-                      else acc[acc.length - 1] = last + ' ' + w
-                      return acc
-                    }, [])
-                    .map((line, i) => (
-                      <p key={i} className="text-body-l font-medium text-text-primary">
-                        {line}
-                      </p>
-                    ))}
-                </div>
+              <InfoLine
+                icon={
+                  <Icon
+                    name="icon-location-square"
+                    size={20}
+                    aria-hidden
+                  />
+                }
+              >
+                <p className="flex-1 break-keep text-body-l font-medium text-text-primary">
+                  {shop.infoRows.find((r) => r.label === '주소')?.value ?? '-'}
+                </p>
               </InfoLine>
-              <InfoLine icon={<Icon name="shop-detail-phone" size={20} className="text-brand-primary" aria-hidden />}>
+              <InfoLine icon={<Icon name="shop-detail-phone" size={20} className="text-text-secondary" aria-hidden />}>
                 <span className="flex-1 text-body-l font-medium text-text-primary">
                   {shop.infoRows.find((r) => r.label === '전화')?.value ?? '-'}
                 </span>
               </InfoLine>
-              <InfoLine icon={<Icon name="shop-detail-doc" size={20} className="text-brand-primary" aria-hidden />} alignStart>
+              <InfoLine icon={<Icon name="shop-detail-doc" size={20} className="text-text-secondary" aria-hidden />} alignStart>
                 <p className="flex-1 text-body-l font-medium text-text-primary">
                   {shop.description ?? ''}
                 </p>
@@ -132,7 +160,7 @@ export function ShopDetailPanel({
               {shop.menus.map((m) => {
                 const qty = quantities[m.name] ?? 0
                 return (
-                  <div key={m.name} className="flex w-full items-center gap-md py-sm">
+                  <div key={m.name} className="flex w-full items-center gap-md py-xs">
                     <span className="flex-1 text-subhead font-medium text-text-primary">
                       {m.name}
                     </span>
@@ -179,14 +207,17 @@ export function ShopDetailPanel({
       </div>
 
       <div className="flex w-full flex-col items-center gap-lg py-xxs">
-        <div className="flex h-[46px] w-full items-end justify-center overflow-clip">
-          <div className="flex items-center justify-center gap-md text-subhead font-bold whitespace-nowrap">
-            <p className="text-text-primary">현재 인원</p>
-            <p className="text-brand-primary">
-              {shop.participantCurrent ?? 1} / {shop.participantTotal ?? 5}명
-            </p>
+        <div className="flex w-full items-end justify-center">
+          <div className="flex flex-col items-start gap-xxs">
+            {shop.status && <ShopStatusBadge status={shop.status} />}
+            <div className="flex items-center gap-md text-subhead font-bold whitespace-nowrap">
+              <p className="text-text-primary">현재 인원</p>
+              <p className="text-brand-primary">
+                {shop.participantCurrent ?? 1} / {shop.participantTotal ?? 5}명
+              </p>
+            </div>
           </div>
-          <div className="flex flex-1 flex-col items-end justify-center gap-1 overflow-clip">
+          <div className="flex flex-1 flex-col items-end justify-center gap-xxs overflow-clip">
             <p className="text-body font-normal text-text-tertiary whitespace-nowrap">
               현재 담은 금액
             </p>
@@ -203,6 +234,19 @@ export function ShopDetailPanel({
           참여하기
         </button>
       </div>
+
+      <ConfirmDialog
+        open={loginPromptOpen}
+        title="로그인이 필요해요"
+        description="좋아요는 로그인 후 이용할 수 있어요."
+        confirmLabel="로그인하기"
+        cancelLabel="닫기"
+        onConfirm={() => {
+          setLoginPromptOpen(false)
+          nav('/login', { viewTransition: true })
+        }}
+        onCancel={() => setLoginPromptOpen(false)}
+      />
     </aside>
   )
 }

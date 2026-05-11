@@ -6,10 +6,18 @@ import IconLocalShop from '@/assets/icons/navitem-localshop.svg?react'
 import IconNews from '@/assets/icons/navitem-news.svg?react'
 import IconMyPage from '@/assets/icons/navitem-mypage.svg?react'
 import IconGuide from '@/assets/icons/navitem-guide.svg?react'
+import IconAdminShop from '@/assets/icons/icon-store.svg?react'
 
 // Figma 1:1: Tile · NavItem (477:949) > NavItem · 6×2 COMPONENT_SET
 // Type 6종 × State 2종 — 각 variant별 SideNav 색상이 미리 적용된 SVG asset 사용
-export type NavItemType = 'Commute' | 'Custom' | 'LocalShop' | 'News' | 'MyPage' | 'Guide'
+export type NavItemType =
+  | 'Commute'
+  | 'Custom'
+  | 'LocalShop'
+  | 'News'
+  | 'MyPage'
+  | 'Guide'
+  | 'AdminShop'
 
 type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>
 interface IconSpec {
@@ -29,6 +37,7 @@ const TYPE_TO_ICON: Record<NavItemType, IconSpec> = {
   News: { icon: IconNews, width: 21.6, height: 21.6, left: 1.2, top: 1.2 },
   MyPage: { icon: IconMyPage, width: 21.6, height: 24, left: 1.2, top: 0 },
   Guide: { icon: IconGuide, width: 21.6, height: 21.6, left: 1.2, top: 1.2 },
+  AdminShop: { icon: IconAdminShop, width: 24, height: 24, left: 0, top: 0 },
 }
 
 const TYPE_TO_LABEL: Record<NavItemType, string> = {
@@ -38,6 +47,7 @@ const TYPE_TO_LABEL: Record<NavItemType, string> = {
   News: '뉴스',
   MyPage: '마이페이지',
   Guide: '가이드',
+  AdminShop: '내 가게 관리',
 }
 
 const NAV_ITEM_PATH: Record<NavItemType, string> = {
@@ -45,8 +55,9 @@ const NAV_ITEM_PATH: Record<NavItemType, string> = {
   Custom: '/finder/preference',
   LocalShop: '/shops',
   News: '/news',
-  MyPage: '/my',
+  MyPage: '/mypage',
   Guide: '/guide',
+  AdminShop: '/admin/shops',
 }
 
 export interface NavItemProps {
@@ -67,7 +78,11 @@ export function NavItem({ type, active = false, onClick }: NavItemProps) {
   )
   const inner = (
     <>
-      <span className="relative inline-block size-[24px]">
+      <span
+        className="relative inline-block size-[24px]"
+        // icon-store.svg는 stroke 기반(--stroke-0 fallback이 brand color)이라 brand 배경에서 흐려짐 → white로 강제
+        style={{ ['--stroke-0' as string]: 'white' } as React.CSSProperties}
+      >
         <Icon
           width={width}
           height={height}
