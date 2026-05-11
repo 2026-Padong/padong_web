@@ -3,7 +3,7 @@ import { MOCK_SHOPS, MOCK_RESULTS, LIFESTYLE_TYPES } from '@/data/mocks'
 import { PREFERENCE_QUESTIONS } from '@/features/neighborhood-finder/data/preferenceQuestions'
 import type { LatLng } from '@/api/contracts/results'
 
-const BASE = '/api'
+const BASE = ''
 
 // 서버 측 행정동 GeoJSON 조회 시뮬레이션 — mock은 public/data에서 fetch + 모듈 캐시
 // 실제 백엔드는 DB에서 동네 코드 → geometry 조회 후 응답 inline 동봉
@@ -81,6 +81,9 @@ function findDongFeature(map: Map<string, DongFeature>, name: string): DongFeatu
   }
   return undefined
 }
+
+// 인증은 Spring 백엔드 (/auth/signup, /reissue, /logout, /me)가 처리 — MSW mock 없음
+// VITE_API_BASE_URL이 localhost:8080을 가리키면 MSW와 다른 origin이라 자동으로 백엔드로 직행
 
 export const handlers = [
   // 가게 목록

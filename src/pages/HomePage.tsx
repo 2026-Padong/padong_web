@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
+import { useAuth } from '@/lib/auth'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { HomeHero } from '@/features/home/components/HomeHero'
 import { GroupPurchaseCardHorizontal } from '@/features/home/components/GroupPurchaseCardHorizontal'
@@ -20,6 +21,7 @@ import { useState } from 'react'
 //   RightColumn (705×1578): CityDataSection + PlaceSection
 export function HomePage() {
   const nav = useNavigate()
+  const { user, logout } = useAuth()
   const [search, setSearch] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('용산구')
   const { data: shopList } = useShopList()
@@ -27,7 +29,13 @@ export function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-neutral-white pb-[56px] lg:pb-0">
-      <HeaderNav activeType="Home" />
+      <HeaderNav
+        activeType="Home"
+        user={user ?? undefined}
+        onAuthClick={() => nav('/login', { viewTransition: true })}
+        onMyPage={() => nav('/mypage', { viewTransition: true })}
+        onLogout={logout}
+      />
       <main className="mx-auto w-full max-w-[1440px] px-8 py-9">
         <div className="flex flex-col gap-12 lg:grid lg:grid-cols-2 lg:gap-10">
           {/* LeftColumn */}
