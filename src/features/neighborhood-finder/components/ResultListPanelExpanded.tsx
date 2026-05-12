@@ -1,0 +1,34 @@
+import { PageNavigation } from '@/components/ui/PageNavigation'
+import { ResultListSummary } from '@/components/ui/ResultListSummary'
+import { ResultListPanel, type ResultListPanelProps } from './ResultListPanel'
+
+// Figma 1:1: Tile · ResultListPanel · v2 (432:856) > ResultListPanelExpanded COMPONENT
+// w-[381px] h-[666px] flex flex-col gap-md items-start
+// ResultListSummary + ResultListPanel + PageNavigation
+export interface ResultListPanelExpandedProps extends ResultListPanelProps {
+  resultCount: number
+  /** subtitle 오버라이드 (예: "추천 동네 12개 · 3개 직장 종합") */
+  resultSubtitle?: string
+  currentPage: number
+  totalPages: number
+  onPageChange?: (p: number) => void
+}
+
+export function ResultListPanelExpanded({
+  results,
+  selectedId,
+  onSelect,
+  resultCount,
+  resultSubtitle,
+  currentPage,
+  totalPages,
+  onPageChange,
+}: ResultListPanelExpandedProps) {
+  return (
+    <div className="flex w-full max-w-[381px] flex-col items-start gap-md">
+      <ResultListSummary resultCount={resultCount} subtitle={resultSubtitle} />
+      <ResultListPanel results={results} selectedId={selectedId} onSelect={onSelect} />
+      <PageNavigation current={currentPage} total={totalPages} onChange={onPageChange} />
+    </div>
+  )
+}

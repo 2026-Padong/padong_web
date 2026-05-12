@@ -1,0 +1,65 @@
+/* Pretendard는 index.html에서 jsDelivr CDN으로 로드 (variable font) */
+
+/* Leaflet 기본 스타일 */
+@import 'leaflet/dist/leaflet.css';
+
+/* Reset / base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+/* 스크롤바 트랙 항상 표시 — 페이지 간 컨텐츠 폭 흔들림 방지 */
+html {
+  overflow-y: scroll;
+}
+
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  color: var(--color-text-secondary);
+  background: var(--color-neutral-white);
+}
+
+/* font shorthand는 font-size까지 inherit로 강제 → Tailwind text-* 토큰 무시됨. family만 inherit */
+input,
+button,
+textarea,
+select {
+  font-family: inherit;
+}
+
+/* input[type="time"] 의 시간 표시 webkit pseudo-elements 도 Pretendard 적용 */
+input[type='time']::-webkit-datetime-edit,
+input[type='time']::-webkit-datetime-edit-fields-wrapper,
+input[type='time']::-webkit-datetime-edit-hour-field,
+input[type='time']::-webkit-datetime-edit-minute-field,
+input[type='time']::-webkit-datetime-edit-ampm-field,
+input[type='time']::-webkit-datetime-edit-text {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Kakao Maps 컨트롤(줌/지도타입/마커) — Tailwind preflight의 img display:block 영향 차단 */
+.kakao-map-wrap img {
+  display: inline-block;
+  max-width: none;
+}
+
+/* Indeterminate progress bar — 분석중 페이지 LoadingFooter */
+@keyframes loading-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}

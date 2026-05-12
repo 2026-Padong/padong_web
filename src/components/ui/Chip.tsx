@@ -1,0 +1,33 @@
+import { forwardRef, type HTMLAttributes } from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
+import { cn } from '@/lib/cn'
+
+// Figma 1:1: Tile · Chip (430:853) > Chip COMPONENT_SET
+// flex gap-0 items-start justify-center px-xs py-xxs rounded-xl
+// Default: bg-surface-subtle text-text-secondary
+// Active: bg-brand-primary text-neutral-white
+// Text: Noto Sans KR Medium 11px
+const chipVariants = cva(
+  'inline-flex items-center justify-center rounded-xl px-xs py-xxs text-body-s leading-none font-medium whitespace-nowrap',
+  {
+    variants: {
+      state: {
+        default: 'bg-surface-subtle text-text-secondary',
+        active: 'bg-brand-primary text-neutral-white',
+      },
+    },
+    defaultVariants: { state: 'default' },
+  },
+)
+
+export interface ChipProps
+  extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof chipVariants> {}
+
+export const Chip = forwardRef<HTMLSpanElement, ChipProps>(
+  ({ className, state, children, ...props }, ref) => (
+    <span ref={ref} className={cn(chipVariants({ state }), className)} {...props}>
+      {children}
+    </span>
+  ),
+)
+Chip.displayName = 'Chip'
