@@ -12,7 +12,6 @@ import {
   fetchMenus,
   toggleMenuSoldOut,
   updateMenu,
-  type MenuCreateRequest,
   type MenuResponse,
   type MenuUpdateRequest,
 } from '@/api/menus'

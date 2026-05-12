@@ -69,7 +69,6 @@ export function ShopDetailPage() {
       {sidebarShops.length > 0 && (
         <ShopListPanel
           shops={sidebarShops}
-          selectedId={shop.id}
           onShopClick={(sid) => nav(`/shops/${sid}`, { viewTransition: true })}
           className="hidden xl:flex"
         />

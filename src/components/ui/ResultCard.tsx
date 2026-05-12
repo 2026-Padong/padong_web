@@ -30,7 +30,6 @@ export function ResultCard({
   fullAddress,
   liked,
   tags,
-  score = 100,
   onToggleLike,
   onClick,
 }: ResultCardProps) {

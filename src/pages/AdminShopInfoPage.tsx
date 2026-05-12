@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { HeaderNav } from '@/components/layout/HeaderNav'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { InfoTable } from '@/features/shop/components/InfoTable'
 import { ActionButton } from '@/features/shop/components/ActionButton'
-import { ShopImageGallery } from '@/features/shop/components/ShopImageGallery'
 import { useAuth } from '@/lib/auth'
 import {
   fetchMyStores,

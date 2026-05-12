@@ -29,7 +29,6 @@ export interface AnalyzingCardProps {
 }
 
 export function AnalyzingCard({
-  activeStep = 0,
   steps = DEFAULT_STEPS,
   loadingMessage = '결과 페이지로 곧 이동합니다',
   loadingProgress = 30,
