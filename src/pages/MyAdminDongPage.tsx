@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
-import { AdminDongSelect } from '@/features/auth/components/AdminDongSelect'
+import { AdminDongPicker } from '@/features/auth/components/AdminDongPicker'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAuth } from '@/lib/auth'
 import { updateAdminDong } from '@/api/auth'
 
-// 내 동네(거주 행정동) 변경
+// 마이페이지 > 동네 설정 — 거주 행정동 단독 변경 페이지
+// (정보 수정과 분리 — 동네는 자주 바뀌는 설정이라 단일 화면으로 빠르게 처리)
 export function MyAdminDongPage() {
   const nav = useNavigate()
   const { user, refreshUser } = useAuth()
@@ -20,8 +21,10 @@ export function MyAdminDongPage() {
     return null
   }
 
+  const changed = selectedId !== undefined && selectedId !== user.adminDongId
+
   const handleSave = async () => {
-    if (selectedId === undefined) return
+    if (!changed || selectedId === undefined) return
     setSubmitting(true)
     try {
       await updateAdminDong(selectedId)
@@ -35,12 +38,10 @@ export function MyAdminDongPage() {
     }
   }
 
-  const changed = selectedId !== undefined && selectedId !== user.adminDongId
-
   return (
-    <div className="flex min-h-screen flex-col bg-surface-subtle/40">
+    <div className="flex min-h-screen flex-col bg-neutral-white">
       <HeaderNav user={user} onMyPage={() => nav('/mypage')} />
-      <main className="mx-auto flex w-full max-w-[640px] flex-1 flex-col gap-lg px-md py-2xl">
+      <main className="mx-auto flex w-full max-w-[400px] flex-1 flex-col gap-xl px-md py-2xl">
         <header className="flex items-center gap-sm">
           <button
             type="button"
@@ -50,17 +51,21 @@ export function MyAdminDongPage() {
           >
             ←
           </button>
-          <h1 className="text-h2 font-bold text-text-primary">내 동네 설정</h1>
+          <h1 className="text-h2 font-bold text-text-primary">동네 설정</h1>
         </header>
 
-        {user.adminDongName && (
-          <p className="text-body-l font-normal text-text-secondary">
-            현재 내 동네 · <span className="font-bold text-text-primary">{user.adminDongName}</span>
-          </p>
-        )}
+        <p className="text-body-l font-normal text-text-secondary">
+          {user.adminDongName ? (
+            <>
+              현재 동네는 <span className="font-bold text-text-primary">{user.adminDongName}</span>이에요.
+            </>
+          ) : (
+            <>아직 동네가 설정되지 않았어요.</>
+          )}
+        </p>
 
-        <AdminDongSelect
-          label="새 거주 행정동"
+        <AdminDongPicker
+          label="동네"
           selectedDongId={selectedId}
           onChange={setSelectedId}
         />
@@ -69,7 +74,7 @@ export function MyAdminDongPage() {
           type="button"
           onClick={handleSave}
           disabled={!changed || submitting}
-          className="w-full cursor-pointer rounded-md bg-brand-primary py-sm text-body-l font-bold text-neutral-white drop-shadow-[0px_4px_24px_rgba(37,88,232,0.14)] transition-colors hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full cursor-pointer rounded-md bg-brand-primary py-sm text-body-l font-bold text-neutral-white drop-shadow-[0px_4px_24px_rgba(37,88,232,0.14)] transition-colors hover:bg-brand-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? '저장 중...' : '저장'}
         </button>
@@ -77,7 +82,7 @@ export function MyAdminDongPage() {
 
       <ConfirmDialog
         open={doneOpen}
-        title="내 동네가 변경됐어요"
+        title="동네가 변경됐어요"
         confirmLabel="확인"
         hideCancel
         onConfirm={() => {

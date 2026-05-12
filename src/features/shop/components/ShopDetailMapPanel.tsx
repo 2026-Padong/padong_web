@@ -4,35 +4,31 @@ import { cn } from '@/lib/cn'
 import type { MockShop } from '@/data/mocks'
 
 // Figma 1:1: ShopDetailPage MenuGroup·InfoGroup의 Map Panel (591:10795 / 1691:6381)
-// JobFinder / Preference 와 동일하게 KakaoMap 사용 (이전 Leaflet → 통일)
-// 내용: 가게 위치 마커 + 주변 POI 마커 + 좌측 하단 MapOverlayCard
+// 내용: 가게 위치 마커 + 좌측 하단 MapOverlayCard
+// 좌표는 ShopDetailResponse.latitude/longitude — 백엔드 적재 대기 (없으면 서울 시청 fallback)
 export interface ShopDetailMapPanelProps {
   shop: MockShop
   className?: string
   onJoin?: () => void
 }
 
-// 임시 mock 좌표 — 실제 위경도는 추후 데이터에 추가
-const SHOP_COORD = { lat: 37.5685, lng: 126.9275 } // 연희동 근처
-const POI: Array<{ id: string; name: string; coord: { lat: number; lng: number } }> = [
-  { id: 'community-center', name: '주민센터', coord: { lat: 37.5697, lng: 126.9268 } },
-  { id: 'yeonhui-elementary', name: '연희초등학교', coord: { lat: 37.5675, lng: 126.9252 } },
-  { id: 'yeonhui-cathedral', name: '연희동성당', coord: { lat: 37.5712, lng: 126.9301 } },
-  { id: 'hongje-stream', name: '홍제천', coord: { lat: 37.5728, lng: 126.9325 } },
-]
+const SEOUL_CITY_HALL = { lat: 37.5665, lng: 126.978 }
 
 export function ShopDetailMapPanel({ shop, className, onJoin }: ShopDetailMapPanelProps) {
   const address =
-    shop.infoRows.find((r) => r.label === '주소')?.value ?? '서울특별시 서대문구 연희동'
-
+    shop.infoRows.find((r) => r.label === '주소')?.value ?? ''
+  // 백엔드가 좌표 적재하면 자동 표시. 미적재 시 서울 시청 fallback (모든 가게 동일 위치 — 시각적 placeholder).
+  const coord =
+    shop.latitude != null && shop.longitude != null
+      ? { lat: shop.latitude, lng: shop.longitude }
+      : SEOUL_CITY_HALL
   const markers: MapMarker[] = [
-    { id: 'shop', position: SHOP_COORD, label: shop.name, selected: true },
-    ...POI.map((p) => ({ id: p.id, position: p.coord, label: p.name })),
+    { id: 'shop', position: coord, label: shop.name, selected: true },
   ]
 
   return (
     <div className={cn('relative bg-surface-cool', className)}>
-      <KakaoMap center={SHOP_COORD} level={4} markers={markers} className="h-full w-full" />
+      <KakaoMap center={coord} level={4} markers={markers} className="h-full w-full" />
 
       {/* MapOverlayCard 절대 위치 — 좌측 하단, 400w 고정 (Figma 1:1) */}
       <div className="pointer-events-none absolute bottom-[30px] left-[30px]">

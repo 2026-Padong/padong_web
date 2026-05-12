@@ -1,6 +1,7 @@
 import { apiGet, apiPost } from './client'
 import type { ResponseDTO } from './contracts/auth'
 import type { PageResponse } from './likes'
+import type { ShopSummaryResponse } from './contracts/shops'
 
 // 백엔드 spec: GET /stores/mine (ADMIN 전용)
 // 마이페이지 '내 가게 관리' — 최신 등록순(PK DESC) 페이징
@@ -62,4 +63,12 @@ export async function toggleStoreLike(storeId: number): Promise<StoreLikeToggleR
     null,
   )
   return res.data
+}
+
+// 랜덤 가게 — 메인페이지 공동구매 섹션용 (인증 불필요)
+// 백엔드 spec: GET /stores/random?size=N → ResponseDTO<ShopSummaryResponse[]>
+// 응답은 PageResponse 가 아니라 flat array
+export async function fetchRandomStores(size = 3): Promise<ShopSummaryResponse[]> {
+  const res = await apiGet<ResponseDTO<ShopSummaryResponse[]>>('/stores/random', { size })
+  return res.data ?? []
 }

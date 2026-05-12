@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { CustomOverlayMap, Map, MapTypeControl, Polygon, ZoomControl, useKakaoLoader } from 'react-kakao-maps-sdk'
+import { CustomOverlayMap, Map, Polygon, useKakaoLoader } from 'react-kakao-maps-sdk'
 import { cn } from '@/lib/cn'
 
 // Seoul 시청 좌표 (지도 기본 중심)
@@ -35,6 +35,8 @@ export interface KakaoMapProps {
   center?: { lat: number; lng: number }
   /** 초기 줌 레벨 — 카카오맵 기준 작을수록 더 확대 (기본 7) */
   level?: number
+  /** 변경 시 강제로 fitBounds 재실행 (검색 트리거 용) */
+  fitBoundsKey?: string | number
   className?: string
 }
 
@@ -45,6 +47,7 @@ export function KakaoMap({
   onDongClick,
   center = SEOUL_CENTER,
   level = 7,
+  fitBoundsKey,
   className,
 }: KakaoMapProps) {
   const apiKey = import.meta.env.VITE_KAKAO_MAP_KEY as string | undefined
@@ -54,15 +57,53 @@ export function KakaoMap({
   // (level prop이 truthy 동일하면 React가 prop 변경 감지 안 해서 재실행 X)
   const mapRef = useRef<kakao.maps.Map | null>(null)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const controlsAddedRef = useRef(false)
   useEffect(() => {
     if (!mapRef.current || !selectedId) return
     const map = mapRef.current
-    map.setLevel(level)
-    if (center) {
-      // map div 정중앙에 dong centroid 배치 (offset 없음)
-      map.panTo(new window.kakao.maps.LatLng(center.lat, center.lng))
-    }
+    // DetailPanel 이 막 마운트되어 맵 너비가 줄어드는 중 — relayout 후 다음 프레임에 카메라 조정
+    // (안 그러면 옛 너비 기준으로 setBounds 호출해서 폴리곤이 우측 치우침)
+    const raf = requestAnimationFrame(() => {
+      map.relayout()
+      requestAnimationFrame(() => {
+        const sel = dongs.find((d) => d.id === selectedId)
+        if (sel && sel.paths.length > 0) {
+          const bounds = new window.kakao.maps.LatLngBounds()
+          for (const p of sel.paths) bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng))
+          map.setBounds(bounds, 24, 24, 24, 24)
+          // 폴리곤이 작으면 줌이 과도하게 들어가서 주변 컨텍스트 사라짐 → 최소 level 6 보장
+          map.setLevel(Math.max(map.getLevel(), 6))
+          return
+        }
+        // 폴리곤 없을 때만 panTo + 고정 level
+        map.setLevel(level)
+        if (center) {
+          map.panTo(new window.kakao.maps.LatLng(center.lat, center.lng))
+        }
+      })
+    })
+    return () => cancelAnimationFrame(raf)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, center, level])
+
+  // 결과 폴리곤 묶음 변경 또는 부모가 fitBoundsKey bump 시 전체 fit
+  // (단, 사용자가 특정 동을 선택한 상태면 위 panTo 가 우선)
+  const dongIdsKey = dongs.map((d) => d.id).join(',')
+  useEffect(() => {
+    if (!mapRef.current || selectedId) return
+    if (dongs.length === 0) return
+    const bounds = new window.kakao.maps.LatLngBounds()
+    let hasPoint = false
+    for (const d of dongs) {
+      for (const p of d.paths) {
+        bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng))
+        hasPoint = true
+      }
+    }
+    if (hasPoint) mapRef.current.setBounds(bounds, 16, 16, 16, 16)
+    // padding 16px 각 면 — 폴리곤 잘림 방지
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dongIdsKey, selectedId, fitBoundsKey])
 
   // 컨테이너 크기 변경 (DetailPanel 토글 등) 시 Kakao map 내부 좌표 재계산
   useEffect(() => {
@@ -122,17 +163,27 @@ export function KakaoMap({
   return (
     <div ref={wrapperRef} className="h-full w-full">
     <Map
-      center={center}
+      center={SEOUL_CENTER}
       level={level}
-      isPanto
       onCreate={(map) => {
         mapRef.current = map
+        // ZoomControl/MapTypeControl 을 컴포넌트로 두면 selectedId 변경 시
+        // 부모 re-render → SDK 가 control 을 detach/re-attach 하다 사라지는 버그가 있음.
+        // 한 번만 imperative 하게 붙임 (StrictMode 더블 마운트로 onCreate 가 2번 발화 → 중복 방지).
+        if (controlsAddedRef.current) return
+        controlsAddedRef.current = true
+        map.addControl(
+          new window.kakao.maps.ZoomControl(),
+          window.kakao.maps.ControlPosition.RIGHT,
+        )
+        map.addControl(
+          new window.kakao.maps.MapTypeControl(),
+          window.kakao.maps.ControlPosition.TOPRIGHT,
+        )
       }}
       className={cn('kakao-map-wrap h-full w-full', className)}
       style={{ width: '100%', height: '100%' }}
     >
-      <ZoomControl position="RIGHT" />
-      <MapTypeControl position="TOPRIGHT" />
       {dongs.map((d) => {
         const isSelected = d.id === selectedId
         const isHover = d.id === hoveredId

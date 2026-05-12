@@ -52,6 +52,11 @@ export interface ShopDetailResponse {
   participantCurrent: number
   participantTotal: number
   status: ShopStatusEnum
+  /** 현재 진행 중인 공동주문 ID. null 이면 진행 중 GroupOrder 없음 (결제 disable) */
+  currentGroupOrderId: number | null
+  /** 가게 위경도 — 백엔드 추가 예정. 적재 전엔 null. */
+  latitude?: number | null
+  longitude?: number | null
 }
 
 // ─────────────────────────────────────────────────────────────

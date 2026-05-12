@@ -47,6 +47,7 @@ function detailToShop(dto: ShopDetailResponse): MockShop {
     images: dto.images,
     menuCategories: dto.menuCategories,
     menus: dto.menus.map((m) => ({
+      id: m.id,
       name: m.name,
       price: m.price,
     })),
@@ -54,6 +55,9 @@ function detailToShop(dto: ShopDetailResponse): MockShop {
       { label: '주소', value: dto.address },
       { label: '전화', value: dto.phoneNumber },
     ],
+    currentGroupOrderId: dto.currentGroupOrderId,
+    latitude: dto.latitude ?? null,
+    longitude: dto.longitude ?? null,
   }
 }
 

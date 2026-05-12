@@ -1,29 +1,14 @@
-import { cva } from 'class-variance-authority'
 import { cn } from '@/lib/cn'
+import { WeatherIcon, type DataIconKind, type WeatherKind } from './WeatherIcon'
 
 // Figma 1:1: Tile · DataCard (925:3151) > DataCard COMPONENT_SET (4 variants)
-// w-[180px] h-[96px] flex gap-md p-md rounded-lg border border-border-default bg-neutral-white
-// IconWrap: size-[48px] rounded-lg (variant별 bg) + emoji 24px
-// Content: label 11px Medium tertiary + value 18px Bold brand-primary + sub 12px Regular secondary
-const iconBgVariants = cva(
-  'flex size-[48px] shrink-0 items-center justify-center overflow-clip rounded-lg',
-  {
-    variants: {
-      type: {
-        Weather: 'bg-[#fff3df]',
-        Temp: 'bg-[#ffe5ce]',
-        Dust: 'bg-[#e3e6eb]',
-        Rain: 'bg-[#dcecff]',
-      },
-    },
-  },
-)
-
-const EMOJI: Record<DataCardProps['type'], string> = {
-  Weather: '☀️',
-  Temp: '🌡️',
-  Dust: '🌫️',
-  Rain: '☔',
+// 모든 아이콘 (Weather 5 + Temp/Dust/Rain) 자체 배경 SVG 타일 → wrap 불필요
+// 카드: w-[180px] h-[96px] rounded-lg border + 아이콘 48×48 + 콘텐츠
+const DEFAULT_KIND: Record<DataCardProps['type'], DataIconKind> = {
+  Weather: 'sunny',
+  Temp: 'thermometer',
+  Dust: 'dust',
+  Rain: 'umbrella',
 }
 
 export interface DataCardProps {
@@ -32,28 +17,21 @@ export interface DataCardProps {
   value: string
   /** 작은 보조 텍스트 */
   sub?: string
+  /** Weather 타입 한정 — 백엔드 status 기반 동적 아이콘 (sunny/cloud/cloudy/rain/snow). 미지정 시 sunny */
+  weatherKind?: WeatherKind
   className?: string
 }
 
-export function DataCard({ type, label, value, sub, className }: DataCardProps) {
+export function DataCard({ type, label, value, sub, weatherKind, className }: DataCardProps) {
+  const kind: DataIconKind = type === 'Weather' ? (weatherKind ?? 'sunny') : DEFAULT_KIND[type]
   return (
     <div
       className={cn(
-        'flex h-[96px] w-[180px] items-center gap-md rounded-lg border border-border-default bg-neutral-white p-md',
+        'flex h-[96px] w-full min-w-0 items-center gap-md rounded-lg border border-border-default bg-neutral-white p-md',
         className,
       )}
     >
-      <div className={iconBgVariants({ type })}>
-        <span
-          className="text-[24px] leading-none"
-          style={{
-            fontFamily:
-              '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif',
-          }}
-        >
-          {EMOJI[type]}
-        </span>
-      </div>
+      <WeatherIcon kind={kind} size={48} className="shrink-0" />
       <div className="flex flex-col gap-xxs overflow-clip whitespace-nowrap">
         <span className="text-body-s font-medium text-text-tertiary">{label}</span>
         <span className="text-h4 font-bold text-brand-primary">{value}</span>

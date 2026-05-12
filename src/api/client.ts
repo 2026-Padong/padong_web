@@ -132,10 +132,25 @@ export function apiPut<T>(path: string, body: unknown): Promise<T> {
   })
 }
 
+export function apiPatch<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(`${BASE_URL}${path}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+}
+
 // multipart/form-data — Content-Type 미지정 (fetch가 boundary 포함 자동 설정)
 export function apiPostMultipart<T>(path: string, formData: FormData): Promise<T> {
   return request<T>(`${BASE_URL}${path}`, {
     method: 'POST',
+    body: formData,
+  })
+}
+
+export function apiPutMultipart<T>(path: string, formData: FormData): Promise<T> {
+  return request<T>(`${BASE_URL}${path}`, {
+    method: 'PUT',
     body: formData,
   })
 }

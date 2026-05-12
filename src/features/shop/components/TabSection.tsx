@@ -12,7 +12,7 @@ export interface TabSectionProps {
 
 export function TabSection({ active, tabs, onChange, children }: TabSectionProps) {
   return (
-    <div className="flex flex-col rounded-xl border border-border-default bg-neutral-white">
+    <div className="flex flex-col rounded-md border border-border-default bg-neutral-white">
       <TabBar active={active} tabs={tabs} onChange={onChange} />
       <div>{children}</div>
     </div>

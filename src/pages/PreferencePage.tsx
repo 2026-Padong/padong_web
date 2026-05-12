@@ -8,7 +8,6 @@ import { NavButton } from '@/features/neighborhood-finder/components/NavButton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { usePreferenceQuestions } from '@/api/queries/usePreferenceQuestions'
-import { useAnalyze } from '@/api/queries/useResults'
 
 const TOTAL = 10
 
@@ -21,7 +20,6 @@ export function PreferencePage() {
   const [answers, setAnswers] = useState<Record<number, Likert>>({})
 
   const { data, isLoading, error, refetch } = usePreferenceQuestions()
-  const analyze = useAnalyze()
 
   const setAnswer = (q: number, v: Likert) =>
     setAnswers((prev) => ({ ...prev, [q]: v }))
@@ -29,12 +27,10 @@ export function PreferencePage() {
   const answeredCount = Object.keys(answers).length
   const allAnswered = answeredCount === TOTAL
 
+  // 답변 들고 분석 페이지로 즉시 이동 — 실제 /dongne/recommendations 호출은 분석 페이지가 담당
   const submit = () => {
     if (!allAnswered) return
-    analyze.mutate(
-      { answers },
-      { onSuccess: () => nav('/finder/preference/analyzing', { viewTransition: true }) },
-    )
+    nav('/finder/preference/analyzing', { state: { answers }, viewTransition: true })
   }
 
   if (isLoading) {
@@ -104,9 +100,9 @@ export function PreferencePage() {
           )}
           <NavButton
             type="next"
-            label={analyze.isPending ? '분석 중...' : '다음으로'}
+            label="다음으로"
             onClick={submit}
-            disabled={!allAnswered || analyze.isPending}
+            disabled={!allAnswered}
           />
         </div>
       </LifestyleQuestionPanelWide>

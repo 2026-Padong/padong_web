@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { SearchInput } from '@/components/ui/SearchInput'
 import { ResultSummary } from '@/components/ui/ResultSummary'
@@ -9,6 +10,8 @@ import { cn } from '@/lib/cn'
 import type { MockShop } from '@/data/mocks'
 import { useDongSuggestions, type DongSuggestionItem } from '@/api/queries/useDongSuggestions'
 import { Highlight } from '@/components/ui/Highlight'
+import { toggleStoreLike } from '@/api/stores'
+import { useLoginGate } from '@/lib/useLoginGate'
 
 // Figma 1:1: Tile · ShopListPanel (598:1662) > ShopListPanel COMPONENT (1715:6842)
 // 420x900 V gap-lg items-start px-lg py-xl bg-white
@@ -48,6 +51,26 @@ export function ShopListPanel({
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
   const { data: suggestData } = useDongSuggestions(search)
+  const { requireLogin, loginDialog } = useLoginGate()
+  const qc = useQueryClient()
+  // 좋아요 낙관적 토글 — refetch 이전까지 UI 즉시 반영
+  const [likedOverrides, setLikedOverrides] = useState<Record<string, boolean>>({})
+
+  const handleToggleLike = async (shopId: string) => {
+    if (!requireLogin({ action: '좋아요' })) return
+    const current = likedOverrides[shopId] ?? shops.find((s) => s.id === shopId)?.liked ?? false
+    setLikedOverrides((p) => ({ ...p, [shopId]: !current }))
+    try {
+      const res = await toggleStoreLike(Number(shopId))
+      setLikedOverrides((p) => ({ ...p, [shopId]: res.liked }))
+      // 내가 찜한 가게/목록 쿼리 갱신
+      qc.invalidateQueries({ queryKey: ['stores'] })
+      qc.invalidateQueries({ queryKey: ['likes', 'stores'] })
+    } catch (e) {
+      console.error('[shop-list:like-toggle] failed:', e)
+      setLikedOverrides((p) => ({ ...p, [shopId]: current }))
+    }
+  }
   const suggestions = suggestData?.items ?? []
   const showSuggestions = focused && search.trim().length > 0 && suggestions.length > 0
 
@@ -166,8 +189,9 @@ export function ShopListPanel({
                   participantCurrent={s.participantCurrent}
                   participantTotal={s.participantTotal}
                   status={s.status}
-                  liked={s.id === selectedId ? true : s.liked}
+                  liked={likedOverrides[s.id] ?? s.liked}
                   onClick={() => onShopClick?.(s.id)}
+                  onToggleLike={() => handleToggleLike(s.id)}
                 />
               </div>
             ))
@@ -177,6 +201,7 @@ export function ShopListPanel({
           <PageNavigation current={page} total={totalPages} onChange={setPage} />
         )}
       </div>
+      {loginDialog}
     </aside>
   )
 }

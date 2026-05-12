@@ -27,9 +27,9 @@ export function AdminStoreCard({ store, onClick, actions }: AdminStoreCardProps)
       type={interactive ? 'button' : undefined}
       onClick={onClick}
       className={
-        'flex w-full flex-col gap-md rounded-2xl bg-neutral-white p-lg text-left ring-1 ring-border-default ' +
+        'flex w-full flex-col gap-md rounded-md bg-neutral-white p-lg text-left ring-1 ring-border-default ' +
         (interactive
-          ? 'cursor-pointer transition-all duration-[var(--duration-base)] hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary'
+          ? 'cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary'
           : '')
       }
     >

@@ -1,5 +1,6 @@
 import { SearchToggle } from '@/components/ui/SearchToggle'
 import { SearchDestinationBox } from './SearchDestinationBox'
+import type { DongSuggestionItem } from '@/api/queries/useDongSuggestions'
 
 // Figma 1:1: Tile · SearchHeader (431:892) > SearchControls COMPONENT
 // w-[381px] flex flex-col gap-xs items-start
@@ -9,8 +10,8 @@ export interface SearchControlsProps {
   onModeChange?: (m: 'single' | 'multi') => void
   destination?: string
   onDestinationChange?: (v: string) => void
-  /** Enter 또는 자동완성 선택 시 호출 — 다중 모드에서 칩 추가 트리거로 활용 */
-  onSubmitDestination?: (v: string) => void
+  /** Enter 또는 자동완성 선택 시 호출 — item 전체 (name + adminDongCode) 전달 */
+  onSubmitDestination?: (item: DongSuggestionItem) => void
   hint?: string
 }
 

@@ -74,11 +74,11 @@ export function AdminShopsPage() {
         {!approved ? (
           <PendingApprovalCard onBack={() => nav('/mypage', { replace: true })} />
         ) : error ? (
-          <p className="rounded-2xl bg-neutral-white p-lg text-body-l text-status-critical ring-1 ring-border-default">
+          <p className="rounded-md bg-neutral-white p-lg text-body-l text-status-critical ring-1 ring-border-default">
             {error}
           </p>
         ) : items === null ? (
-          <p className="rounded-2xl bg-neutral-white p-lg text-body-l text-text-tertiary ring-1 ring-border-default">
+          <p className="rounded-md bg-neutral-white p-lg text-body-l text-text-tertiary ring-1 ring-border-default">
             불러오는 중...
           </p>
         ) : items.length === 0 ? (
@@ -104,7 +104,7 @@ export function AdminShopsPage() {
 
 function PendingApprovalCard({ onBack }: { onBack: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-md rounded-2xl bg-neutral-white p-2xl text-center ring-1 ring-border-default">
+    <div className="flex flex-col items-center gap-md rounded-md bg-neutral-white p-2xl text-center ring-1 ring-border-default">
       <h2 className="text-h3 font-bold text-text-primary">관리자 승인 대기 중</h2>
       <p className="max-w-[360px] text-body-l font-normal text-text-secondary">
         사장님 신청이 접수되었어요. 승인이 완료되면 가게를 등록하고 관리할 수 있어요.
@@ -122,7 +122,7 @@ function PendingApprovalCard({ onBack }: { onBack: () => void }) {
 
 function EmptyStoresCard({ onRegister }: { onRegister: () => void }) {
   return (
-    <div className="flex flex-col items-center gap-md rounded-2xl bg-neutral-white p-2xl text-center ring-1 ring-border-default">
+    <div className="flex flex-col items-center gap-md rounded-md bg-neutral-white p-2xl text-center ring-1 ring-border-default">
       <h2 className="text-h3 font-bold text-text-primary">아직 등록된 가게가 없어요</h2>
       <p className="max-w-[360px] text-body-l font-normal text-text-secondary">
         첫 가게를 등록하고 손님들에게 노출해보세요.

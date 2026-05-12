@@ -57,7 +57,7 @@ export function ResultCard({
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1',
         isSelected
           ? 'border-[1.5px] border-border-default bg-brand-primary-tint'
-          : 'border border-border-default hover:-translate-y-0.5 hover:border-border-medium hover:shadow-sm',
+          : 'border border-border-default',
       )}
     >
       {/* Header */}
@@ -69,8 +69,8 @@ export function ResultCard({
         <Heart active={liked} onClick={handleHeartClick} />
       </div>
 
-      {/* ScoreBar */}
-      <ScoreBar value={isSelected ? score : undefined} className="w-full" />
+      {/* ScoreBar — 백엔드 매칭 점수 없음, 80% 중앙 고정 표시 */}
+      <ScoreBar value={80} className="w-full" />
 
       {/* Tags */}
       <div className="flex w-full gap-xs overflow-clip">

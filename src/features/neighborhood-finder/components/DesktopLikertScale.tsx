@@ -16,7 +16,7 @@ export interface DesktopLikertScaleProps {
 
 export function DesktopLikertScale({ selected, onSelect }: DesktopLikertScaleProps) {
   return (
-    <div className="flex w-full flex-col items-start rounded-2xl border border-border-default bg-white/68 px-3xl pt-sm pb-md drop-shadow-[0px_4px_24px_rgba(45,78,130,0.04)]">
+    <div className="flex w-full flex-col items-start rounded-md border border-border-default bg-white/68 px-3xl pt-sm pb-md drop-shadow-[0px_4px_24px_rgba(45,78,130,0.04)]">
       <div className="relative flex h-16 w-full items-end">
         {/* 트랙 — 5개 item flex-1 분할 시 각 item 중심이 10/30/50/70/90% 위치 → 1번~5번 dot 중심 잇기: left/right 10%
             top: dot 중심(64-26/2=51) - track 두께 절반(1) = 50 */}

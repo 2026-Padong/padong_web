@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { DestinationBar, type DestinationBarProps } from './DestinationBar'
-import { useDongSuggestions } from '@/api/queries/useDongSuggestions'
+import { useDongSuggestions, type DongSuggestionItem } from '@/api/queries/useDongSuggestions'
 import { Highlight } from '@/components/ui/Highlight'
 
 // Figma 1:1: Tile · SearchDestinationBox (431:889) > SearchDestinationBox COMPONENT
@@ -8,8 +8,8 @@ import { Highlight } from '@/components/ui/Highlight'
 export interface SearchDestinationBoxProps extends DestinationBarProps {
   /** 우측 정렬 hint, 예: "연희동" */
   hint?: string
-  /** Enter 또는 자동완성 선택 → 입력 확정 콜백 (다중 모드에서 칩 추가) */
-  onSubmit?: (v: string) => void
+  /** Enter 또는 자동완성 선택 → 입력 확정 콜백 (item 전체 전달: name + adminDongCode 등) */
+  onSubmit?: (item: DongSuggestionItem) => void
 }
 
 export function SearchDestinationBox({
@@ -25,9 +25,9 @@ export function SearchDestinationBox({
   const suggestions = data?.items ?? []
   const showSuggestions = focused && query.trim().length > 0 && suggestions.length > 0
 
-  const submit = (v: string) => {
-    if (onSubmit) onSubmit(v)
-    else onChange?.(v)
+  const submit = (item: DongSuggestionItem) => {
+    if (onSubmit) onSubmit(item)
+    else onChange?.(item.name)
     // setFocused(false) 안 함 — input 포커스 유지되어 다음 타이핑 시 dropdown 다시 뜨도록
   }
 
@@ -41,7 +41,7 @@ export function SearchDestinationBox({
           // Enter는 자동완성 매칭이 있을 때만 첫 항목 추가 — 임의 입력값은 추가 X
           if (e.key === 'Enter' && suggestions.length > 0) {
             e.preventDefault()
-            submit(suggestions[0].name)
+            submit(suggestions[0])
           }
         }}
       >
@@ -61,7 +61,7 @@ export function SearchDestinationBox({
                 aria-selected={item.name === query}
                 onMouseDown={(e) => {
                   e.preventDefault()
-                  submit(item.name)
+                  submit(item)
                 }}
                 className="flex w-full flex-col items-start gap-xxs px-md py-sm text-left transition-colors hover:bg-surface-subtle"
               >

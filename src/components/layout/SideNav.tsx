@@ -3,12 +3,13 @@ import { NavItem, type NavItemType } from './NavItem'
 import { cn } from '@/lib/cn'
 import logoUrl from '@/assets/logo-sidenav.png'
 import { useAuth } from '@/lib/auth'
+import { useLoginGate } from '@/lib/useLoginGate'
 
 // Figma 1:1: Tile · SideNav (432:847) > SideNav COMPONENT
 // 112×900 (Figma 의도) — lg+ 표시, 그 미만은 hidden (대신 BottomNav)
 // Logo: w-full h-[70px] rounded-sm IMAGE
 // 기본 6개 + ADMIN 로그인 시 "내 가게 관리" 추가
-const BASE_ITEMS: NavItemType[] = ['Commute', 'Custom', 'LocalShop', 'News', 'MyPage', 'Guide']
+const BASE_ITEMS: NavItemType[] = ['Commute', 'Custom', 'LocalShop', 'News', 'MyPage']
 
 export interface SideNavProps {
   activeType?: NavItemType
@@ -19,6 +20,7 @@ export interface SideNavProps {
 export function SideNav({ activeType, onNavigate, className }: SideNavProps) {
   const { user, logout } = useAuth()
   const nav = useNavigate()
+  const { requireLogin, loginDialog } = useLoginGate()
   const items: NavItemType[] =
     user?.role === 'ADMIN' ? [...BASE_ITEMS, 'AdminShop'] : BASE_ITEMS
   const isAdmin = user?.role === 'ADMIN'
@@ -26,6 +28,17 @@ export function SideNav({ activeType, onNavigate, className }: SideNavProps) {
   const handleLogout = async () => {
     await logout()
     // 현재 페이지에 머무름 — 보호된 라우트 (마이페이지/사장님 등) 는 페이지 가드가 자동 redirect
+  }
+
+  // 비로그인 상태에서 보호 라우트 클릭 시 로그인 게이트 — 가드된 경우 true 반환
+  const gateGuestNav = (type: NavItemType): (() => void) | undefined => {
+    if (user) return undefined // 로그인 상태면 기본 Link 라우팅
+    if (type === 'MyPage') {
+      return () => {
+        requireLogin({ action: '마이페이지 이용' })
+      }
+    }
+    return undefined
   }
 
   return (
@@ -42,7 +55,9 @@ export function SideNav({ activeType, onNavigate, className }: SideNavProps) {
         aria-label="홈으로"
         className="block w-full cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-primary"
       >
-        <img src={logoUrl} alt="파동" className="h-[70px] w-full rounded-sm object-cover" />
+        <div className="relative mx-auto size-[48px] overflow-hidden">
+          <img src={logoUrl} alt="파동" className="absolute inset-0 size-full scale-[2.2]" />
+        </div>
       </Link>
 
       {/* 인증 영역 — 로고 바로 아래 (HeaderNav 와 동일 패턴 + 드롭다운 오른쪽) */}
@@ -116,9 +131,11 @@ export function SideNav({ activeType, onNavigate, className }: SideNavProps) {
           type={t}
           active={t === activeType}
           // onNavigate가 명시될 때만 button 모드 (preview), 기본은 Link 라우팅
-          onClick={onNavigate ? () => onNavigate(t) : undefined}
+          // 비로그인 + 보호 라우트(MyPage) 클릭 시 gateGuestNav 로 로그인 알림 우선
+          onClick={onNavigate ? () => onNavigate(t) : gateGuestNav(t)}
         />
       ))}
+      {loginDialog}
     </nav>
   )
 }

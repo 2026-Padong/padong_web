@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { useAuth } from '@/lib/auth'
+import { popReturnUrl } from '@/lib/loginRedirect'
 
 // Spring Security OAuth2SuccessHandler가 redirect하는 콜백 페이지
 // 4가지 케이스:
@@ -73,8 +74,9 @@ export function KakaoCallbackPage() {
         },
         { accessToken, refreshToken },
       )
-      // 2) /auth/me-detail로 email/picture/adminDong 등 보강 후 홈 이동
-      void refreshUser().finally(() => nav('/', { replace: true }))
+      // 2) /auth/me-detail로 email/picture/adminDong 등 보강 후 returnUrl(없으면 홈) 이동
+      const returnUrl = popReturnUrl()
+      void refreshUser().finally(() => nav(returnUrl ?? '/', { replace: true }))
       return
     }
 

@@ -69,17 +69,25 @@ export function PlaceCard({
   data,
   onClick,
 }: PlaceCardProps) {
+  const interactive = Boolean(onClick)
   return (
     <article
       onClick={onClick}
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onClick?.()
-        }
-      }}
-      className="flex w-full cursor-pointer flex-col items-start gap-sm rounded-2xl border border-border-default bg-neutral-white px-md py-md transition-all duration-[var(--duration-base)] hover:-translate-y-0.5 hover:border-border-medium hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
+      tabIndex={interactive ? 0 : undefined}
+      onKeyDown={
+        interactive
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onClick?.()
+              }
+            }
+          : undefined
+      }
+      className={
+        'flex w-full flex-col items-start gap-sm rounded-md border border-border-default bg-neutral-white px-md py-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1' +
+        (interactive ? ' cursor-pointer' : '')
+      }
     >
       {/* Hero */}
       <div className="flex w-full items-center gap-lg overflow-clip">

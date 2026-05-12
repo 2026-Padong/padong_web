@@ -1,4 +1,11 @@
-import { apiDelete, apiGet, apiPost, apiPostMultipart, apiPut } from './client'
+import {
+  apiDelete,
+  apiGet,
+  apiPost,
+  apiPostMultipart,
+  apiPut,
+  apiPutMultipart,
+} from './client'
 import type {
   AdminUpgradeRequest,
   AdminUpgradeResponse,
@@ -42,6 +49,27 @@ export async function fetchMe(): Promise<number> {
 // 마이페이지 프로필 상세 (nickname, picture, email, role, approved, adminDong)
 export async function fetchMeDetail(): Promise<UserDetailResponse> {
   const res = await apiGet<ResponseDTO<UserDetailResponse>>('/auth/me-detail')
+  return res.data
+}
+
+// 프로필 수정 — multipart: request JSON(Blob) + (옵션) picture 파일
+// 백엔드 spec (예정): PUT /auth/me
+//   - @RequestPart("request") UpdateProfileRequest { nickname: String }
+//   - @RequestPart(value="picture", required=false) MultipartFile picture
+//   - response: ResponseDTO<UserDetailResponse>
+// 함정: signup 과 동일 — request part 는 Blob({type:'application/json'}), Content-Type 직접 설정 금지.
+export interface UpdateProfileRequest {
+  nickname: string
+}
+
+export async function updateMyProfile(
+  req: UpdateProfileRequest,
+  picture?: File | null,
+): Promise<UserDetailResponse> {
+  const formData = new FormData()
+  formData.append('request', new Blob([JSON.stringify(req)], { type: 'application/json' }))
+  if (picture) formData.append('picture', picture)
+  const res = await apiPutMultipart<ResponseDTO<UserDetailResponse>>('/auth/me', formData)
   return res.data
 }
 

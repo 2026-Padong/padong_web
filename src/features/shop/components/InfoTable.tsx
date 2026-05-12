@@ -8,7 +8,7 @@ export interface InfoTableProps {
 
 export function InfoTable({ rows }: InfoTableProps) {
   return (
-    <div className="flex flex-col gap-sm rounded-xl border border-border-default bg-neutral-white p-md pb-sm">
+    <div className="flex flex-col gap-sm rounded-md border border-border-default bg-neutral-white p-md pb-sm">
       {rows.map((r, i) => (
         <InfoRow key={`${r.label}-${i}`} {...r} />
       ))}

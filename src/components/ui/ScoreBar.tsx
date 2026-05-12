@@ -23,6 +23,8 @@ export function ScoreBar({ value, className }: ScoreBarProps) {
     return () => cancelAnimationFrame(id)
   }, [pct])
 
+  // 채워진 영역을 중앙 정렬 — 좌우로 (100-pct)/2% 여백
+  const offset = (100 - renderedPct) / 2
   return (
     <div
       className={cn(
@@ -32,8 +34,8 @@ export function ScoreBar({ value, className }: ScoreBarProps) {
     >
       {value !== undefined && (
         <div
-          className="absolute top-0 left-0 h-full rounded-sm bg-brand-primary transition-[width] duration-[var(--duration-slow)] ease-[var(--ease-out)]"
-          style={{ width: `${renderedPct}%` }}
+          className="absolute top-0 h-full rounded-sm bg-brand-primary transition-[width,left] duration-[var(--duration-slow)] ease-[var(--ease-out)]"
+          style={{ left: `${offset}%`, width: `${renderedPct}%` }}
         />
       )}
     </div>

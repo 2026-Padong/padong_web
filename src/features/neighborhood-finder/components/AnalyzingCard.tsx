@@ -4,7 +4,7 @@ import { AnalyzingIllustration } from './AnalyzingIllustration'
 import { StepCard } from './StepCard'
 
 // Figma 1:1: Tile · AnalyzingCard (1511:4245) > AnalyzingCard COMPONENT
-// w-[980px] flex flex-col items-center justify-between px-[72px] py-2xl rounded-2xl
+// w-[980px] flex flex-col items-center justify-between px-[72px] py-2xl rounded-md
 // AnalyzingIllustration + TitleBlock + StepsRow (3 StepCards) + LoadingFooter
 const DEFAULT_STEPS = [
   {
@@ -36,7 +36,7 @@ export function AnalyzingCard({
   loadingIndeterminate = false,
 }: AnalyzingCardProps) {
   return (
-    <section className="flex w-full max-w-[980px] flex-col items-center justify-between gap-2xl rounded-2xl px-md py-2xl md:px-[72px]">
+    <section className="flex w-full max-w-[980px] flex-col items-center justify-between gap-2xl rounded-md px-md py-2xl md:px-[72px]">
       <AnalyzingIllustration />
       <TitleBlock
         title={

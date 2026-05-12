@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
 import { ImageUpload } from '@/components/ui/ImageUpload'
-import { AdminDongSelect } from '@/features/auth/components/AdminDongSelect'
+import { AdminDongPicker } from '@/features/auth/components/AdminDongPicker'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAuth } from '@/lib/auth'
 import { upgradeToAdmin } from '@/api/auth'
@@ -93,10 +93,11 @@ export function UpgradeAdminPage() {
             hint={errors.license ?? '이미지(jpg, png, webp) 또는 PDF, 5MB 이하'}
           />
 
-          <AdminDongSelect
+          <AdminDongPicker
             label="영업 행정동 (선택 — 미입력 시 현재 거주 동네 유지)"
             selectedDongId={adminDongId}
             onChange={setAdminDongId}
+            placeholder="현재 거주 동네 유지"
           />
 
           <button

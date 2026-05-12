@@ -3,21 +3,22 @@ import { HeaderNavItem, type HeaderNavItemType } from './HeaderNavItem'
 import { cn } from '@/lib/cn'
 import logoUrl from '@/assets/logo-headernav.png'
 import type { Role } from '@/api/contracts/auth'
+import { useLoginGate } from '@/lib/useLoginGate'
 
 // Figma 1:1: Tile · HeaderNav (906:3135) > HeaderNav COMPONENT
 // 외곽 풀폭 + 안 콘텐츠 mx-auto max-w-screen-2xl
 // Logo container (py-sm) > Logo (h-[42px] w-[43px] IMAGE) + RightContainer
 // Nav: flex gap-xl items-start justify-center, 6 HeaderNavItem (md+ 표시, 모바일 hidden)
-const NAV: HeaderNavItemType[] = ['Home', 'Commute', 'Custom', 'LocalShop', 'News', 'MyPage', 'Guide']
+const NAV: HeaderNavItemType[] = ['Home', 'Commute', 'Custom', 'LocalShop', 'News', 'MyPage']
 
-// 라우트 매핑 — 미구현 항목(News/MyPage/Guide)은 null → 클릭해도 이동 X
+// 라우트 매핑 — 미구현 항목(News)은 null → 클릭해도 이동 X
 const NAV_PATH: Record<HeaderNavItemType, string | null> = {
   Home: '/',
   Commute: '/finder/job',
   Custom: '/finder/preference',
   LocalShop: '/shops',
   News: null,
-  MyPage: null,
+  MyPage: '/mypage',
   Guide: null,
 }
 
@@ -52,6 +53,7 @@ export function HeaderNav({
   className,
 }: HeaderNavProps) {
   const nav = useNavigate()
+  const { requireLogin, loginDialog } = useLoginGate()
   const isAdmin = user?.role === 'ADMIN'
   const handleAdminShops = () => {
     if (onAdminShops) onAdminShops()
@@ -60,6 +62,11 @@ export function HeaderNav({
   const handleClick = (t: HeaderNavItemType) => {
     if (onNavigate) {
       onNavigate(t)
+      return
+    }
+    // 비로그인 + 마이페이지 → 로그인 게이트
+    if (t === 'MyPage' && !user) {
+      requireLogin({ action: '마이페이지 이용' })
       return
     }
     const path = NAV_PATH[t]
@@ -74,14 +81,9 @@ export function HeaderNav({
             type="button"
             onClick={() => nav('/', { viewTransition: true })}
             aria-label="홈으로"
-            className="relative h-[42px] w-[43px] cursor-pointer overflow-hidden transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-white"
+            className="relative size-[48px] cursor-pointer overflow-hidden transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-white"
           >
-            <img
-              src={logoUrl}
-              alt=""
-              className="absolute h-[238.1%] w-[232.56%] max-w-none"
-              style={{ top: '-73.35%', left: '-58.79%' }}
-            />
+            <img src={logoUrl} alt="" className="absolute inset-0 size-full scale-[2.2]" />
           </button>
         </div>
         <div className="flex flex-1 items-baseline justify-end gap-3xl">
@@ -173,6 +175,7 @@ export function HeaderNav({
           )}
         </div>
       </div>
+      {loginDialog}
     </header>
   )
 }

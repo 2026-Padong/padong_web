@@ -89,7 +89,7 @@ const pct = (v: number, base: number) => `${(v / base) * 100}%`
 export function DataMap({ selectedDistrict, onDistrictClick, className }: DataMapProps) {
   return (
     <div
-      className={`relative w-full overflow-clip rounded-xl bg-neutral-white ${className ?? ''}`}
+      className={`relative w-full overflow-clip rounded-md bg-neutral-white ${className ?? ''}`}
       style={{ aspectRatio: `${W} / ${H}` }}
       role="img"
       aria-label="서울특별시 25개 구 지도"

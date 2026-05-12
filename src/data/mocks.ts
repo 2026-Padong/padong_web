@@ -52,6 +52,8 @@ import shopSangsuPizza2 from '@/assets/shops/shop-sangsu-pizza-2.png'
 import shopSangsuPizza3 from '@/assets/shops/shop-sangsu-pizza-3.png'
 
 export interface MockShopMenu {
+  /** 백엔드 menu PK — 주문/결제 시 필요. 목록형 mock 데이터엔 없을 수 있음 */
+  id?: number
   name: string
   description?: string
   price: number
@@ -83,6 +85,11 @@ export interface MockShop {
   menuCategories: string[]
   menus: MockShopMenu[]
   infoRows: MockShopInfoRow[]
+  /** 진행 중 공동주문 ID — null/undefined 면 결제 진입 disable */
+  currentGroupOrderId?: number | null
+  /** 가게 위경도 — 백엔드 응답에 추가 예정 (현재 미적재) */
+  latitude?: number | null
+  longitude?: number | null
 }
 
 export interface LifestyleType {

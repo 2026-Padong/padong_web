@@ -29,7 +29,7 @@ export function MapOverlayCard({
   onAction,
 }: MapOverlayCardProps) {
   return (
-    <div className="flex w-full max-w-[400px] flex-col items-start justify-center gap-lg rounded-xl border border-border-default bg-neutral-white p-md">
+    <div className="flex w-full max-w-[400px] flex-col items-start justify-center gap-lg rounded-md border border-border-default bg-neutral-white p-md">
       <div className="flex h-[137px] w-full items-center justify-between gap-md py-xs">
         <div className="flex h-[117px] w-[120px] shrink-0 items-center justify-center overflow-clip rounded-md border border-border-default p-xs">
           {image ? (

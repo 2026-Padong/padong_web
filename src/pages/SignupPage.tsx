@@ -3,9 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
 import { TextField } from '@/components/ui/TextField'
 import { ImageUpload } from '@/components/ui/ImageUpload'
-import { AdminDongSelect } from '@/features/auth/components/AdminDongSelect'
+import { AdminDongPicker } from '@/features/auth/components/AdminDongPicker'
 import { signupOrLogin } from '@/api/auth'
 import { useAuth } from '@/lib/auth'
+import { popReturnUrl } from '@/lib/loginRedirect'
 import type { Role } from '@/api/contracts/auth'
 
 // 신규 가입 페이지 — 카카오 OAuth 후 백엔드가 signupRequired=true로 redirect
@@ -74,7 +75,8 @@ export function SignupPage() {
         { name: nickname, userId: res.userId, role: res.role },
         { accessToken: res.accessToken, refreshToken: res.refreshToken },
       )
-      nav('/', { replace: true })
+      const returnUrl = popReturnUrl()
+      nav(returnUrl ?? '/', { replace: true })
     } catch (e) {
       console.error('[signup] failed:', e)
       setErrors({ nickname: '회원가입에 실패했어요. 다시 시도해주세요' })
@@ -114,7 +116,7 @@ export function SignupPage() {
           )}
 
           {!isAdmin && (
-            <AdminDongSelect
+            <AdminDongPicker
               label="거주 행정동"
               selectedDongId={adminDongId}
               onChange={(id) => {

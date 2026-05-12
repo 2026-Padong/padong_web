@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { Heart } from '@/components/ui/Heart'
 import { Icon } from '@/components/ui/Icon'
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { useLoginGate } from '@/lib/useLoginGate'
 import { toggleStoreLike } from '@/api/stores'
-import { useAuth } from '@/lib/auth'
+import { saveCart } from '@/lib/cart'
 import type { MockShop } from '@/data/mocks'
 import { ShopImageGallery } from './ShopImageGallery'
 import { ShopStatusBadge } from './ShopStatusBadge'
@@ -45,24 +46,46 @@ export function ShopDetailPanel({
   const fmtPrice = (n: number) => `${n.toLocaleString('ko-KR')}원`
   const isMenuTab = tab === 'Menu'
   const [liked, setLiked] = useState(shop.liked)
-  const [loginPromptOpen, setLoginPromptOpen] = useState(false)
-  const { user } = useAuth()
   const nav = useNavigate()
+  const { requireLogin, loginDialog } = useLoginGate()
+  const qc = useQueryClient()
 
   const handleToggleLike = async () => {
-    if (!user) {
-      setLoginPromptOpen(true)
-      return
-    }
+    if (!requireLogin({ action: '좋아요' })) return
     const prev = liked
     setLiked(!prev) // 낙관적 업데이트
     try {
       const result = await toggleStoreLike(Number(shop.id))
-      setLiked(result.liked) // 서버 응답으로 sync
+      setLiked(result.liked)
+      // 가게 좋아요 관련 쿼리 (목록/내가찜한가게) 갱신 — MyLikedStores 패턴과 통일
+      qc.invalidateQueries({ queryKey: ['stores'] })
+      qc.invalidateQueries({ queryKey: ['likes', 'stores'] })
     } catch (e) {
       console.error('[store:like-toggle] failed:', e)
       setLiked(prev) // 실패 시 롤백
     }
+  }
+
+  // 참여하기 — 카트 sessionStorage 저장 + checkout 페이지로 이동
+  const handleJoin = () => {
+    if (!requireLogin({ action: '참여' })) return
+    const items = shop.menus
+      .map((m) => ({
+        menuId: m.id ?? 0,
+        name: m.name,
+        price: m.price,
+        quantity: quantities[m.name] ?? 0,
+      }))
+      .filter((it) => it.quantity > 0)
+    if (items.length === 0) return // 빈 카트는 진행 X
+    saveCart(Number(shop.id), {
+      shopId: Number(shop.id),
+      shopName: shop.name,
+      items,
+      totalAmount,
+    })
+    onJoin?.()
+    nav(`/shops/${shop.id}/checkout`, { viewTransition: true })
   }
 
   return (
@@ -228,25 +251,15 @@ export function ShopDetailPanel({
         </div>
         <button
           type="button"
-          onClick={onJoin}
-          className="flex w-full items-center justify-center rounded-md bg-brand-primary py-sm text-subhead font-bold text-neutral-white"
+          onClick={handleJoin}
+          disabled={totalAmount === 0 || shop.currentGroupOrderId == null}
+          className="flex w-full items-center justify-center rounded-md bg-brand-primary py-sm text-subhead font-bold text-neutral-white transition-colors hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
         >
-          참여하기
+          {shop.currentGroupOrderId == null ? '모집 마감' : '참여하기'}
         </button>
       </div>
 
-      <ConfirmDialog
-        open={loginPromptOpen}
-        title="로그인이 필요해요"
-        description="좋아요는 로그인 후 이용할 수 있어요."
-        confirmLabel="로그인하기"
-        cancelLabel="닫기"
-        onConfirm={() => {
-          setLoginPromptOpen(false)
-          nav('/login', { viewTransition: true })
-        }}
-        onCancel={() => setLoginPromptOpen(false)}
-      />
+      {loginDialog}
     </aside>
   )
 }
