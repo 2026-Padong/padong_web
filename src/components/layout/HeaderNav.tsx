@@ -12,13 +12,13 @@ import { useLoginGate } from '@/lib/useLoginGate'
 const NAV: HeaderNavItemType[] = ['Home', 'Commute', 'Custom', 'LocalShop', 'News', 'MyPage']
 const ADMIN_NAV: HeaderNavItemType[] = ['AdminShop']
 
-// 라우트 매핑 — 미구현 항목(News)은 null → 클릭해도 이동 X
+// 라우트 매핑
 const NAV_PATH: Record<HeaderNavItemType, string | null> = {
   Home: '/',
   Commute: '/finder/job',
   Custom: '/finder/preference',
   LocalShop: '/shops',
-  News: null,
+  News: '/news',
   MyPage: '/mypage',
   Guide: null,
   AdminShop: '/admin/shops',

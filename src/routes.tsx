@@ -28,6 +28,7 @@ import { AdminOrdersPage } from '@/pages/AdminOrdersPage'
 import { AdminOrderNewPage } from '@/pages/AdminOrderNewPage'
 import { AdminOrderHistoryPage } from '@/pages/AdminOrderHistoryPage'
 import { AdminOrderHistoryDetailPage } from '@/pages/AdminOrderHistoryDetailPage'
+import { NewsPage } from '@/pages/NewsPage'
 import { DevIndexPage } from '@/dev/DevIndexPage'
 import { TokensPreview } from '@/dev/TokensPreview'
 import { UiBasicsPreview } from '@/dev/UiBasicsPreview'
@@ -73,6 +74,7 @@ export const router = createBrowserRouter([
   { path: '/admin/orders/new', element: <AdminOrderNewPage /> },
   { path: '/admin/orders/history', element: <AdminOrderHistoryPage /> },
   { path: '/admin/orders/history/:id', element: <AdminOrderHistoryDetailPage /> },
+  { path: '/news', element: <NewsPage /> },
   { path: '/auth/kakao/callback', element: <KakaoCallbackPage /> },
 
   // Dev previews (Phase 별 컴포넌트 카탈로그)

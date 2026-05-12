@@ -14,11 +14,11 @@ export interface NewsResponse {
   items: News[]
 }
 
-// GET /news/search?dongne={행정동 이름}
-// dongne 는 행정동 한글명 (예: "연남동"). JWT 의 user.adminDongName 으로 호출
-export async function fetchNewsByDong(dongne: string): Promise<News[]> {
-  if (!dongne) return []
-  const res = await apiGet<ResponseDTO<NewsResponse>>('/news/search', { dongne })
+// 프론트는 동네 설정 구조와 동일하게 adminDongId 기반으로 요청
+// (백엔드는 추후 ?adminDongId= 시그니처로 정합 예정 — 현재 swagger 는 ?dongne= name)
+export async function fetchNewsByAdminDong(adminDongId: number): Promise<News[]> {
+  if (!adminDongId) return []
+  const res = await apiGet<ResponseDTO<NewsResponse>>('/news/search', { adminDongId })
   return res.data.items ?? []
 }
 
