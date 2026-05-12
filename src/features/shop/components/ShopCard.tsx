@@ -1,6 +1,8 @@
 import { Heart } from '@/components/ui/Heart'
 import { Icon } from '@/components/ui/Icon'
-import { ShopStatusBadge, type ShopStatus } from './ShopStatusBadge'
+import { Img } from '@/components/ui/Img'
+import type { RecruitmentStatus } from '@/api/contracts/shops'
+import { RecruitmentBadge } from './RecruitmentBadge'
 
 // Figma 1:1: Tile · ShopCard (1739:4663) > ShopCard COMPONENT
 // h-[131px] rounded-xl bg-white, H gap-0 items-center
@@ -15,14 +17,14 @@ import { ShopStatusBadge, type ShopStatus } from './ShopStatusBadge'
 //       CountGroup (gap-1): Users icon 14 + "1/5명" 11px Medium text-secondary
 //       RecruitingBadge: bg #dbe5fc, dot + "모집중" 11px text #2457e8
 export interface ShopCardProps {
-  id: string
+  id: number
   image?: string
   name: string
   category?: string
   description?: string
   participantCurrent?: number
   participantTotal?: number
-  status?: ShopStatus | null
+  recruitmentStatus?: RecruitmentStatus | null
   liked: boolean
   onClick?: () => void
   onToggleLike?: () => void
@@ -35,7 +37,7 @@ export function ShopCard({
   description,
   participantCurrent,
   participantTotal,
-  status = 'recruiting',
+  recruitmentStatus,
   liked,
   onClick,
   onToggleLike,
@@ -54,13 +56,11 @@ export function ShopCard({
     >
       {/* ImageArea */}
       <div className="relative h-full w-[155px] shrink-0 rounded-lg bg-surface-subtle">
-        {image && (
-          <img
-            src={image}
-            alt={name}
-            className="absolute inset-0 h-full w-full rounded-lg object-cover"
-          />
-        )}
+        <Img
+          src={image}
+          alt={name}
+          className="absolute inset-0 h-full w-full rounded-lg object-cover"
+        />
       </div>
 
       {/* ContentArea */}
@@ -96,7 +96,7 @@ export function ShopCard({
             ) : (
               <span aria-hidden /> /* justify-between 유지용 spacer */
             )}
-            {status && <ShopStatusBadge status={status} />}
+            {recruitmentStatus && <RecruitmentBadge status={recruitmentStatus} />}
           </div>
         </div>
       </div>

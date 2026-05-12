@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Image as ImageIcon } from 'lucide-react'
 
 // Figma 1:1: HomePage instance (1697:7392) > NewsCardHorizontal
@@ -19,14 +20,21 @@ export function NewsCardHorizontal({
   summary,
   onClick,
 }: NewsCardHorizontalProps) {
+  const [broken, setBroken] = useState(false)
+  const showImg = Boolean(thumbnail) && !broken
   return (
     <article
       onClick={onClick}
       className="flex w-full cursor-pointer items-center gap-lg rounded-lg border border-border-default p-md"
     >
       <div className="flex h-[110px] w-[120px] shrink-0 items-center justify-center overflow-clip rounded-md bg-[#e8edf7]">
-        {thumbnail ? (
-          <img src={thumbnail} alt={title} className="h-full w-full object-cover" />
+        {showImg ? (
+          <img
+            src={thumbnail!}
+            alt={title}
+            className="h-full w-full object-cover"
+            onError={() => setBroken(true)}
+          />
         ) : (
           <ImageIcon size={32} className="text-border-default" />
         )}

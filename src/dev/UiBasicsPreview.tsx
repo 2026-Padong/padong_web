@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { Bookmark } from '@/components/ui/Bookmark'
 import { CategoryBadge } from '@/components/ui/CategoryBadge'
 import { Chip } from '@/components/ui/Chip'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -74,10 +73,6 @@ export function UiBasicsPreview() {
         <Row name="Heart">
           <Heart />
           <Heart active />
-        </Row>
-        <Row name="Bookmark">
-          <Bookmark />
-          <Bookmark active />
         </Row>
       </section>
 

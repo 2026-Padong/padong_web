@@ -7,28 +7,6 @@ import { ShopListPanel } from '@/features/shop/components/ShopListPanel'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useShopList } from '@/api/queries/useShopList'
-import type { ShopSummaryResponse } from '@/api/contracts/shops'
-import type { MockShop, ShopStatus } from '@/data/mocks'
-
-// ShopSummaryResponse → 패널이 기대하는 MockShop 형태 (목록은 메뉴/info 비어 있음)
-function toShop(dto: ShopSummaryResponse): MockShop {
-  return {
-    id: String(dto.id),
-    image: dto.thumbnailUrl,
-    name: dto.name,
-    category: dto.categoryLabel || dto.category,
-    description: dto.description || undefined,
-    status: dto.status.toLowerCase() as ShopStatus,
-    participantCurrent: dto.participantCurrent,
-    participantTotal: dto.participantTotal,
-    liked: dto.likedByCurrentUser,
-    bookmarked: false,
-    images: dto.thumbnailUrl ? [dto.thumbnailUrl] : [],
-    menuCategories: [],
-    menus: [],
-    infoRows: [],
-  }
-}
 
 export function ShopListPage() {
   const nav = useNavigate()
@@ -60,7 +38,7 @@ export function ShopListPage() {
       ) : (
         // 빈 결과도 패널은 항상 렌더 — 검색/필터/위치칩 유지, 카드 영역에서만 "가게가 없어요"
         <ShopListPanel
-          shops={(data?.content ?? []).map(toShop)}
+          shops={data?.content ?? []}
           onShopClick={(id) => nav(`/shops/${id}`, { viewTransition: true })}
           onAdminDongChange={(item) => setAdminDongCode(item.adminDongCode)}
         />

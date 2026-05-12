@@ -1,6 +1,7 @@
 import { CategoryBadge, type CategoryType } from '@/components/ui/CategoryBadge'
 import { FacilityChip } from '@/components/ui/FacilityChip'
 import { Icon, type IconName } from '@/components/ui/Icon'
+import { Img } from '@/components/ui/Img'
 import { SubwayLineBadge, type SubwayLine } from '@/components/ui/SubwayLineBadge'
 
 // Figma 1:1: Tile · PlaceCard (926:3130) > PlaceCard COMPONENT (926:3122)
@@ -100,9 +101,7 @@ export function PlaceCard({
               : 'linear-gradient(158.95deg, #f5a875 3.66%, #6675c7 76.87%)',
           }}
         >
-          {image && (
-            <img src={image} alt={name} className="absolute inset-0 h-full w-full object-cover" />
-          )}
+          <Img src={image} alt={name} className="absolute inset-0 h-full w-full object-cover" />
         </div>
 
         {/* InfoColumn */}

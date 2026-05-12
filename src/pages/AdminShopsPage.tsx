@@ -7,7 +7,6 @@ import { fetchMyStores, type StoreRegistrationResponse } from '@/api/stores'
 import { ActionButton } from '@/features/shop/components/ActionButton'
 import { AdminShopDetailPanel } from '@/features/admin/components/AdminShopDetailPanel'
 import { useShopDetail } from '@/api/queries/useShopDetail'
-import { detailToShop } from '@/features/shop/utils/shopAdapters'
 import { MenuOrderList, ActiveOrderBadge } from '@/features/admin/components/MenuOrderList'
 
 // 사장님 전용 — 매장 관리 (와이드 2컬럼)
@@ -144,8 +143,7 @@ function ShopDetailEmbed({ storeId }: { storeId: number }) {
   if (detail.isError || !detail.data) {
     return <EmptyState title="오류" message="가게 정보를 불러올 수 없어요" />
   }
-  const shop = detailToShop(detail.data)
-  return <AdminShopDetailPanel shop={shop} tab={tab} onTabChange={setTab} />
+  return <AdminShopDetailPanel shop={detail.data} tab={tab} onTabChange={setTab} />
 }
 
 // ─── 세부 메뉴 진입 카드 ────────────────────────────────────────────────────

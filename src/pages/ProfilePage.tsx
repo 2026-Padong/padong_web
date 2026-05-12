@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
 import { TextField } from '@/components/ui/TextField'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { Img } from '@/components/ui/Img'
 import { useAuth } from '@/lib/auth'
 import { updateMyProfile } from '@/api/auth'
 
@@ -112,17 +113,16 @@ export function ProfilePage() {
             aria-label="프로필 사진 변경"
             className="group relative cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
           >
-            {displayPicture ? (
-              <img
-                src={displayPicture}
-                alt=""
-                className="size-[96px] rounded-full object-cover ring-1 ring-border-default"
-              />
-            ) : (
-              <div className="inline-flex size-[96px] items-center justify-center rounded-full bg-brand-primary text-h2 font-bold text-neutral-white">
-                {initial}
-              </div>
-            )}
+            <Img
+              src={displayPicture}
+              alt=""
+              className="size-[96px] rounded-full object-cover ring-1 ring-border-default"
+              fallback={
+                <div className="inline-flex size-[96px] items-center justify-center rounded-full bg-brand-primary text-h2 font-bold text-neutral-white">
+                  {initial}
+                </div>
+              }
+            />
             <span
               aria-hidden
               className="absolute right-0 bottom-0 inline-flex size-[28px] items-center justify-center rounded-full bg-neutral-white text-body-l font-bold text-text-secondary ring-1 ring-border-default transition-colors group-hover:bg-surface-subtle"

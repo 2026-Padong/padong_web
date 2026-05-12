@@ -3,7 +3,7 @@ import { Icon, ICON_NAMES, type IconName } from '@/components/ui/Icon'
 // Phase 9.5 Day 0 — 모든 등록 아이콘 카탈로그
 // 그룹별로 묶어서 시각 검증 + 누락/중복/사이즈 이상 한눈에 확인
 const GROUPS: { title: string; prefix: string }[] = [
-  { title: 'Bookmark / Heart', prefix: 'bookmark-|heart-' },
+  { title: 'Heart', prefix: 'heart-' },
   { title: 'Home Hero', prefix: 'home-hero-' },
   { title: 'Generic icons (icon-*)', prefix: 'icon-' },
   { title: 'Kind (주거유형 / 교통수단)', prefix: 'kind-' },

@@ -1,13 +1,13 @@
 import { KakaoMap, type MapMarker } from '@/components/map/KakaoMap'
 import { MapOverlayCard } from './MapOverlayCard'
 import { cn } from '@/lib/cn'
-import type { MockShop } from '@/data/mocks'
+import type { ShopDetailResponse } from '@/api/contracts/shops'
 
 // Figma 1:1: ShopDetailPage MenuGroup·InfoGroup의 Map Panel (591:10795 / 1691:6381)
 // 내용: 가게 위치 마커 + 좌측 하단 MapOverlayCard
 // 좌표는 ShopDetailResponse.latitude/longitude — 백엔드 적재 대기 (없으면 서울 시청 fallback)
 export interface ShopDetailMapPanelProps {
-  shop: MockShop
+  shop: ShopDetailResponse
   className?: string
   onJoin?: () => void
 }
@@ -15,8 +15,6 @@ export interface ShopDetailMapPanelProps {
 const SEOUL_CITY_HALL = { lat: 37.5665, lng: 126.978 }
 
 export function ShopDetailMapPanel({ shop, className, onJoin }: ShopDetailMapPanelProps) {
-  const address =
-    shop.infoRows.find((r) => r.label === '주소')?.value ?? ''
   // 백엔드가 좌표 적재하면 자동 표시. 미적재 시 서울 시청 fallback (모든 가게 동일 위치 — 시각적 placeholder).
   const coord =
     shop.latitude != null && shop.longitude != null
@@ -34,10 +32,10 @@ export function ShopDetailMapPanel({ shop, className, onJoin }: ShopDetailMapPan
       <div className="pointer-events-none absolute bottom-[30px] left-[30px]">
         <div className="pointer-events-auto">
           <MapOverlayCard
-            image={shop.image || undefined}
+            image={shop.thumbnailUrl || undefined}
             name={shop.name}
-            address={address}
-            topMenus={shop.menuCategories.slice(0, 3)}
+            address={shop.address}
+            topMenus={shop.menus.slice(0, 3).map((m) => m.name)}
             actionLabel="참여하기"
             onAction={onJoin}
           />

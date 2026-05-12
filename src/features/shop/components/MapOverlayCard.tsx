@@ -1,5 +1,6 @@
 import { Image as ImageIcon } from 'lucide-react'
 import { Icon } from '@/components/ui/Icon'
+import { Img } from '@/components/ui/Img'
 
 // Figma 1:1: Tile · MapOverlayCard (660:1998) > MapOverlayCard COMPONENT
 // w-[400px] V gap-lg items-start justify-center p-md rounded-xl border bg-white
@@ -32,11 +33,12 @@ export function MapOverlayCard({
     <div className="flex w-full max-w-[400px] flex-col items-start justify-center gap-lg rounded-md border border-border-default bg-neutral-white p-md">
       <div className="flex h-[137px] w-full items-center justify-between gap-md py-xs">
         <div className="flex h-[117px] w-[120px] shrink-0 items-center justify-center overflow-clip rounded-md border border-border-default p-xs">
-          {image ? (
-            <img src={image} alt={name} className="h-full w-full rounded-md object-contain" />
-          ) : (
-            <ImageIcon size={32} className="text-border-default" />
-          )}
+          <Img
+            src={image}
+            alt={name}
+            className="h-full w-full rounded-md object-contain"
+            fallback={<ImageIcon size={32} className="text-border-default" />}
+          />
         </div>
         <div className="flex h-full flex-1 flex-col items-start justify-center gap-lg overflow-clip pl-md pt-md">
           <div className="flex h-[38px] w-full flex-col items-start justify-between">

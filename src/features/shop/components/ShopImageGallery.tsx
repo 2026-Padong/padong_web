@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Img } from '@/components/ui/Img'
 
 // Figma 1:1: ShopDetailPanel 내 ShopImageGallery (591:10791 등)
 // 단일 이미지 슬라이더 — 한 번에 한 장 + "▧ N / total" 카운터 좌하단 + 좌/우 화살표
@@ -24,17 +25,16 @@ export function ShopImageGallery({ images, alt = '', className }: ShopImageGalle
     <div
       className={`relative h-[214px] w-full overflow-clip rounded-lg bg-surface-subtle ${className ?? ''}`}
     >
-      {images.length > 0 ? (
-        <img
-          src={images[safeIndex]}
-          alt={alt}
-          className="absolute inset-0 h-full w-full rounded-lg object-cover"
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center">
-          <ImageIcon size={48} className="text-border-default" />
-        </div>
-      )}
+      <Img
+        src={images.length > 0 ? images[safeIndex] : undefined}
+        alt={alt}
+        className="absolute inset-0 h-full w-full rounded-lg object-cover"
+        fallback={
+          <div className="flex h-full w-full items-center justify-center">
+            <ImageIcon size={48} className="text-border-default" />
+          </div>
+        }
+      />
 
       {/* 좌측 화살표 */}
       {images.length > 1 && (

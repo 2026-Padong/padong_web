@@ -1,4 +1,5 @@
 import { Image as ImageIcon } from 'lucide-react'
+import { Img } from '@/components/ui/Img'
 import { PriceTag } from './PriceTag'
 
 // Figma 1:1: Tile · MenuItem (1663:4668) > MenuItem COMPONENT
@@ -15,13 +16,16 @@ export interface MenuItemProps {
 export function MenuItem({ image, name, description, price, originalPrice }: MenuItemProps) {
   return (
     <div className="flex items-center gap-md py-sm">
-      {image ? (
-        <img src={image} alt={name} className="h-12 w-12 shrink-0 rounded-md object-cover" />
-      ) : (
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-surface-subtle">
-          <ImageIcon size={20} className="text-border-default" />
-        </div>
-      )}
+      <Img
+        src={image}
+        alt={name}
+        className="h-12 w-12 shrink-0 rounded-md object-cover"
+        fallback={
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-surface-subtle">
+            <ImageIcon size={20} className="text-border-default" />
+          </div>
+        }
+      />
       <div className="flex flex-1 flex-col gap-xxs">
         <span className="text-body-l font-bold text-text-primary">{name}</span>
         {description && <span className="text-body-s text-text-tertiary">{description}</span>}

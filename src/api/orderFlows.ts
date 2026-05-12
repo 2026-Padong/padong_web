@@ -26,6 +26,7 @@ export interface OrderFlowResponse {
   paymentMethod?: string
   participantCurrent?: number
   participantTotal?: number
+  closingSoon?: boolean
   canceledAt?: string
   canceledReason?: string
   canApprove: boolean

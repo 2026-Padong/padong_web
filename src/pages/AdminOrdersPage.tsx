@@ -147,7 +147,7 @@ function FlowInfoCard({ flow, storeId }: { flow: OrderFlowResponse; storeId: num
     <section className="flex flex-col gap-md">
       <div className="flex items-center justify-between gap-md">
         <h2 className="text-h3 font-bold text-text-primary">모임 정보</h2>
-        <FlowStatusBadge status={flow.status} />
+        <FlowStatusBadge status={flow.status} closingSoon={flow.closingSoon} />
       </div>
 
       <article className="flex flex-col gap-sm rounded-md bg-neutral-white p-lg ring-1 ring-border-default">

@@ -99,7 +99,7 @@ export function AdminOrderHistoryDetailPage() {
                       <FlowRow label="완료 일시" value={formatDt(flow.completedAt)} />
                       <FlowRow
                         label="메뉴"
-                        value={flow.menus.map((m) => m.menuInfo).join(', ')}
+                        value={flow.menus.map((m) => m.name).join(', ')}
                       />
                     </dl>
 

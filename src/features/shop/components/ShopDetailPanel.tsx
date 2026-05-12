@@ -6,9 +6,9 @@ import { Icon } from '@/components/ui/Icon'
 import { useLoginGate } from '@/lib/useLoginGate'
 import { toggleStoreLike } from '@/api/stores'
 import { saveCart } from '@/lib/cart'
-import type { MockShop } from '@/data/mocks'
+import type { ShopDetailResponse } from '@/api/contracts/shops'
 import { ShopImageGallery } from './ShopImageGallery'
-import { ShopStatusBadge } from './ShopStatusBadge'
+import { RecruitmentBadge } from './RecruitmentBadge'
 import { formatWeekdaysParen, maskToWeekdays } from '@/features/admin/utils/weekdays'
 import { cn } from '@/lib/cn'
 
@@ -17,6 +17,21 @@ function formatHours(open?: string, close?: string, mask?: number) {
   const oc = open && close ? `${trimSeconds(open)} ~ ${trimSeconds(close)}` : ''
   const wk = mask != null ? formatWeekdaysParen(maskToWeekdays(mask)) : ''
   return [oc, wk].filter(Boolean).join(' · ')
+}
+
+// recruitmentDeadline → "오늘 18:00" / "5/14 14:00"
+function formatDeadline(raw: string): string {
+  const d = new Date(raw)
+  if (Number.isNaN(d.getTime())) return raw
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mi = String(d.getMinutes()).padStart(2, '0')
+  const time = `${hh}:${mi}`
+  const now = new Date()
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  return sameDay ? `오늘 ${time}` : `${d.getMonth() + 1}/${d.getDate()} ${time}`
 }
 
 // Figma 1:1: Tile · ShopDetailPanel (659:2019) > ShopDetailPanel COMPONENT_SET (Tab=Menu/Info)
@@ -33,7 +48,7 @@ function formatHours(open?: string, close?: string, mask?: number) {
 //   ParticipantsRow: "현재 인원 1 / 5명" + "현재 담은 금액 X원"
 //   ActionButton "참여하기"
 export interface ShopDetailPanelProps {
-  shop: MockShop
+  shop: ShopDetailResponse
   tab: 'Menu' | 'Info'
   onTabChange?: (t: 'Menu' | 'Info') => void
   onBack?: () => void
@@ -53,7 +68,7 @@ export function ShopDetailPanel({
   const totalAmount = shop.menus.reduce((sum, m) => sum + (quantities[m.name] ?? 0) * m.price, 0)
   const fmtPrice = (n: number) => `${n.toLocaleString('ko-KR')}원`
   const isMenuTab = tab === 'Menu'
-  const [liked, setLiked] = useState(shop.liked)
+  const [liked, setLiked] = useState(shop.likedByCurrentUser)
   const nav = useNavigate()
   const { requireLogin, loginDialog } = useLoginGate()
   const qc = useQueryClient()
@@ -63,7 +78,7 @@ export function ShopDetailPanel({
     const prev = liked
     setLiked(!prev) // 낙관적 업데이트
     try {
-      const result = await toggleStoreLike(Number(shop.id))
+      const result = await toggleStoreLike(shop.id)
       setLiked(result.liked)
       // 가게 좋아요 관련 쿼리 (목록/내가찜한가게) 갱신 — MyLikedStores 패턴과 통일
       qc.invalidateQueries({ queryKey: ['stores'] })
@@ -86,8 +101,8 @@ export function ShopDetailPanel({
       }))
       .filter((it) => it.quantity > 0)
     if (items.length === 0) return // 빈 카트는 진행 X
-    saveCart(Number(shop.id), {
-      shopId: Number(shop.id),
+    saveCart(shop.id, {
+      shopId: shop.id,
       shopName: shop.name,
       items,
       totalAmount,
@@ -117,13 +132,13 @@ export function ShopDetailPanel({
       <div className="flex w-full flex-col items-start gap-xxs py-xs">
         <h1 className="text-h2 font-bold text-text-primary whitespace-nowrap">{shop.name}</h1>
         <div className="flex w-full items-center justify-between gap-xs">
-          <p className="text-body font-normal text-text-tertiary">{shop.category}</p>
+          <p className="text-body font-normal text-text-tertiary">{shop.categoryLabel}</p>
           <Heart active={liked} onClick={handleToggleLike} />
         </div>
       </div>
 
       <div className="flex w-full max-w-[400px] items-center justify-center">
-        <ShopImageGallery images={shop.images} alt={shop.name} />
+        <ShopImageGallery images={shop.images.map((i) => i.url)} alt={shop.name} />
       </div>
 
       <div className="flex w-full flex-1 flex-col items-start overflow-hidden py-sm">
@@ -176,12 +191,12 @@ export function ShopDetailPanel({
                 }
               >
                 <p className="flex-1 break-keep text-body-l font-medium text-text-primary">
-                  {shop.infoRows.find((r) => r.label === '주소')?.value ?? '-'}
+                  {shop.address || '-'}
                 </p>
               </InfoLine>
               <InfoLine icon={<Icon name="shop-detail-phone" size={20} className="text-text-secondary" aria-hidden />}>
                 <span className="flex-1 text-body-l font-medium text-text-primary">
-                  {shop.infoRows.find((r) => r.label === '전화')?.value ?? '-'}
+                  {shop.phoneNumber || '-'}
                 </span>
               </InfoLine>
               <InfoLine icon={<Icon name="shop-detail-doc" size={20} className="text-text-secondary" aria-hidden />} alignStart>
@@ -194,18 +209,36 @@ export function ShopDetailPanel({
             <div className="flex w-full flex-1 flex-col items-start gap-xxs overflow-y-auto py-sm pl-lg pr-sm">
               {shop.menus.map((m) => {
                 const qty = quantities[m.name] ?? 0
+                const soldOut = m.soldOut === true
                 return (
                   <div key={m.name} className="flex w-full items-center gap-md py-xs">
-                    <span className="flex-1 text-subhead font-medium text-text-primary">
+                    <span
+                      className={
+                        'flex-1 text-subhead font-medium ' +
+                        (soldOut ? 'text-text-tertiary line-through' : 'text-text-primary')
+                      }
+                    >
                       {m.name}
                     </span>
-                    <span className="text-body-l font-medium text-text-primary whitespace-nowrap">
-                      {fmtPrice(m.price)}
-                    </span>
-                    <div className="flex items-center justify-center gap-md rounded-2xl border border-border-default px-md py-xs">
+                    {soldOut ? (
+                      <span className="text-body-l font-medium text-status-critical whitespace-nowrap">
+                        품절
+                      </span>
+                    ) : (
+                      <span className="text-body-l font-medium text-text-primary whitespace-nowrap">
+                        {fmtPrice(m.price)}
+                      </span>
+                    )}
+                    <div
+                      className={
+                        'flex items-center justify-center gap-md rounded-2xl border border-border-default px-md py-xs ' +
+                        (soldOut ? 'opacity-40' : '')
+                      }
+                    >
                       <button
                         type="button"
                         aria-label="감소"
+                        disabled={soldOut}
                         onClick={() =>
                           setQuantities((s) => ({ ...s, [m.name]: Math.max(0, qty - 1) }))
                         }
@@ -228,6 +261,7 @@ export function ShopDetailPanel({
                       <button
                         type="button"
                         aria-label="증가"
+                        disabled={soldOut}
                         onClick={() => setQuantities((s) => ({ ...s, [m.name]: qty + 1 }))}
                       >
                         <Icon name="stepper-plus" size={16} className="text-text-primary" aria-hidden />
@@ -244,13 +278,23 @@ export function ShopDetailPanel({
       <div className="flex w-full flex-col items-center gap-lg py-xxs">
         <div className="flex w-full items-end justify-center">
           <div className="flex flex-col items-start gap-xxs">
-            {shop.status && <ShopStatusBadge status={shop.status} />}
+            {shop.recruitmentStatus && <RecruitmentBadge status={shop.recruitmentStatus} />}
             <div className="flex items-center gap-md text-subhead font-bold whitespace-nowrap">
               <p className="text-text-primary">현재 인원</p>
               <p className="text-brand-primary">
                 {shop.participantCurrent ?? 1} / {shop.participantTotal ?? 5}명
               </p>
             </div>
+            {shop.currentGroupOrder && (
+              <>
+                <p className="text-body font-normal text-text-tertiary whitespace-nowrap">
+                  {formatDeadline(shop.currentGroupOrder.recruitmentDeadline)} 마감
+                </p>
+                <p className="text-body font-normal text-text-tertiary whitespace-nowrap">
+                  1인 최소 {fmtPrice(shop.currentGroupOrder.minOrderPerPerson)}
+                </p>
+              </>
+            )}
           </div>
           <div className="flex flex-1 flex-col items-end justify-center gap-xxs overflow-clip">
             <p className="text-body font-normal text-text-tertiary whitespace-nowrap">
@@ -264,10 +308,14 @@ export function ShopDetailPanel({
         <button
           type="button"
           onClick={handleJoin}
-          disabled={totalAmount === 0 || shop.currentGroupOrderId == null}
+          disabled={totalAmount === 0 || !shop.currentGroupOrder || totalAmount < (shop.currentGroupOrder?.minOrderPerPerson ?? 0)}
           className="flex w-full items-center justify-center rounded-md bg-brand-primary py-sm text-subhead font-bold text-neutral-white transition-colors hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {shop.currentGroupOrderId == null ? '모집 마감' : '참여하기'}
+          {!shop.currentGroupOrder
+            ? '모집 마감'
+            : totalAmount > 0 && totalAmount < shop.currentGroupOrder.minOrderPerPerson
+              ? `최소 ${fmtPrice(shop.currentGroupOrder.minOrderPerPerson)}부터 참여 가능`
+              : '참여하기'}
         </button>
       </div>
 

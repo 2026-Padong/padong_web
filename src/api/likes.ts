@@ -1,5 +1,6 @@
 import { apiGet, apiPost } from './client'
 import type { ResponseDTO } from './contracts/auth'
+import type { RecruitmentStatus } from './contracts/shops'
 
 // 백엔드 PageResponse — content[] + 페이지 메타 (가게 목록 등)
 export interface PageResponse<T> {
@@ -43,7 +44,8 @@ export interface LikedStoreResponse {
   category: string
   imageUrl?: string
   description?: string
-  status?: 'recruiting' | 'preparing' | 'closed' | null
+  /** 사용자 측 모집 상태 — ShopSummaryResponse/ShopDetailResponse 와 동일 enum */
+  recruitmentStatus?: RecruitmentStatus | null
   participantCurrent?: number
   participantTotal?: number
 }

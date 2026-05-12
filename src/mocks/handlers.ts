@@ -39,29 +39,27 @@ const mockStore = {
   closeTime: '22:00',
   weekdayMask: 0b1111111, // 매일
   images: [] as { id: number; url: string; sortOrder: number }[],
-  menuCategories: ['치즈케이크', '음료'],
   menus: [
-    { id: 11, name: '바스크 치즈케이크', price: 8500 },
-    { id: 12, name: '얼그레이 치즈케이크', price: 9000 },
-    { id: 13, name: '말차 치즈케이크', price: 9500 },
-    { id: 14, name: '초콜릿 바스크', price: 9000 },
-    { id: 15, name: '딸기 바스크 (시즌)', price: 10500 },
-    { id: 16, name: '바스크 치즈케이크 홀 (미니)', price: 30000 },
-    { id: 17, name: '바스크 치즈케이크 홀 (1호)', price: 45000 },
-    { id: 18, name: '핸드드립 커피', price: 5500 },
-    { id: 19, name: '아이스 아메리카노', price: 4500 },
-    { id: 20, name: '카페라떼', price: 5500 },
-    { id: 21, name: '얼그레이 밀크티', price: 6000 },
-    { id: 22, name: '복숭아 아이스티', price: 5500 },
-    { id: 23, name: '제주 말차라떼', price: 6500 },
-    { id: 24, name: '딸기 라떼 (시즌)', price: 7000 },
+    { id: 11, name: '바스크 치즈케이크', price: 8500, soldOut: false },
+    { id: 12, name: '얼그레이 치즈케이크', price: 9000, soldOut: false },
+    { id: 13, name: '말차 치즈케이크', price: 9500, soldOut: false },
+    { id: 14, name: '초콜릿 바스크', price: 9000, soldOut: false },
+    { id: 15, name: '딸기 바스크 (시즌)', price: 10500, soldOut: true },
+    { id: 16, name: '바스크 치즈케이크 홀 (미니)', price: 30000, soldOut: false },
+    { id: 17, name: '바스크 치즈케이크 홀 (1호)', price: 45000, soldOut: false },
+    { id: 18, name: '핸드드립 커피', price: 5500, soldOut: true },
+    { id: 19, name: '아이스 아메리카노', price: 4500, soldOut: false },
+    { id: 20, name: '카페라떼', price: 5500, soldOut: false },
+    { id: 21, name: '얼그레이 밀크티', price: 6000, soldOut: false },
+    { id: 22, name: '복숭아 아이스티', price: 5500, soldOut: false },
+    { id: 23, name: '제주 말차라떼', price: 6500, soldOut: false },
+    { id: 24, name: '딸기 라떼 (시즌)', price: 7000, soldOut: false },
   ],
   participantCurrent: 3,
   participantTotal: 5,
-  status: 'RECRUITING' as const,
-  currentGroupOrderId: 101,
+  recruitmentStatus: 'RECRUITING' as const,
+  currentGroupOrder: { id: 101, recruitmentDeadline: new Date(Date.now() + 3*60*60*1000).toISOString(), minOrderPerPerson: 8000 },
   likedByCurrentUser: false,
-  likeCount: 27,
   latitude: 37.5347,
   longitude: 126.9947,
 }
@@ -78,40 +76,41 @@ const mockMineRow = {
   closeTime: mockStore.closeTime,
   weekdayMask: mockStore.weekdayMask,
   thumbnailUrl: mockStore.thumbnailUrl,
-  likeCount: mockStore.likeCount,
+  likeCount: 27,
   likedByCurrentUser: false,
   latitude: mockStore.latitude,
   longitude: mockStore.longitude,
 }
 
-// 백엔드 새 스키마 정합: { id, storeId, menuInfo, price, soldOut }
-const mockMenus: { id: number; storeId: number; menuInfo: string; price: number; soldOut: boolean }[] = [
-  { id: 11, storeId: 1, menuInfo: '바스크 치즈케이크', price: 8500, soldOut: false },
-  { id: 12, storeId: 1, menuInfo: '얼그레이 치즈케이크', price: 9000, soldOut: false },
-  { id: 13, storeId: 1, menuInfo: '말차 치즈케이크', price: 9500, soldOut: false },
-  { id: 14, storeId: 1, menuInfo: '초콜릿 바스크', price: 9000, soldOut: false },
-  { id: 15, storeId: 1, menuInfo: '딸기 바스크 (시즌)', price: 10500, soldOut: true },
-  { id: 16, storeId: 1, menuInfo: '바스크 치즈케이크 홀 (미니)', price: 30000, soldOut: false },
-  { id: 17, storeId: 1, menuInfo: '바스크 치즈케이크 홀 (1호)', price: 45000, soldOut: false },
-  { id: 18, storeId: 1, menuInfo: '핸드드립 커피', price: 5500, soldOut: true },
-  { id: 19, storeId: 1, menuInfo: '아이스 아메리카노', price: 4500, soldOut: false },
-  { id: 20, storeId: 1, menuInfo: '카페라떼', price: 5500, soldOut: false },
+// 백엔드 새 스키마 정합: { id, storeId, name, price, soldOut }
+const mockMenus: { id: number; storeId: number; name: string; price: number; soldOut: boolean }[] = [
+  { id: 11, storeId: 1, name: '바스크 치즈케이크', price: 8500, soldOut: false },
+  { id: 12, storeId: 1, name: '얼그레이 치즈케이크', price: 9000, soldOut: false },
+  { id: 13, storeId: 1, name: '말차 치즈케이크', price: 9500, soldOut: false },
+  { id: 14, storeId: 1, name: '초콜릿 바스크', price: 9000, soldOut: false },
+  { id: 15, storeId: 1, name: '딸기 바스크 (시즌)', price: 10500, soldOut: true },
+  { id: 16, storeId: 1, name: '바스크 치즈케이크 홀 (미니)', price: 30000, soldOut: false },
+  { id: 17, storeId: 1, name: '바스크 치즈케이크 홀 (1호)', price: 45000, soldOut: false },
+  { id: 18, storeId: 1, name: '핸드드립 커피', price: 5500, soldOut: true },
+  { id: 19, storeId: 1, name: '아이스 아메리카노', price: 4500, soldOut: false },
+  { id: 20, storeId: 1, name: '카페라떼', price: 5500, soldOut: false },
 ]
 
 // menuId → orderFlow row (가능 액션 플래그로 상태 머신 시각화)
 const mockFlows: Record<number, {
-  id: number; menuId: number; storeId: number; menuInfo: string; status: string
+  id: number; menuId: number; storeId: number; name: string; status: string
   canApprove: boolean; canReject: boolean; canMarkReadyForPickup: boolean; canCompletePickup: boolean
 }> = {
   // 가게당 진행 모임은 한 건만 — 메뉴 11 만 active, 12/13 은 진행 주문 없음 (404)
   11: {
-    id: 201, menuId: 11, storeId: 1, menuInfo: '바스크 치즈케이크 1조각',
+    id: 201, menuId: 11, storeId: 1, name: '바스크 치즈케이크 1조각',
     status: 'PENDING',
+    closingSoon: true,
     canApprove: false, canReject: false, canMarkReadyForPickup: false, canCompletePickup: false, canCancel: true,
     menus: [
-      { menuId: 11, menuInfo: '바스크 치즈케이크', price: 8500 },
-      { menuId: 12, menuInfo: '얼그레이 치즈케이크', price: 9000 },
-      { menuId: 13, menuInfo: '말차 치즈케이크', price: 9500 },
+      { menuId: 11, name: '바스크 치즈케이크', price: 8500 },
+      { menuId: 12, name: '얼그레이 치즈케이크', price: 9000 },
+      { menuId: 13, name: '말차 치즈케이크', price: 9500 },
     ],
     recruitmentStart: '2026-05-13 09:00',
     recruitmentDeadline: '2026-05-13 14:00',
@@ -127,8 +126,8 @@ const mockFlowHistory = [
   {
     id: 301, storeId: 1, status: 'COMPLETED',
     menus: [
-      { menuId: 11, menuInfo: '바스크 치즈케이크', price: 8500 },
-      { menuId: 12, menuInfo: '얼그레이 치즈케이크', price: 9000 },
+      { menuId: 11, name: '바스크 치즈케이크', price: 8500 },
+      { menuId: 12, name: '얼그레이 치즈케이크', price: 9000 },
     ],
     recruitmentStart: '2026-05-08 09:00',
     recruitmentDeadline: '2026-05-08 14:00',
@@ -139,8 +138,8 @@ const mockFlowHistory = [
   {
     id: 302, storeId: 1, status: 'COMPLETED',
     menus: [
-      { menuId: 13, menuInfo: '말차 치즈케이크', price: 9500 },
-      { menuId: 14, menuInfo: '초콜릿 바스크', price: 9000 },
+      { menuId: 13, name: '말차 치즈케이크', price: 9500 },
+      { menuId: 14, name: '초콜릿 바스크', price: 9000 },
     ],
     recruitmentStart: '2026-05-05 10:00',
     recruitmentDeadline: '2026-05-05 15:00',
@@ -151,7 +150,7 @@ const mockFlowHistory = [
   {
     id: 303, storeId: 1, status: 'REJECTED',
     menus: [
-      { menuId: 18, menuInfo: '핸드드립 커피', price: 5500 },
+      { menuId: 18, name: '핸드드립 커피', price: 5500 },
     ],
     recruitmentStart: '2026-05-02 11:00',
     recruitmentDeadline: '2026-05-02 16:00',
@@ -258,12 +257,12 @@ export const handlers = [
 
   // 메뉴 등록 (JSON body)
   http.post(`${BASE}/menus`, async ({ request }) => {
-    const body = (await request.json()) as { storeId: number; menuInfo: string; price: number }
+    const body = (await request.json()) as { storeId: number; name: string; price: number }
     const newId = Math.max(...mockMenus.map((m) => m.id), 0) + 1
     const created = {
       id: newId,
       storeId: body.storeId,
-      menuInfo: body.menuInfo,
+      name: body.name,
       price: body.price,
       soldOut: false,
     }
@@ -278,8 +277,8 @@ export const handlers = [
     if (idx === -1) {
       return HttpResponse.json({ statusCode: '404', message: '메뉴 없음', data: null }, { status: 404 })
     }
-    const body = (await request.json()) as { menuInfo: string; price: number }
-    mockMenus[idx] = { ...mockMenus[idx], menuInfo: body.menuInfo, price: body.price }
+    const body = (await request.json()) as { name: string; price: number }
+    mockMenus[idx] = { ...mockMenus[idx], name: body.name, price: body.price }
     return HttpResponse.json(ok(mockMenus[idx], '메뉴 수정 성공'))
   }),
 
@@ -347,29 +346,29 @@ export const handlers = [
       {
         userId: 1, userName: '김예일', joinedAt: '2026-05-13 09:30',
         items: [
-          { menuId: 11, menuInfo: '바스크 치즈케이크', price: 8500, quantity: 1 },
-          { menuId: 12, menuInfo: '얼그레이 치즈케이크', price: 9000, quantity: 1 },
+          { menuId: 11, name: '바스크 치즈케이크', price: 8500, quantity: 1 },
+          { menuId: 12, name: '얼그레이 치즈케이크', price: 9000, quantity: 1 },
         ],
         totalAmount: 17500, paymentStatus: 'PAID',
       },
       {
         userId: 2, userName: '이수민', joinedAt: '2026-05-13 10:15',
         items: [
-          { menuId: 11, menuInfo: '바스크 치즈케이크', price: 8500, quantity: 2 },
+          { menuId: 11, name: '바스크 치즈케이크', price: 8500, quantity: 2 },
         ],
         totalAmount: 17000, paymentStatus: 'PAID',
       },
       {
         userId: 3, userName: '박지훈', joinedAt: '2026-05-13 11:00',
         items: [
-          { menuId: 13, menuInfo: '말차 치즈케이크', price: 9500, quantity: 1 },
+          { menuId: 13, name: '말차 치즈케이크', price: 9500, quantity: 1 },
         ],
         totalAmount: 9500, paymentStatus: 'PENDING',
       },
       {
         userId: 4, userName: '최서연', joinedAt: '2026-05-13 11:45',
         items: [
-          { menuId: 11, menuInfo: '바스크 치즈케이크', price: 8500, quantity: 1 },
+          { menuId: 11, name: '바스크 치즈케이크', price: 8500, quantity: 1 },
         ],
         totalAmount: 8500, paymentStatus: 'CANCELLED',
       },
@@ -391,7 +390,7 @@ export const handlers = [
       const m = mockMenus.find((x) => x.id === id)
       return {
         menuId: id,
-        menuInfo: m?.menuInfo ?? `메뉴 ${id}`,
+        name: m?.name ?? `메뉴 ${id}`,
         price: m?.discountPrice ?? 0,
       }
     })
@@ -399,7 +398,7 @@ export const handlers = [
       id: Math.max(201, ...Object.values(mockFlows).map((f) => f.id)) + 1,
       menuId: body.menuIds[0] ?? 0,
       storeId: body.storeId,
-      menuInfo: refs[0]?.menuInfo ?? '',
+      name: refs[0]?.name ?? '',
       status: 'PENDING',
       canApprove: true, canReject: true, canMarkReadyForPickup: false, canCompletePickup: false,
       menus: refs,

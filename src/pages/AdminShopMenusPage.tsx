@@ -97,8 +97,8 @@ function MenuListSection({ storeId }: { storeId: number }) {
   const [adding, setAdding] = useState(false)
 
   const createMutation = useMutation({
-    mutationFn: (input: { menuInfo: string; price: number }) =>
-      createMenu({ storeId, menuInfo: input.menuInfo, price: input.price }),
+    mutationFn: (input: { name: string; price: number }) =>
+      createMenu({ storeId, name: input.name, price: input.price }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['menus', storeId] })
       setAdding(false)
@@ -197,7 +197,7 @@ function MenuRow({ storeId, menu }: { storeId: number; menu: MenuResponse }) {
       }
     >
       <h3 className="flex-1 text-subhead font-medium text-text-primary">
-        {menu.menuInfo}
+        {menu.name}
         {soldOut && (
           <span className="ml-sm inline-flex items-center rounded-full bg-status-closed-bg px-xs py-xxs text-body-s font-medium text-status-closed">
             품절
@@ -231,7 +231,7 @@ function MenuRow({ storeId, menu }: { storeId: number; menu: MenuResponse }) {
         <button
           type="button"
           onClick={() => {
-            if (!confirm(`"${menu.menuInfo}" 메뉴를 삭제할까요?`)) return
+            if (!confirm(`"${menu.name}" 메뉴를 삭제할까요?`)) return
             deleteMutation.mutate()
           }}
           disabled={deleteMutation.isPending}
@@ -247,7 +247,7 @@ function MenuRow({ storeId, menu }: { storeId: number; menu: MenuResponse }) {
 // ─── 메뉴 입력 폼 (create / edit 공용) ───────────────────────────────────────
 
 interface MenuFormInput {
-  menuInfo: string
+  name: string
   price: number
 }
 
@@ -265,7 +265,7 @@ function MenuEditCard({
   submitting: boolean
 }) {
   const [form, setForm] = useState<MenuFormInput>(initial)
-  const valid = form.menuInfo.trim().length > 0 && form.price > 0
+  const valid = form.name.trim().length > 0 && form.price > 0
 
   return (
     <form
@@ -283,8 +283,8 @@ function MenuEditCard({
             label: '메뉴 이름',
             value: (
               <EditInput
-                value={form.menuInfo}
-                onChange={(e) => setForm((s) => ({ ...s, menuInfo: e.target.value }))}
+                value={form.name}
+                onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
                 placeholder="메뉴 이름을 입력하세요"
               />
             ),
@@ -353,9 +353,9 @@ function EditInput({
 // ─── 헬퍼 ───────────────────────────────────────────────────────────────────
 
 function emptyInput(): MenuFormInput {
-  return { menuInfo: '', price: 0 }
+  return { name: '', price: 0 }
 }
 
 function menuToInput(m: MenuResponse): MenuFormInput {
-  return { menuInfo: m.menuInfo, price: m.price }
+  return { name: m.name, price: m.price }
 }

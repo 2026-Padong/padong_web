@@ -7,9 +7,11 @@ export interface OrderInfo {
   /** 백엔드 발급 사용자 노출용 주문번호 (yyyyMMdd-PK5자리). 백엔드 응답에 있을 때만 채워짐 */
   orderNumber?: string
   paymentId: string
-  paidAt: string // ISO 8601
-  /** 백엔드 상태 — "PREPARING" | "READY" | "COMPLETED" | "CANCELLED" 등 */
+  paidAt: string | null // ISO 8601. 미결제면 null
+  /** 결제 상태 (OrderStatus) — READY/PAID/CANCELED/FAILED */
   status?: string
+  /** Fulfillment 상태 (OrderFlowStatus) — PENDING/WAITING_APPROVAL/APPROVED/READY/COMPLETED/REJECTED */
+  flowStatus?: string
   shop: {
     id: number
     name: string
@@ -55,7 +57,9 @@ export function listLocalOrders(): OrderInfo[] {
       // 손상된 항목 무시
     }
   }
-  return orders.sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime())
+  // paidAt null (미결제) 은 뒤로
+  const ts = (v: string | null) => (v ? new Date(v).getTime() : 0)
+  return orders.sort((a, b) => ts(b.paidAt) - ts(a.paidAt))
 }
 
 // ─────────────────────────────────────────────────────────────

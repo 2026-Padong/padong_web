@@ -1,4 +1,5 @@
 import { Image as ImageIcon } from 'lucide-react'
+import { Img } from '@/components/ui/Img'
 
 // Figma 1:1: HomePage instance (1697:7386) > GroupPurchaseCardHorizontal
 // border-light rounded-lg p-md, H gap-lg items-center
@@ -35,11 +36,12 @@ export function GroupPurchaseCardHorizontal({
       className="flex w-full cursor-pointer items-center gap-lg rounded-lg border border-border-default p-md"
     >
       <div className="flex h-[110px] w-[180px] shrink-0 items-center justify-center overflow-clip rounded-md bg-[#f0e8e8]">
-        {thumbnail ? (
-          <img src={thumbnail} alt={shopName} className="h-full w-full object-cover" />
-        ) : (
-          <ImageIcon size={32} className="text-border-default" />
-        )}
+        <Img
+          src={thumbnail}
+          alt={shopName}
+          className="h-full w-full object-cover"
+          fallback={<ImageIcon size={32} className="text-border-default" />}
+        />
       </div>
       <div className="flex h-full flex-1 flex-col items-start justify-between self-stretch">
         <div className="flex w-full items-center justify-between">

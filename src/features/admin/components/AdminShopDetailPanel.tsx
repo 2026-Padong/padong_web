@@ -1,6 +1,6 @@
 import { Icon } from '@/components/ui/Icon'
 import { ShopImageGallery } from '@/features/shop/components/ShopImageGallery'
-import type { MockShop } from '@/data/mocks'
+import type { ShopDetailResponse } from '@/api/contracts/shops'
 import { formatWeekdaysParen, maskToWeekdays } from '@/features/admin/utils/weekdays'
 import { cn } from '@/lib/cn'
 
@@ -16,7 +16,7 @@ function formatHours(open?: string, close?: string, mask?: number) {
 // 사장 전용 가게 디테일 패널 — ShopDetailPanel (고객용) 과 동일한 시각적 구조를
 // 공유하지만 고객 액션(좋아요/수량/참여)을 제거하고 운영 정보(상태 배지)만 노출
 export interface AdminShopDetailPanelProps {
-  shop: MockShop
+  shop: ShopDetailResponse
   tab: 'Menu' | 'Info'
   onTabChange?: (t: 'Menu' | 'Info') => void
   className?: string
@@ -41,11 +41,11 @@ export function AdminShopDetailPanel({
     >
       <div className="flex w-full flex-col items-start gap-xxs">
         <h1 className="text-h2 font-bold text-text-primary whitespace-nowrap">{shop.name}</h1>
-        <p className="text-body font-normal text-text-tertiary">{shop.category}</p>
+        <p className="text-body font-normal text-text-tertiary">{shop.categoryLabel}</p>
       </div>
 
       <div className="flex w-full max-w-[400px] items-center justify-center">
-        <ShopImageGallery images={shop.images} alt={shop.name} />
+        <ShopImageGallery images={shop.images.map((i) => i.url)} alt={shop.name} />
       </div>
 
       <div className="flex w-full min-h-0 flex-1 flex-col items-start pt-sm">
@@ -91,12 +91,12 @@ export function AdminShopDetailPanel({
                 icon={<Icon name="icon-location-square" size={20} aria-hidden />}
               >
                 <p className="flex-1 break-keep text-body-l font-medium text-text-primary">
-                  {shop.infoRows.find((r) => r.label === '주소')?.value ?? '-'}
+                  {shop.address || '-'}
                 </p>
               </InfoLine>
               <InfoLine icon={<Icon name="shop-detail-phone" size={20} className="text-text-secondary" aria-hidden />}>
                 <span className="flex-1 text-body-l font-medium text-text-primary">
-                  {shop.infoRows.find((r) => r.label === '전화')?.value ?? '-'}
+                  {shop.phoneNumber || '-'}
                 </span>
               </InfoLine>
               <InfoLine

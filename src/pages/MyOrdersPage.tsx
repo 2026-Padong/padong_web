@@ -58,14 +58,18 @@ export function MyOrdersPage() {
     return `${yyyy}.${mm}.${dd} ${hh}:${mi}`
   }
 
-  const statusLabel = (s: string | undefined) => {
-    switch (s) {
+  // 결제 상태(payment status) 우선 분기 → 정상 결제면 flowStatus 6종 매핑
+  const statusLabel = (paymentStatus?: string, flowStatus?: string) => {
+    if (paymentStatus === 'FAILED') return '결제 실패'
+    if (paymentStatus === 'CANCELED') return '취소됨'
+    switch (flowStatus) {
+      case 'PENDING': return '모집 중'
+      case 'WAITING_APPROVAL': return '승인 대기'
+      case 'APPROVED': return '준비 중'
       case 'READY': return '픽업 가능'
       case 'COMPLETED': return '완료'
-      case 'CANCELLED': return '취소됨'
-      case 'PREPARING':
-      default:
-        return '준비중'
+      case 'REJECTED': return '거절됨'
+      default: return '준비 중'
     }
   }
 
@@ -133,7 +137,7 @@ export function MyOrdersPage() {
                     <div className="flex items-baseline justify-between gap-md">
                       <span className="text-body-l font-bold text-text-primary">{o.shop.name}</span>
                       <span className="shrink-0 text-body font-normal text-text-tertiary">
-                        {fmtDate(o.paidAt)}
+                        {o.paidAt ? fmtDate(o.paidAt) : '결제 전'}
                       </span>
                     </div>
 
@@ -149,7 +153,7 @@ export function MyOrdersPage() {
                       <span className="inline-flex items-center gap-xxs rounded-full bg-status-recruiting-bg px-sm py-xxs">
                         <span className="size-[6px] rounded-full bg-status-recruiting" />
                         <span className="text-body-s font-medium text-status-recruiting">
-                          {statusLabel(o.status)}
+                          {statusLabel(o.status, o.flowStatus)}
                         </span>
                       </span>
                     </div>

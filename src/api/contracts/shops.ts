@@ -14,7 +14,13 @@
 //   DELETE /stores/{id}/images/{imageId}
 // ─────────────────────────────────────────────────────────────
 
-export type ShopStatusEnum = 'RECRUITING' | 'CLOSING' | 'CLOSED'
+/** 사용자 측 모집 상태 — 가게 카드/상세에서 노출 */
+export type RecruitmentStatus =
+  | 'RECRUITING'
+  | 'CLOSING_SOON'
+  | 'IN_PROGRESS'
+  | 'NO_FLOW'
+  | 'OUT_OF_HOURS'
 
 export interface CategoryOption {
   code: string
@@ -36,7 +42,7 @@ export interface ShopSummaryResponse {
   description: string
   participantCurrent: number
   participantTotal: number
-  status: ShopStatusEnum
+  recruitmentStatus: RecruitmentStatus
   likeCount: number
   likedByCurrentUser: boolean
   latitude: number
@@ -47,7 +53,7 @@ export interface ShopSummaryResponse {
 export interface ShopListQueryParams {
   adminDongCode?: string
   q?: string
-  status?: ShopStatusEnum
+  status?: RecruitmentStatus
   category?: string
   likedOnly?: boolean
   page?: number
@@ -58,6 +64,13 @@ export interface ShopMenuItemResponse {
   id: number
   name: string
   price: number
+  soldOut: boolean
+}
+
+export interface CurrentGroupOrderSummary {
+  id: number
+  recruitmentDeadline: string  // ISO 또는 "YYYY-MM-DD HH:mm"
+  minOrderPerPerson: number    // 1인 최소 주문 금액 (원)
 }
 
 export interface ShopDetailResponse {
@@ -74,13 +87,12 @@ export interface ShopDetailResponse {
   closeTime: string        // "HH:mm"
   weekdayMask: number      // 비트마스크
   images: StoreImageResponse[]
-  menuCategories: string[]
   menus: ShopMenuItemResponse[]
   participantCurrent: number
   participantTotal: number
-  status: ShopStatusEnum
-  /** 현재 진행 중인 공동주문 ID. null 이면 진행 중 GroupOrder 없음 (결제 disable) */
-  currentGroupOrderId: number | null
+  recruitmentStatus: RecruitmentStatus
+  /** 진행 중 공동주문. null 이면 진행 중 GroupOrder 없음 (결제 disable) */
+  currentGroupOrder: CurrentGroupOrderSummary | null
   latitude: number
   longitude: number
 }
@@ -119,55 +131,4 @@ export interface StoreRegistrationUpdateRequest {
 
 export interface StoreImageReorderRequest {
   ids: number[]
-}
-
-// ─────────────────────────────────────────────────────────────
-// 레거시 — 목록 API 및 ShopCard, ShopListPanel 에서 사용 중
-// 추후 GET /stores (목록) 연동 시 ShopSummaryResponse 로 대체 예정
-// ─────────────────────────────────────────────────────────────
-
-export type ShopStatusDto = 'recruiting' | 'closing' | 'closed'
-
-export interface ShopDto {
-  id: string
-  image: string
-  name: string
-  category: string
-  description: string | null
-  status: ShopStatusDto
-  participantCurrent: number
-  participantTotal: number
-  liked: boolean
-}
-
-export interface ShopMenuDto {
-  name: string
-  description: string | null
-  price: number
-  originalPrice: number | null
-  image: string | null
-}
-
-export interface ShopInfoRowDto {
-  label: string
-  value: string
-}
-
-export interface ShopDetailDto extends ShopDto {
-  images: string[]
-  menuCategories: string[]
-  menus: ShopMenuDto[]
-  infoRows: ShopInfoRowDto[]
-  bookmarked: boolean
-}
-
-export interface ShopListResponse {
-  items: ShopDto[]
-  total: number
-}
-
-export interface ShopListQuery {
-  q?: string
-  filters?: string[]
-  page?: number
 }

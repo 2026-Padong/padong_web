@@ -8,7 +8,6 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useShopList } from '@/api/queries/useShopList'
 import { useShopDetail } from '@/api/queries/useShopDetail'
-import { summaryToShop as dtoToShop, detailToShop } from '@/features/shop/utils/shopAdapters'
 
 export function ShopDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -60,8 +59,8 @@ export function ShopDetailPage() {
     )
   }
 
-  const shop = detailToShop(detail.data)
-  const sidebarShops = (list.data?.content ?? []).map(dtoToShop)
+  const shop = detail.data
+  const sidebarShops = list.data?.content ?? []
 
   return (
     <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">

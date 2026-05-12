@@ -1,5 +1,6 @@
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
+import { Img } from '@/components/ui/Img'
 import { useAuth } from '@/lib/auth'
 import { useOrderDetail } from '@/api/queries/useMyOrders'
 import type { OrderInfo } from '@/lib/orderStorage'
@@ -53,8 +54,10 @@ export function OrderDetailPage() {
     const mi = String(d.getMinutes()).padStart(2, '0')
     return `${yyyy}.${mm}.${dd} ${hh}:${mi}`
   }
-  // 유저 노출용 주문번호: 결제일 기반 + PK 패딩
-  const displayOrderNumber = `${info.paidAt.slice(0, 10).replace(/-/g, '')}-${String(info.orderId).padStart(5, '0')}`
+  // 유저 노출용 주문번호: 결제일 기반 + PK 패딩 (미결제면 orderId only)
+  const displayOrderNumber = info.paidAt
+    ? `${info.paidAt.slice(0, 10).replace(/-/g, '')}-${String(info.orderId).padStart(5, '0')}`
+    : String(info.orderId).padStart(5, '0')
 
   return (
     <div className="flex min-h-screen flex-col bg-neutral-white">
@@ -73,25 +76,45 @@ export function OrderDetailPage() {
           <h1 className="text-h2 font-bold text-text-primary">주문 상세</h1>
         </header>
 
-        {/* 상태 뱃지 (현재는 결제 완료 후 진입 → 준비중 가정) */}
-        <section className="flex flex-col items-start gap-xs py-md">
-          <span className="inline-flex items-center gap-xxs rounded-full bg-status-recruiting-bg px-sm py-xxs">
-            <span className="size-[6px] rounded-full bg-status-recruiting" />
-            <span className="text-body-s font-medium text-status-recruiting">준비중</span>
-          </span>
-          <p className="text-body font-normal text-text-tertiary">
-            가게가 메뉴를 준비하고 있어요. 픽업 가능 시점에 알림으로 알려드릴게요.
-          </p>
-        </section>
+        {/* 상태 뱃지 — payment status FAILED/CANCELED 우선, 그 외 flowStatus 6종 */}
+        {(() => {
+          const isFail = info.status === 'FAILED' || info.status === 'CANCELED'
+          const fs = info.flowStatus
+          let label = '준비 중'
+          let helper = '가게가 메뉴를 준비하고 있어요. 픽업 가능 시점에 알림으로 알려드릴게요.'
+          if (info.status === 'FAILED') {
+            label = '결제 실패'; helper = '결제가 정상 완료되지 않았어요.'
+          } else if (info.status === 'CANCELED') {
+            label = '취소됨'; helper = '주문이 취소되었어요.'
+          } else if (fs === 'PENDING') {
+            label = '모집 중'; helper = '같이 주문할 사람을 모으고 있어요.'
+          } else if (fs === 'WAITING_APPROVAL') {
+            label = '승인 대기'; helper = '사장님의 승인을 기다리고 있어요.'
+          } else if (fs === 'READY') {
+            label = '픽업 가능'; helper = '가게에 들러 주문을 받아가세요.'
+          } else if (fs === 'COMPLETED') {
+            label = '완료'; helper = '픽업이 완료되었어요.'
+          } else if (fs === 'REJECTED') {
+            label = '거절됨'; helper = '사장님이 모임을 거절했어요.'
+          }
+          const tone = isFail || fs === 'REJECTED' ? 'critical' : 'recruiting'
+          return (
+            <section className="flex flex-col items-start gap-xs py-md">
+              <span className={`inline-flex items-center gap-xxs rounded-full bg-status-${tone}-bg px-sm py-xxs`}>
+                <span className={`size-[6px] rounded-full bg-status-${tone}`} />
+                <span className={`text-body-s font-medium text-status-${tone}`}>{label}</span>
+              </span>
+              <p className="text-body font-normal text-text-tertiary">{helper}</p>
+            </section>
+          )
+        })()}
 
         <Divider />
 
         {/* 가게 정보 */}
         <section className="flex items-center gap-md py-lg">
           <div className="size-[56px] shrink-0 overflow-hidden rounded-md bg-surface-subtle">
-            {info.shop.imageUrl && (
-              <img src={info.shop.imageUrl} alt={info.shop.name} className="h-full w-full object-cover" />
-            )}
+            <Img src={info.shop.imageUrl} alt={info.shop.name} className="h-full w-full object-cover" />
           </div>
           <div className="flex flex-1 flex-col gap-xxs">
             <span className="text-body-l font-bold text-text-primary">{info.shop.name}</span>
@@ -148,7 +171,7 @@ export function OrderDetailPage() {
           <dl className="flex flex-col gap-xs">
             <InfoRow label="총 금액" value={fmtPrice(info.totalAmount)} valueClass="text-brand-primary font-bold" />
             <InfoRow label="결제수단" value={info.paymentMethod === 'card' ? '카드' : '계좌이체'} />
-            <InfoRow label="결제일시" value={fmtDate(info.paidAt)} />
+            <InfoRow label="결제일시" value={info.paidAt ? fmtDate(info.paidAt) : '결제 전'} />
             <InfoRow label="주문번호" value={displayOrderNumber} valueClass="text-text-tertiary font-normal text-body" />
           </dl>
         </section>

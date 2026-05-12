@@ -3,8 +3,6 @@
 // 사용처: <Icon name="icon-search" size={20} />
 // 비square 아이콘은 size 안 주면 intrinsic 크기로 렌더 (Figma 1:1 기본값).
 
-import BookmarkActive from '@/assets/icons/bookmark-active.svg?react'
-import BookmarkDefault from '@/assets/icons/bookmark-default.svg?react'
 import FacilityBike from '@/assets/icons/facility-bike.svg?react'
 import FacilityBus from '@/assets/icons/facility-bus.svg?react'
 import FacilitySubway from '@/assets/icons/facility-subway.svg?react'
@@ -72,9 +70,7 @@ interface IconSpec {
 
 // 모든 등록 아이콘 — Phase 9.5 진행 중 신규 자산은 여기 추가
 const ICONS = {
-  // Bookmark / Heart
-  'bookmark-active': { Component: BookmarkActive, width: 14, height: 18 },
-  'bookmark-default': { Component: BookmarkDefault, width: 14, height: 18 },
+  // Heart
   'heart-active': { Component: HeartActive, width: 13, height: 12 },
   'heart-default': { Component: HeartDefault, width: 14.5, height: 13.5 },
 

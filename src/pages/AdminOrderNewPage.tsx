@@ -212,7 +212,7 @@ function OrderForm({ storeId }: { storeId: number }) {
                           className="size-[18px] shrink-0 cursor-pointer accent-brand-primary disabled:cursor-not-allowed"
                         />
                         <span className="flex-1 text-body-l font-medium text-text-primary">
-                          {m.menuInfo}
+                          {m.name}
                           {disabled && (
                             <span className="ml-sm inline-flex items-center rounded-full bg-status-closed-bg px-xs py-xxs text-body-s font-medium text-status-closed">
                               품절

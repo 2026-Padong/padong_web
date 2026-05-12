@@ -53,7 +53,7 @@ export function OrderHistoryList({
           <div className="flex items-start justify-between gap-md">
             <div className="flex flex-1 flex-col gap-xxs">
               <span className="text-body-l font-bold text-text-primary">
-                {it.menus.map((m) => m.menuInfo).join(', ')}
+                {it.menus.map((m) => m.name).join(', ')}
               </span>
               {it.recruitmentDeadline && (
                 <span className="text-body font-normal text-text-tertiary">

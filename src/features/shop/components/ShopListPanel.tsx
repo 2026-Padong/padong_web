@@ -7,7 +7,7 @@ import { FilterChipRow } from '@/components/ui/FilterChipRow'
 import { PageNavigation } from '@/components/ui/PageNavigation'
 import { ShopCard } from './ShopCard'
 import { cn } from '@/lib/cn'
-import type { MockShop } from '@/data/mocks'
+import type { ShopSummaryResponse } from '@/api/contracts/shops'
 import { useDongSuggestions, type DongSuggestionItem } from '@/api/queries/useDongSuggestions'
 import { Highlight } from '@/components/ui/Highlight'
 import { toggleStoreLike } from '@/api/stores'
@@ -21,9 +21,9 @@ import { useLoginGate } from '@/lib/useLoginGate'
 //   ResultSummary + FilterChipRow + ShopList (flex-1) + PageNavigation
 export interface ShopListPanelProps {
   title?: string
-  shops: MockShop[]
-  selectedId?: string
-  onShopClick?: (id: string) => void
+  shops: ShopSummaryResponse[]
+  selectedId?: number
+  onShopClick?: (id: number) => void
   /** 자동완성에서 동 선택 시 — 부모가 adminDongCode 받아 useShopList 파라미터로 전달 (서버 필터) */
   onAdminDongChange?: (item: DongSuggestionItem) => void
   className?: string
@@ -54,14 +54,14 @@ export function ShopListPanel({
   const { requireLogin, loginDialog } = useLoginGate()
   const qc = useQueryClient()
   // 좋아요 낙관적 토글 — refetch 이전까지 UI 즉시 반영
-  const [likedOverrides, setLikedOverrides] = useState<Record<string, boolean>>({})
+  const [likedOverrides, setLikedOverrides] = useState<Record<number, boolean>>({})
 
-  const handleToggleLike = async (shopId: string) => {
+  const handleToggleLike = async (shopId: number) => {
     if (!requireLogin({ action: '좋아요' })) return
-    const current = likedOverrides[shopId] ?? shops.find((s) => s.id === shopId)?.liked ?? false
+    const current = likedOverrides[shopId] ?? shops.find((s) => s.id === shopId)?.likedByCurrentUser ?? false
     setLikedOverrides((p) => ({ ...p, [shopId]: !current }))
     try {
-      const res = await toggleStoreLike(Number(shopId))
+      const res = await toggleStoreLike(shopId)
       setLikedOverrides((p) => ({ ...p, [shopId]: res.liked }))
       // 내가 찜한 가게/목록 쿼리 갱신
       qc.invalidateQueries({ queryKey: ['stores'] })
@@ -86,9 +86,10 @@ export function ShopListPanel({
 
   // 클라이언트 필터는 칩 (status/category/liked) 만 — 동 필터는 백엔드가 adminDongCode 로 처리
   const filtered = shops.filter((s) => {
-    if (activeFilters['recruiting'] && s.status !== 'recruiting') return false
-    if (activeFilters['cafe'] && !s.category.includes('카페')) return false
-    if (activeFilters['liked'] && !s.liked) return false
+    if (activeFilters['recruiting'] && s.recruitmentStatus !== 'RECRUITING') return false
+    const cat = s.categoryLabel
+    if (activeFilters['cafe'] && !cat.includes('카페')) return false
+    if (activeFilters['liked'] && !s.likedByCurrentUser) return false
     return true
   })
 
@@ -182,14 +183,14 @@ export function ShopListPanel({
               >
                 <ShopCard
                   id={s.id}
-                  image={s.image || undefined}
+                  image={s.thumbnailUrl || undefined}
                   name={s.name}
-                  category={s.category}
+                  category={s.categoryLabel}
                   description={s.description}
                   participantCurrent={s.participantCurrent}
                   participantTotal={s.participantTotal}
-                  status={s.status}
-                  liked={likedOverrides[s.id] ?? s.liked}
+                  recruitmentStatus={s.recruitmentStatus}
+                  liked={likedOverrides[s.id] ?? s.likedByCurrentUser}
                   onClick={() => onShopClick?.(s.id)}
                   onToggleLike={() => handleToggleLike(s.id)}
                 />

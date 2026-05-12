@@ -4,14 +4,27 @@ import type { CursorPageResponse } from './likes'
 import type { OrderInfo } from '@/lib/orderStorage'
 
 // 백엔드 OrderResponse (swagger 일치)
+//   status      : 결제 상태 (OrderStatus)     — READY/PAID/CANCELED/FAILED
+//   flowStatus  : 공구 fulfillment 상태       — PENDING/WAITING_APPROVAL/APPROVED/READY/COMPLETED/REJECTED
+// 사용자 화면 라벨은 둘을 조합해서 결정 (예: status=PAID + flowStatus=READY → "픽업 가능").
+export type OrderPaymentStatus = 'READY' | 'PAID' | 'CANCELED' | 'FAILED'
+export type OrderFlowStatus =
+  | 'PENDING'
+  | 'WAITING_APPROVAL'
+  | 'APPROVED'
+  | 'READY'
+  | 'COMPLETED'
+  | 'REJECTED'
+
 export interface OrderResponse {
   orderId: number
   orderNumber: string
   paymentId: string
-  paidAt: string // ISO
-  paymentMethod: 'card' | 'transfer' | string
+  paidAt: string | null // ISO. 결제 전이면 null
+  paymentMethod: 'card' | 'transfer' | string | null
   totalAmount: number
-  status: string // PREPARING | READY | COMPLETED | CANCELLED
+  status: OrderPaymentStatus
+  flowStatus: OrderFlowStatus
   shop: {
     id: number
     name: string
@@ -38,6 +51,7 @@ export function toOrderInfo(r: OrderResponse): OrderInfo {
     paymentId: r.paymentId,
     paidAt: r.paidAt,
     status: r.status,
+    flowStatus: r.flowStatus,
     paymentMethod: r.paymentMethod === 'transfer' ? 'transfer' : 'card',
     shop: r.shop,
     items: r.items,

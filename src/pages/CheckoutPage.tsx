@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router'
 import * as PortOne from '@portone/browser-sdk/v2'
 import { HeaderNav } from '@/components/layout/HeaderNav'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { Img } from '@/components/ui/Img'
 import { useShopDetail } from '@/api/queries/useShopDetail'
 import { preparePayment, confirmPayment } from '@/api/payments'
 import { loadCart, clearCart, type CartData } from '@/lib/cart'
@@ -55,13 +56,16 @@ export function CheckoutPage() {
 
   const handleSubmit = async () => {
     if (!cart || !shop) return
+    if (!shop.currentGroupOrder) {
+      // 모집 종료/없음 — 결제 진입 자체가 ShopDetailPanel 에서 차단되지만 안전망
+      setErrorOpen(true)
+      return
+    }
     setSubmitting(true)
     try {
       // 1) 백엔드 prepare — orderId, paymentId(UUID), amount 받음
-      // shop.currentGroupOrderId 가 진행 중 GroupOrder. null 이면 결제 진입 자체가 차단됐어야 함.
-      const groupOrderId = shop.currentGroupOrderId ?? shop.id
       const prepare = await preparePayment({
-        groupOrderId,
+        groupOrderId: shop.currentGroupOrder.id,
         orderMenus: cart.items.map((it) => ({ menuId: it.menuId, quantity: it.quantity })),
       })
 
@@ -102,7 +106,7 @@ export function CheckoutPage() {
           id: shop.id,
           name: shop.name,
           imageUrl: shop.thumbnailUrl,
-          category: shop.categoryLabel || shop.category,
+          category: shop.categoryLabel,
           address: shop.address,
           phoneNumber: shop.phoneNumber,
           openTime: shop.openTime,
@@ -167,13 +171,11 @@ export function CheckoutPage() {
         {/* 가게 정보 */}
         <section className="flex items-center gap-md py-lg">
           <div className="size-[72px] shrink-0 overflow-hidden rounded-md bg-surface-subtle">
-            {shop.thumbnailUrl && (
-              <img src={shop.thumbnailUrl} alt={shop.name} className="h-full w-full object-cover" />
-            )}
+            <Img src={shop.thumbnailUrl} alt={shop.name} className="h-full w-full object-cover" />
           </div>
           <div className="flex flex-1 flex-col gap-xxs">
             <span className="text-body-l font-bold text-text-primary">{shop.name}</span>
-            <span className="text-body font-normal text-text-tertiary">{shop.categoryLabel || shop.category}</span>
+            <span className="text-body font-normal text-text-tertiary">{shop.categoryLabel}</span>
             <span className="text-body font-normal text-text-secondary">
               {shop.address}
             </span>

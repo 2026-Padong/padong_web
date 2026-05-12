@@ -5,7 +5,6 @@ import { BottomNav } from '@/components/layout/BottomNav'
 import { HomeHero } from '@/features/home/components/HomeHero'
 import { ShopCard } from '@/features/shop/components/ShopCard'
 import { Skeleton } from '@/components/ui/Skeleton'
-import type { ShopStatus } from '@/features/shop/components/ShopStatusBadge'
 import { NewsCardHorizontal } from '@/features/home/components/NewsCardHorizontal'
 import { PlaceCard } from '@/features/home/components/PlaceCard'
 import { SectionHeader } from '@/components/ui/SectionHeader'
@@ -97,14 +96,14 @@ export function HomePage() {
                   recruiting.map((s) => (
                     <ShopCard
                       key={s.id}
-                      id={String(s.id)}
+                      id={s.id}
                       image={s.thumbnailUrl}
                       name={s.name}
-                      category={s.categoryLabel || s.category}
+                      category={s.categoryLabel}
                       description={s.description}
                       participantCurrent={s.participantCurrent}
                       participantTotal={s.participantTotal}
-                      status={s.status.toLowerCase() as ShopStatus}
+                      recruitmentStatus={s.recruitmentStatus}
                       liked={s.likedByCurrentUser}
                       onClick={() => nav(`/shops/${s.id}`, { viewTransition: true })}
                     />

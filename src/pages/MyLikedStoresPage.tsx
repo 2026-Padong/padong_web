@@ -195,12 +195,12 @@ export function MyLikedStoresPage() {
               {items.map((s) => (
                 <ShopCard
                   key={s.likeId}
-                  id={String(s.storeId)}
+                  id={s.storeId}
                   image={s.imageUrl}
                   name={s.name}
                   category={s.category}
                   description={s.description ?? s.address}
-                  status={s.status ?? null}
+                  recruitmentStatus={s.recruitmentStatus ?? null}
                   participantCurrent={s.participantCurrent}
                   participantTotal={s.participantTotal}
                   liked

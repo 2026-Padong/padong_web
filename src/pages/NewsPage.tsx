@@ -117,6 +117,7 @@ function resolveDongName(
 // ─── 뉴스 카드 ───────────────────────────────────────────────────────────────
 
 function NewsCard({ news }: { news: News }) {
+  const [imgBroken, setImgBroken] = useState(false)
   const handleOpen = () => {
     if (news.originallink) {
       window.open(news.originallink, '_blank', 'noopener,noreferrer')
@@ -124,6 +125,7 @@ function NewsCard({ news }: { news: News }) {
   }
   const cleanDesc = (news.description ?? '').replace(/<[^>]*>/g, '')
   const cleanTitle = (news.title ?? '').replace(/<[^>]*>/g, '')
+  const hasImage = Boolean(news.thumbnail) && !imgBroken
   return (
     <article
       onClick={handleOpen}
@@ -138,14 +140,12 @@ function NewsCard({ news }: { news: News }) {
       className="group flex h-full cursor-pointer flex-col gap-sm overflow-hidden rounded-md bg-neutral-white ring-1 ring-border-default transition-shadow hover:shadow-[0px_8px_24px_rgba(45,78,130,0.10)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
     >
       <div className="aspect-[16/9] w-full overflow-hidden bg-surface-subtle">
-        {news.thumbnail ? (
+        {hasImage ? (
           <img
-            src={news.thumbnail}
+            src={news.thumbnail!}
             alt=""
             className="size-full object-cover transition-transform duration-[var(--duration-base)] group-hover:scale-[1.03]"
-            onError={(e) => {
-              ;(e.currentTarget as HTMLImageElement).style.visibility = 'hidden'
-            }}
+            onError={() => setImgBroken(true)}
           />
         ) : (
           <div className="flex size-full items-center justify-center text-body font-normal text-text-tertiary">

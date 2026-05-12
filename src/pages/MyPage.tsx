@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Icon } from '@/components/ui/Icon'
+import { Img } from '@/components/ui/Img'
 import { useAuth } from '@/lib/auth'
 import { withdrawApi } from '@/api/auth'
 import { tokenStore } from '@/api/client'
@@ -56,17 +57,16 @@ export function MyPage() {
         <h1 className="text-h2 font-bold text-text-primary">마이페이지</h1>
         {/* 1) Hero — 톤 다운 (연한 brand tint 배경 + 일반 텍스트) */}
         <section className="flex items-center gap-md rounded-md bg-brand-primary-tint px-lg py-lg">
-          {user.picture ? (
-            <img
-              src={user.picture}
-              alt=""
-              className="size-[56px] shrink-0 rounded-full object-cover"
-            />
-          ) : (
-            <div className="inline-flex size-[56px] shrink-0 items-center justify-center rounded-full bg-brand-primary text-h3 font-bold text-neutral-white">
-              {initial}
-            </div>
-          )}
+          <Img
+            src={user.picture}
+            alt=""
+            className="size-[56px] shrink-0 rounded-full object-cover"
+            fallback={
+              <div className="inline-flex size-[56px] shrink-0 items-center justify-center rounded-full bg-brand-primary text-h3 font-bold text-neutral-white">
+                {initial}
+              </div>
+            }
+          />
           <div className="flex flex-1 flex-col gap-xxs">
             <div className="flex items-center gap-xs">
               <span className="text-body-l font-bold text-text-primary">{user.name} 님</span>

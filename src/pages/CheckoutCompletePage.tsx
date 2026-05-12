@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
+import { Img } from '@/components/ui/Img'
 import { useAuth } from '@/lib/auth'
 import { loadOrder, type OrderInfo } from '@/lib/orderStorage'
 
@@ -69,9 +70,7 @@ export function CheckoutCompletePage() {
         {/* 가게 정보 */}
         <section className="flex items-center gap-md py-lg">
           <div className="size-[56px] shrink-0 overflow-hidden rounded-md bg-surface-subtle">
-            {info.shop.imageUrl && (
-              <img src={info.shop.imageUrl} alt={info.shop.name} className="h-full w-full object-cover" />
-            )}
+            <Img src={info.shop.imageUrl} alt={info.shop.name} className="h-full w-full object-cover" />
           </div>
           <div className="flex flex-1 flex-col gap-xxs">
             <span className="text-body-l font-bold text-text-primary">{info.shop.name}</span>

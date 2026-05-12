@@ -58,13 +58,11 @@ export function buildFlowInfoFields(flow: OrderFlowResponse): FlowInfoField[] {
   if (flow.minOrderPerPerson != null)
     fields.push({ label: '인당 최소 주문', value: fmt(flow.minOrderPerPerson) })
   if ((flow.menus ?? []).length > 0)
-    fields.push({ label: '메뉴', value: (flow.menus ?? []).map((m) => m.menuInfo).join(', ') })
+    fields.push({ label: '메뉴', value: (flow.menus ?? []).map((m) => m.name).join(', ') })
   return fields
 }
 
-// 프론트 디자인 상태 — 6개 라벨/색 고정
-// 백엔드 enum (RECRUITING/CLOSING/PENDING_FULL/WAITING_APPROVAL/PREPARING/READY_FOR_PICKUP/PICKUP_COMPLETED/CANCELED/REJECTED)
-// 은 아래 normalizeFlowStatus 로 6개에 매핑
+// 모임 상태 — 백엔드 enum 직접 사용 (PENDING/WAITING_APPROVAL/APPROVED/READY/COMPLETED/REJECTED)
 const FLOW_BADGE: Record<
   string,
   { label: string; bg: string; fg: string; dot: string }
@@ -73,9 +71,9 @@ const FLOW_BADGE: Record<
     label: '모집중',
     bg: 'bg-status-recruiting-bg', fg: 'text-status-recruiting', dot: 'bg-status-recruiting',
   },
-  PENDING_FULL: {
-    label: '모집 완료',
-    bg: 'bg-status-positive-bg', fg: 'text-status-positive', dot: 'bg-status-positive',
+  WAITING_APPROVAL: {
+    label: '대기중',
+    bg: 'bg-status-warning-bg', fg: 'text-status-warning', dot: 'bg-status-warning',
   },
   APPROVED: {
     label: '접수됨',
@@ -83,7 +81,7 @@ const FLOW_BADGE: Record<
   },
   READY: {
     label: '픽업 준비 완료',
-    bg: 'bg-status-warning-bg', fg: 'text-status-warning', dot: 'bg-status-warning',
+    bg: 'bg-brand-primary-tint', fg: 'text-brand-primary', dot: 'bg-brand-primary',
   },
   COMPLETED: {
     label: '픽업 완료',
@@ -95,31 +93,23 @@ const FLOW_BADGE: Record<
   },
 }
 
-// 백엔드 9개 status → 프론트 6개로 정규화
-function normalizeFlowStatus(s: string): string {
-  switch (s) {
-    case 'RECRUITING':
-    case 'CLOSING':
-      return 'PENDING'
-    case 'PENDING_FULL':
-    case 'WAITING_APPROVAL':
-      return 'PENDING_FULL'
-    case 'PREPARING':
-      return 'APPROVED'
-    case 'READY_FOR_PICKUP':
-      return 'READY'
-    case 'PICKUP_COMPLETED':
-      return 'COMPLETED'
-    case 'CANCELED':
-    case 'REJECTED':
-      return 'REJECTED'
-    default:
-      return s
+export function FlowStatusBadge({
+  status,
+  closingSoon,
+}: {
+  status: string
+  closingSoon?: boolean
+}) {
+  // PENDING + closingSoon → "마감 임박" 강조 배지
+  if (status === 'PENDING' && closingSoon) {
+    return (
+      <span className="inline-flex items-center gap-xxs rounded-full bg-status-critical-bg px-xs py-xxs">
+        <span className="size-[6px] rounded-full bg-status-critical" />
+        <span className="text-body-s font-bold text-status-critical">마감 임박</span>
+      </span>
+    )
   }
-}
-
-export function FlowStatusBadge({ status }: { status: string }) {
-  const v = FLOW_BADGE[normalizeFlowStatus(status)] ?? FLOW_BADGE.PENDING
+  const v = FLOW_BADGE[status] ?? FLOW_BADGE.PENDING
   return (
     <span className={`inline-flex items-center gap-xxs rounded-full px-xs py-xxs ${v.bg}`}>
       <span className={`size-[6px] rounded-full ${v.dot}`} />
@@ -252,7 +242,7 @@ export function ActiveOrderBadge({ storeId }: { storeId: number }) {
   })
   const flow = flowQuery.data
   if (!flow) return null
-  return <FlowStatusBadge status={flow.status} />
+  return <FlowStatusBadge status={flow.status} closingSoon={flow.closingSoon} />
 }
 
 export function FlowRow({

@@ -5,19 +5,19 @@ import type { ResponseDTO } from './contracts/auth'
 export interface MenuResponse {
   id: number
   storeId: number
-  menuInfo: string
+  name: string
   price: number
   soldOut: boolean
 }
 
 export interface MenuCreateRequest {
   storeId: number
-  menuInfo: string
+  name: string
   price: number
 }
 
 export interface MenuUpdateRequest {
-  menuInfo: string
+  name: string
   price: number
 }
 

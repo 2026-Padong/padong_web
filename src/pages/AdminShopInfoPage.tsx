@@ -260,7 +260,7 @@ function ShopInfoCard({ shop }: { shop: ShopDetailResponse }) {
                 value: editing ? (
                   <CategorySelect value={category} onChange={setCategory} />
                 ) : (
-                  shop.categoryLabel || shop.category
+                  shop.categoryLabel
                 ),
               },
               {

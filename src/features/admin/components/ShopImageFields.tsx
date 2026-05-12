@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { Img } from '@/components/ui/Img'
 import { ShopImageGallery } from '@/features/shop/components/ShopImageGallery'
 
 // ─── 썸네일 필드 — view/edit 통합 ──────────────────────────────────────────
@@ -36,17 +37,16 @@ export function ShopThumbnailField({
   return (
     <div className="flex w-fit flex-col gap-sm">
       <div className="rounded-md border border-border-default p-md">
-        {src ? (
-          <img
-            src={src}
-            alt={alt ?? ''}
-            className="h-[131px] w-[155px] rounded-md object-cover"
-          />
-        ) : (
-          <div className="flex h-[131px] w-[155px] items-center justify-center rounded-md border border-dashed border-border-default text-body-s font-normal text-text-tertiary">
-            썸네일 없음
-          </div>
-        )}
+        <Img
+          src={src ?? undefined}
+          alt={alt ?? ''}
+          className="h-[131px] w-[155px] rounded-md object-cover"
+          fallback={
+            <div className="flex h-[131px] w-[155px] items-center justify-center rounded-md border border-dashed border-border-default text-body-s font-normal text-text-tertiary">
+              썸네일 없음
+            </div>
+          }
+        />
       </div>
       {editing && (
         <div className="flex w-full flex-col gap-xs">
@@ -135,7 +135,7 @@ export function ShopGalleryField({
               key={it.key}
               className="group relative aspect-[16/9] overflow-hidden rounded-md ring-1 ring-border-default"
             >
-              <img
+              <Img
                 src={it.url}
                 alt={`상세 ${idx + 1}`}
                 className="absolute inset-0 size-full object-cover"

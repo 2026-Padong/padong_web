@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { NavItem, type NavItemType } from '@/components/layout/NavItem'
 import { ResultCard } from '@/components/ui/ResultCard'
 import { Heart } from '@/components/ui/Heart'
-import { Bookmark } from '@/components/ui/Bookmark'
 import { PageButton } from '@/components/ui/PageButton'
 import { TabBarItem } from '@/components/ui/TabBarItem'
 import { BackButton } from '@/components/ui/BackButton'
@@ -15,7 +14,6 @@ import { RadioOption } from '@/features/neighborhood-finder/components/RadioOpti
 export function InteractionsPreview() {
   const [activeNavType, setActiveNavType] = useState<NavItemType>('Commute')
   const [liked, setLiked] = useState(false)
-  const [bookmarked, setBookmarked] = useState(false)
   const [page, setPage] = useState(1)
   const [tab, setTab] = useState<'Menu' | 'Info'>('Menu')
   const [radio, setRadio] = useState(3)
@@ -112,9 +110,9 @@ export function InteractionsPreview() {
           </div>
         </section>
 
-        {/* Heart / Bookmark */}
+        {/* Heart */}
         <section className="flex flex-col gap-md">
-          <h2 className="text-h3 font-bold text-text-primary">Heart / Bookmark (toggle 버튼)</h2>
+          <h2 className="text-h3 font-bold text-text-primary">Heart (toggle 버튼)</h2>
           <p className="text-body-s text-text-tertiary">
             hover: scale-110 · active: scale-95 · click 시 default ↔ active 토글
           </p>
@@ -123,12 +121,6 @@ export function InteractionsPreview() {
               <Heart active={liked} onClick={() => setLiked((v) => !v)} />
               <span className="text-body text-text-tertiary">
                 Heart {liked ? '(active)' : '(default)'}
-              </span>
-            </div>
-            <div className="flex items-center gap-sm">
-              <Bookmark active={bookmarked} onClick={() => setBookmarked((v) => !v)} />
-              <span className="text-body text-text-tertiary">
-                Bookmark {bookmarked ? '(active)' : '(default)'}
               </span>
             </div>
           </div>
