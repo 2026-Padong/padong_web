@@ -22,7 +22,6 @@ import { useLoginGate } from '@/lib/useLoginGate'
 export interface ShopListPanelProps {
   title?: string
   shops: ShopSummaryResponse[]
-  selectedId?: number
   onShopClick?: (id: number) => void
   /** 자동완성에서 동 선택 시 — 부모가 adminDongCode 받아 useShopList 파라미터로 전달 (서버 필터) */
   onAdminDongChange?: (item: DongSuggestionItem) => void
@@ -40,7 +39,6 @@ const ITEMS_PER_PAGE = 4
 export function ShopListPanel({
   title = '동네 가게 추천',
   shops,
-  selectedId,
   onShopClick,
   onAdminDongChange,
   className,

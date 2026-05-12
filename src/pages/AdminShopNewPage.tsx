@@ -160,9 +160,9 @@ export function AdminShopNewPage() {
             <section className="flex flex-col gap-sm lg:w-fit">
               <SectionHeader title="상세 이미지" hint="16 : 9" />
               <ShopGalleryField
-                items={detailImages.map((f, i) => ({ key: String(i), url: detailUrls[i] }))}
+                items={detailImages.map((_, i) => ({ key: String(i), url: detailUrls[i] }))}
                 editing
-                onAdd={(f) => setDetailImages((prev) => [...prev, f])}
+                onAdd={(file) => setDetailImages((prev) => [...prev, file])}
                 onRemove={(key) => setDetailImages((prev) => prev.filter((_, idx) => String(idx) !== key))}
                 alt={form.name}
               />

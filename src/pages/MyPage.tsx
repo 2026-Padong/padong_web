@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { Icon } from '@/components/ui/Icon'
+import { Icon, type IconName } from '@/components/ui/Icon'
 import { Img } from '@/components/ui/Img'
 import { useAuth } from '@/lib/auth'
 import { withdrawApi } from '@/api/auth'
@@ -182,10 +182,6 @@ export function MyPage() {
   )
 }
 
-function Divider() {
-  return <div className="h-px w-full bg-border-default" aria-hidden />
-}
-
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <h2 className="px-md pt-xl pb-xs text-body font-bold text-text-tertiary">
@@ -201,7 +197,7 @@ function MenuItem({
   onClick,
   comingSoon,
 }: {
-  icon?: string
+  icon?: IconName
   label: string
   description?: string
   onClick?: () => void

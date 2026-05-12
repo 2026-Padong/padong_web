@@ -391,7 +391,7 @@ export const handlers = [
       return {
         menuId: id,
         name: m?.name ?? `메뉴 ${id}`,
-        price: m?.discountPrice ?? 0,
+        price: m?.price ?? 0,
       }
     })
     const created = {

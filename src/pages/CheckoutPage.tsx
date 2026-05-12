@@ -71,6 +71,8 @@ export function CheckoutPage() {
 
       // 2) PortOne SDK 위젯 호출 — env 키 있을 때만. 없으면 mock/test 흐름 (백엔드 isTest)
       if (HAS_PORTONE) {
+        // PortOne v2 PaymentRequestUnion 은 payMethod 별 필드를 요구 (예: alipayPlus).
+        // CARD/TRANSFER 두 경로만 쓰므로 SDK 입력 타입으로 단언.
         const result = await PortOne.requestPayment({
           storeId: PORTONE_STORE_ID!,
           channelKey: PORTONE_CHANNEL_KEY!,
@@ -83,7 +85,7 @@ export function CheckoutPage() {
             fullName: prepare.customerName,
             ...(user.email ? { email: user.email } : {}),
           },
-        })
+        } as Parameters<typeof PortOne.requestPayment>[0])
         // 사용자 취소 또는 PG 오류 (성공 시 code 는 undefined)
         if (result && result.code !== undefined) {
           console.error('[checkout] portone:', result.code, result.message)
