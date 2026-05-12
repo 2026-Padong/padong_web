@@ -21,7 +21,13 @@ import { CheckoutCompletePage } from '@/pages/CheckoutCompletePage'
 import { OrderDetailPage } from '@/pages/OrderDetailPage'
 import { MyOrdersPage } from '@/pages/MyOrdersPage'
 import { AdminShopsPage } from '@/pages/AdminShopsPage'
+import { AdminShopInfoPage } from '@/pages/AdminShopInfoPage'
+import { AdminShopMenusPage } from '@/pages/AdminShopMenusPage'
 import { AdminShopNewPage } from '@/pages/AdminShopNewPage'
+import { AdminOrdersPage } from '@/pages/AdminOrdersPage'
+import { AdminOrderNewPage } from '@/pages/AdminOrderNewPage'
+import { AdminOrderHistoryPage } from '@/pages/AdminOrderHistoryPage'
+import { AdminOrderHistoryDetailPage } from '@/pages/AdminOrderHistoryDetailPage'
 import { DevIndexPage } from '@/dev/DevIndexPage'
 import { TokensPreview } from '@/dev/TokensPreview'
 import { UiBasicsPreview } from '@/dev/UiBasicsPreview'
@@ -60,7 +66,13 @@ export const router = createBrowserRouter([
   { path: '/mypage/likes/stores', element: <MyLikedStoresPage /> },
   { path: '/mypage/upgrade-admin', element: <UpgradeAdminPage /> },
   { path: '/admin/shops', element: <AdminShopsPage /> },
+  { path: '/admin/shops/info', element: <AdminShopInfoPage /> },
+  { path: '/admin/shops/menus', element: <AdminShopMenusPage /> },
   { path: '/admin/shops/new', element: <AdminShopNewPage /> },
+  { path: '/admin/orders', element: <AdminOrdersPage /> },
+  { path: '/admin/orders/new', element: <AdminOrderNewPage /> },
+  { path: '/admin/orders/history', element: <AdminOrderHistoryPage /> },
+  { path: '/admin/orders/history/:id', element: <AdminOrderHistoryDetailPage /> },
   { path: '/auth/kakao/callback', element: <KakaoCallbackPage /> },
 
   // Dev previews (Phase 별 컴포넌트 카탈로그)

@@ -10,6 +10,7 @@ import { useLoginGate } from '@/lib/useLoginGate'
 // Logo container (py-sm) > Logo (h-[42px] w-[43px] IMAGE) + RightContainer
 // Nav: flex gap-xl items-start justify-center, 6 HeaderNavItem (md+ 표시, 모바일 hidden)
 const NAV: HeaderNavItemType[] = ['Home', 'Commute', 'Custom', 'LocalShop', 'News', 'MyPage']
+const ADMIN_NAV: HeaderNavItemType[] = ['AdminShop']
 
 // 라우트 매핑 — 미구현 항목(News)은 null → 클릭해도 이동 X
 const NAV_PATH: Record<HeaderNavItemType, string | null> = {
@@ -20,6 +21,8 @@ const NAV_PATH: Record<HeaderNavItemType, string | null> = {
   News: null,
   MyPage: '/mypage',
   Guide: null,
+  AdminShop: '/admin/shops',
+  AdminOrder: '/admin/orders',
 }
 
 export interface HeaderNavProps {
@@ -91,7 +94,7 @@ export function HeaderNav({
             aria-label="상단 내비게이션"
             className="hidden items-start justify-center gap-xl overflow-clip md:flex"
           >
-            {NAV.map((t) => {
+            {[...NAV, ...(isAdmin ? ADMIN_NAV : [])].map((t) => {
               const hasRoute = onNavigate || NAV_PATH[t]
               return (
                 <button

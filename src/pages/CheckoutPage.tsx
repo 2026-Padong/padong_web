@@ -101,8 +101,8 @@ export function CheckoutPage() {
         shop: {
           id: shop.id,
           name: shop.name,
-          imageUrl: shop.imageUrl,
-          category: shop.category,
+          imageUrl: shop.thumbnailUrl,
+          category: shop.categoryLabel || shop.category,
           address: shop.address,
           phoneNumber: shop.phoneNumber,
           openTime: shop.openTime,
@@ -167,14 +167,16 @@ export function CheckoutPage() {
         {/* 가게 정보 */}
         <section className="flex items-center gap-md py-lg">
           <div className="size-[72px] shrink-0 overflow-hidden rounded-md bg-surface-subtle">
-            {shop.imageUrl && (
-              <img src={shop.imageUrl} alt={shop.name} className="h-full w-full object-cover" />
+            {shop.thumbnailUrl && (
+              <img src={shop.thumbnailUrl} alt={shop.name} className="h-full w-full object-cover" />
             )}
           </div>
           <div className="flex flex-1 flex-col gap-xxs">
             <span className="text-body-l font-bold text-text-primary">{shop.name}</span>
-            <span className="text-body font-normal text-text-tertiary">{shop.category}</span>
-            <span className="text-body font-normal text-text-secondary">{shop.address}</span>
+            <span className="text-body font-normal text-text-tertiary">{shop.categoryLabel || shop.category}</span>
+            <span className="text-body font-normal text-text-secondary">
+              {shop.address}
+            </span>
           </div>
         </section>
 
@@ -206,7 +208,10 @@ export function CheckoutPage() {
         <section className="flex flex-col gap-md py-lg">
           <h2 className="text-body-l font-bold text-text-primary">픽업 정보</h2>
           <dl className="flex flex-col gap-xs">
-            <InfoRow label="장소" value={shop.address} />
+            <InfoRow
+              label="장소"
+              value={shop.address}
+            />
             <InfoRow label="시간" value={`${shop.openTime} ~ ${shop.closeTime}`} />
             <InfoRow label="전화" value={shop.phoneNumber} />
           </dl>

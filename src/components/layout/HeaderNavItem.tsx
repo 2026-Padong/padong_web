@@ -11,6 +11,8 @@ export type HeaderNavItemType =
   | 'News'
   | 'MyPage'
   | 'Guide'
+  | 'AdminShop'
+  | 'AdminOrder'
 
 const LABEL: Record<HeaderNavItemType, string> = {
   Home: '홈',
@@ -20,6 +22,8 @@ const LABEL: Record<HeaderNavItemType, string> = {
   News: '뉴스',
   MyPage: '마이페이지',
   Guide: '가이드',
+  AdminShop: '매장 관리',
+  AdminOrder: '주문 관리',
 }
 
 // Underline width per type (Figma 명시값 + Home은 한 글자 14px Bold 기준)
@@ -31,6 +35,8 @@ const UNDERLINE_W: Record<HeaderNavItemType, string> = {
   News: 'w-[26px]',
   MyPage: 'w-[65px]',
   Guide: 'w-[39px]',
+  AdminShop: 'w-[65px]',
+  AdminOrder: 'w-[65px]',
 }
 
 export interface HeaderNavItemProps {

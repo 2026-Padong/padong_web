@@ -9,7 +9,15 @@ import { saveCart } from '@/lib/cart'
 import type { MockShop } from '@/data/mocks'
 import { ShopImageGallery } from './ShopImageGallery'
 import { ShopStatusBadge } from './ShopStatusBadge'
+import { formatWeekdaysParen, maskToWeekdays } from '@/features/admin/utils/weekdays'
 import { cn } from '@/lib/cn'
+
+const trimSeconds = (t?: string) => (t ? t.slice(0, 5) : '')
+function formatHours(open?: string, close?: string, mask?: number) {
+  const oc = open && close ? `${trimSeconds(open)} ~ ${trimSeconds(close)}` : ''
+  const wk = mask != null ? formatWeekdaysParen(maskToWeekdays(mask)) : ''
+  return [oc, wk].filter(Boolean).join(' · ')
+}
 
 // Figma 1:1: Tile · ShopDetailPanel (659:2019) > ShopDetailPanel COMPONENT_SET (Tab=Menu/Info)
 // 450w 900h V gap-md pt-xl pb-sm px-xl items-center bg-white
@@ -152,7 +160,11 @@ export function ShopDetailPanel({
             <div className="flex w-full flex-col items-center gap-xxs overflow-clip px-md py-sm">
               <InfoLine icon={<Icon name="shop-detail-clock" size={20} className="text-text-secondary" aria-hidden />}>
                 <span className="text-body-l font-medium text-text-primary">영업 중</span>
-                <span className="text-body-l font-medium text-text-primary">· 22:00까지</span>
+                {formatHours(shop.openTime, shop.closeTime, shop.weekdayMask) && (
+                  <span className="text-body-l font-medium text-text-primary">
+                    · {formatHours(shop.openTime, shop.closeTime, shop.weekdayMask)}
+                  </span>
+                )}
               </InfoLine>
               <InfoLine
                 icon={

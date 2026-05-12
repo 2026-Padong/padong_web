@@ -199,7 +199,7 @@ export function MyLikedStoresPage() {
                   image={s.imageUrl}
                   name={s.name}
                   category={s.category}
-                  description={s.description ?? s.roadAddress}
+                  description={s.description ?? s.address}
                   status={s.status ?? null}
                   participantCurrent={s.participantCurrent}
                   participantTotal={s.participantTotal}

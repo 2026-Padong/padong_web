@@ -39,7 +39,7 @@ export interface LikedStoreResponse {
   likeId: number
   storeId: number
   name: string
-  roadAddress: string
+  address: string
   category: string
   imageUrl?: string
   description?: string

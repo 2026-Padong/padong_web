@@ -52,7 +52,8 @@ export function MyPage() {
         onMyPage={() => nav('/mypage', { viewTransition: true })}
         onLogout={handleLogout}
       />
-      <main className="mx-auto flex w-full max-w-[640px] flex-1 flex-col px-md py-lg">
+      <main className="mx-auto flex w-full max-w-[640px] flex-1 flex-col gap-md px-md py-lg">
+        <h1 className="text-h2 font-bold text-text-primary">마이페이지</h1>
         {/* 1) Hero — 톤 다운 (연한 brand tint 배경 + 일반 텍스트) */}
         <section className="flex items-center gap-md rounded-md bg-brand-primary-tint px-lg py-lg">
           {user.picture ? (
@@ -126,7 +127,7 @@ export function MyPage() {
           />
           {isAdmin ? (
             <MenuItem
-              label="가게 관리"
+              label="매장 관리"
               onClick={() => nav('/admin/shops', { viewTransition: true })}
             />
           ) : (

@@ -98,9 +98,9 @@ export function HomePage() {
                     <ShopCard
                       key={s.id}
                       id={String(s.id)}
-                      image={s.imageUrl}
+                      image={s.thumbnailUrl}
                       name={s.name}
-                      category={s.category}
+                      category={s.categoryLabel || s.category}
                       description={s.description}
                       participantCurrent={s.participantCurrent}
                       participantTotal={s.participantTotal}

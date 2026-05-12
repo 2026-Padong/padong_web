@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { HeaderNav } from '@/components/layout/HeaderNav'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { useAuth } from '@/lib/auth'
 import { fetchMyStores, type StoreRegistrationResponse } from '@/api/stores'
-import { AdminStoreCard } from '@/features/admin/components/AdminStoreCard'
+import { ActionButton } from '@/features/shop/components/ActionButton'
+import { AdminShopDetailPanel } from '@/features/admin/components/AdminShopDetailPanel'
+import { useShopDetail } from '@/api/queries/useShopDetail'
+import { detailToShop } from '@/features/shop/utils/shopAdapters'
+import { MenuOrderList, ActiveOrderBadge } from '@/features/admin/components/MenuOrderList'
 
-// 사장님 전용 — 내 가게 관리 페이지
-// 가드:
-//   - 비로그인 → /login
-//   - role !== ADMIN → /mypage
-//   - approved === false → "승인 대기" 안내
-//   - approved === true → 가게 리스트
+// 사장님 전용 — 매장 관리 (와이드 2컬럼)
+// 좌: 가게 정보 요약 + 세부 메뉴 (가게 정보 / 메뉴 관리)
+// 우: 모임 관리 (진행 중 주문 흐름 - 풀 보기 링크 포함)
 export function AdminShopsPage() {
   const nav = useNavigate()
   const { user } = useAuth()
   const [items, setItems] = useState<StoreRegistrationResponse[] | null>(null)
-  const [total, setTotal] = useState(0)
   const [error, setError] = useState<string | null>(null)
 
   const isAdmin = user?.role === 'ADMIN'
@@ -30,71 +31,101 @@ export function AdminShopsPage() {
       nav('/mypage', { replace: true })
       return
     }
-    if (!approved) return // 승인 대기 — fetch 생략
-
+    if (!approved) return
     fetchMyStores()
-      .then((page) => {
-        setItems(page.content)
-        setTotal(page.totalElements)
-      })
+      .then((page) => setItems(page.content))
       .catch((e) => {
         console.error('[admin-shops] fetch failed:', e)
-        setError('가게 목록을 불러올 수 없어요')
+        setError('가게 정보를 불러올 수 없어요')
       })
   }, [user, isAdmin, approved, nav])
 
   if (!user) return null
+  const store = items?.[0]
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface-subtle/40">
+    <div className="flex min-h-screen flex-col bg-neutral-white">
       <HeaderNav user={user} onMyPage={() => nav('/mypage')} />
-      <main className="mx-auto flex w-full max-w-[640px] flex-1 flex-col gap-lg px-md py-2xl">
-        <header className="flex flex-col gap-xs">
-          <div className="flex items-center gap-sm">
-            <button
-              type="button"
-              onClick={() => nav('/mypage')}
-              aria-label="뒤로"
-              className="cursor-pointer text-h3 text-text-tertiary hover:text-text-primary"
-            >
-              ←
-            </button>
-            <h1 className="text-h2 font-bold text-text-primary">내 가게 관리</h1>
-            {approved && items && (
-              <span className="ml-auto inline-flex items-center rounded-full bg-surface-subtle px-xs py-xxs text-body font-medium text-text-secondary">
-                {total}개
-              </span>
-            )}
-          </div>
-          <p className="ml-[28px] text-body-l font-normal text-text-secondary">
-            등록한 가게의 정보를 확인하고 관리할 수 있어요.
-          </p>
+      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-2xl px-2xl pt-md pb-md">
+        <header className="flex items-center gap-sm">
+          <button
+            type="button"
+            onClick={() => nav('/mypage')}
+            aria-label="뒤로"
+            className="cursor-pointer text-h3 text-text-tertiary hover:text-text-primary"
+          >
+            ←
+          </button>
+          <h1 className="text-h2 font-bold text-text-primary">매장 관리</h1>
         </header>
 
         {!approved ? (
-          <PendingApprovalCard onBack={() => nav('/mypage', { replace: true })} />
+          <EmptyState title="관리자 승인 대기 중" message="승인 완료 후 관리할 수 있어요" />
         ) : error ? (
-          <p className="rounded-md bg-neutral-white p-lg text-body-l text-status-critical ring-1 ring-border-default">
-            {error}
-          </p>
+          <EmptyState title="오류" message={error} />
         ) : items === null ? (
-          <p className="rounded-md bg-neutral-white p-lg text-body-l text-text-tertiary ring-1 ring-border-default">
-            불러오는 중...
-          </p>
-        ) : items.length === 0 ? (
-          <EmptyStoresCard onRegister={() => nav('/admin/shops/new', { viewTransition: true })} />
-        ) : (
+          <EmptyState title="불러오는 중..." message="" />
+        ) : !store ? (
           <div className="flex flex-col gap-md">
-            <button
-              type="button"
-              onClick={() => nav('/admin/shops/new', { viewTransition: true })}
-              className="self-end cursor-pointer rounded-md bg-brand-primary px-md py-sm text-body-l font-bold text-neutral-white drop-shadow-[0px_4px_24px_rgba(37,88,232,0.14)] transition-colors hover:bg-brand-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
-            >
+            <EmptyState title="등록된 가게가 없어요" message="첫 가게를 등록해보세요" />
+            <ActionButton onClick={() => nav('/admin/shops/new', { viewTransition: true })}>
               + 가게 등록
-            </button>
-            {items.map((s) => (
-              <AdminStoreCard key={s.id} store={s} />
-            ))}
+            </ActionButton>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-lg lg:grid-cols-[450px_1fr]">
+            {/* LEFT — absolute trick: 좌측 panel 이 row 사이즈에 기여 X. row 는 우측 자연 + min-h 로만 결정 */}
+            <aside className="flex flex-col gap-md lg:relative">
+              <div className="lg:absolute lg:inset-0 lg:flex lg:overflow-hidden">
+                <ShopDetailEmbed storeId={store.id} />
+              </div>
+            </aside>
+
+            {/* RIGHT — 모임 현황 + 가게 관리. min-h 로 panel 의 최소 높이 보장 (콘텐츠 적어도 너무 짧지 않게) */}
+            <section className="flex flex-col gap-md lg:min-h-[640px]">
+              <div className="flex flex-col gap-md">
+                <div className="flex items-baseline justify-between gap-sm">
+                  <div className="flex items-center gap-md">
+                    <h2 className="text-h3 font-bold text-text-primary">모임 현황</h2>
+                    <ActiveOrderBadge storeId={store.id} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => nav('/admin/orders', { viewTransition: true })}
+                    className="cursor-pointer text-body font-bold text-brand-primary hover:underline"
+                  >
+                    상세 보기 →
+                  </button>
+                </div>
+                <MenuOrderList storeId={store.id} activeOnly />
+              </div>
+
+              <div className="flex flex-col gap-md">
+                <h2 className="text-h3 font-bold text-text-primary">가게 관리</h2>
+                <div className="grid grid-cols-1 gap-md md:grid-cols-2">
+                  <NavCard
+                    title="모임 생성"
+                    description="메뉴 골라 모집 시작"
+                    onClick={() => nav('/admin/orders/new', { viewTransition: true })}
+                  />
+                  <NavCard
+                    title="모임 내역"
+                    description="완료·거절된 모임 기록"
+                    onClick={() => nav('/admin/orders/history', { viewTransition: true })}
+                  />
+                  <NavCard
+                    title="가게 정보 수정"
+                    description="이름·주소·영업 시간·이미지"
+                    onClick={() => nav('/admin/shops/info', { viewTransition: true })}
+                  />
+                  <NavCard
+                    title="메뉴 관리"
+                    description="판매 메뉴 등록·수정·삭제"
+                    onClick={() => nav('/admin/shops/menus', { viewTransition: true })}
+                  />
+                </div>
+              </div>
+            </section>
           </div>
         )}
       </main>
@@ -102,38 +133,48 @@ export function AdminShopsPage() {
   )
 }
 
-function PendingApprovalCard({ onBack }: { onBack: () => void }) {
-  return (
-    <div className="flex flex-col items-center gap-md rounded-md bg-neutral-white p-2xl text-center ring-1 ring-border-default">
-      <h2 className="text-h3 font-bold text-text-primary">관리자 승인 대기 중</h2>
-      <p className="max-w-[360px] text-body-l font-normal text-text-secondary">
-        사장님 신청이 접수되었어요. 승인이 완료되면 가게를 등록하고 관리할 수 있어요.
-      </p>
-      <button
-        type="button"
-        onClick={onBack}
-        className="mt-xs cursor-pointer rounded-md bg-surface-subtle px-md py-sm text-body-l font-bold text-text-primary transition-colors hover:bg-surface-subtle/70"
-      >
-        마이페이지로
-      </button>
-    </div>
-  )
+// ─── 가게 상세 패널 임베드 (사장 전용 AdminShopDetailPanel) ────────────────
+
+function ShopDetailEmbed({ storeId }: { storeId: number }) {
+  const [tab, setTab] = useState<'Menu' | 'Info'>('Menu')
+  const detail = useShopDetail(String(storeId))
+  if (detail.isLoading) {
+    return <EmptyState title="불러오는 중..." message="" />
+  }
+  if (detail.isError || !detail.data) {
+    return <EmptyState title="오류" message="가게 정보를 불러올 수 없어요" />
+  }
+  const shop = detailToShop(detail.data)
+  return <AdminShopDetailPanel shop={shop} tab={tab} onTabChange={setTab} />
 }
 
-function EmptyStoresCard({ onRegister }: { onRegister: () => void }) {
+// ─── 세부 메뉴 진입 카드 ────────────────────────────────────────────────────
+
+function NavCard({
+  title,
+  description,
+  onClick,
+}: {
+  title: string
+  description: string
+  onClick: () => void
+}) {
   return (
-    <div className="flex flex-col items-center gap-md rounded-md bg-neutral-white p-2xl text-center ring-1 ring-border-default">
-      <h2 className="text-h3 font-bold text-text-primary">아직 등록된 가게가 없어요</h2>
-      <p className="max-w-[360px] text-body-l font-normal text-text-secondary">
-        첫 가게를 등록하고 손님들에게 노출해보세요.
-      </p>
-      <button
-        type="button"
-        onClick={onRegister}
-        className="mt-xs cursor-pointer rounded-md bg-brand-primary px-md py-sm text-body-l font-bold text-neutral-white drop-shadow-[0px_4px_24px_rgba(37,88,232,0.14)] transition-colors hover:bg-brand-primary-hover"
+    <button
+      type="button"
+      onClick={onClick}
+      className="group flex w-full cursor-pointer items-center gap-md rounded-md border border-border-default p-md text-left transition-colors hover:border-brand-primary hover:bg-brand-primary-tint/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+    >
+      <div className="flex flex-1 flex-col gap-xxs">
+        <span className="text-body-l font-bold text-text-primary">{title}</span>
+        <span className="text-body font-normal text-text-secondary">{description}</span>
+      </div>
+      <span
+        aria-hidden
+        className="text-h3 font-normal text-text-tertiary transition-all group-hover:translate-x-[2px] group-hover:text-brand-primary"
       >
-        + 가게 등록하기
-      </button>
-    </div>
+        ›
+      </span>
+    </button>
   )
 }

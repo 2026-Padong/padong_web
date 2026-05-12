@@ -7,6 +7,7 @@ import IconNews from '@/assets/icons/navitem-news.svg?react'
 import IconMyPage from '@/assets/icons/navitem-mypage.svg?react'
 import IconGuide from '@/assets/icons/navitem-guide.svg?react'
 import IconAdminShop from '@/assets/icons/icon-store.svg?react'
+import IconAdminOrder from '@/assets/icons/shop-detail-doc.svg?react'
 
 // Figma 1:1: Tile · NavItem (477:949) > NavItem · 6×2 COMPONENT_SET
 // Type 6종 × State 2종 — 각 variant별 SideNav 색상이 미리 적용된 SVG asset 사용
@@ -18,6 +19,7 @@ export type NavItemType =
   | 'MyPage'
   | 'Guide'
   | 'AdminShop'
+  | 'AdminOrder'
 
 type IconComponent = React.FC<React.SVGProps<SVGSVGElement>>
 interface IconSpec {
@@ -38,6 +40,7 @@ const TYPE_TO_ICON: Record<NavItemType, IconSpec> = {
   MyPage: { icon: IconMyPage, width: 21.6, height: 24, left: 1.2, top: 0 },
   Guide: { icon: IconGuide, width: 21.6, height: 21.6, left: 1.2, top: 1.2 },
   AdminShop: { icon: IconAdminShop, width: 24, height: 24, left: 0, top: 0 },
+  AdminOrder: { icon: IconAdminOrder, width: 24, height: 24, left: 0, top: 0 },
 }
 
 const TYPE_TO_LABEL: Record<NavItemType, string> = {
@@ -47,7 +50,8 @@ const TYPE_TO_LABEL: Record<NavItemType, string> = {
   News: '뉴스',
   MyPage: '마이페이지',
   Guide: '가이드',
-  AdminShop: '내 가게 관리',
+  AdminShop: '매장 관리',
+  AdminOrder: '주문 관리',
 }
 
 const NAV_ITEM_PATH: Record<NavItemType, string> = {
@@ -58,6 +62,7 @@ const NAV_ITEM_PATH: Record<NavItemType, string> = {
   MyPage: '/mypage',
   Guide: '/guide',
   AdminShop: '/admin/shops',
+  AdminOrder: '/admin/orders',
 }
 
 export interface NavItemProps {

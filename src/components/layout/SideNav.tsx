@@ -7,9 +7,9 @@ import { useLoginGate } from '@/lib/useLoginGate'
 
 // Figma 1:1: Tile · SideNav (432:847) > SideNav COMPONENT
 // 112×900 (Figma 의도) — lg+ 표시, 그 미만은 hidden (대신 BottomNav)
-// Logo: w-full h-[70px] rounded-sm IMAGE
-// 기본 6개 + ADMIN 로그인 시 "내 가게 관리" 추가
-const BASE_ITEMS: NavItemType[] = ['Commute', 'Custom', 'LocalShop', 'News', 'MyPage']
+// 위/아래 분리: 위쪽 = 사장 전용 (ADMIN role), 아래쪽 = 일반 사용자 메뉴
+const USER_ITEMS: NavItemType[] = ['Commute', 'Custom', 'LocalShop', 'News', 'MyPage']
+const ADMIN_ITEMS: NavItemType[] = ['AdminShop']
 
 export interface SideNavProps {
   activeType?: NavItemType
@@ -21,8 +21,6 @@ export function SideNav({ activeType, onNavigate, className }: SideNavProps) {
   const { user, logout } = useAuth()
   const nav = useNavigate()
   const { requireLogin, loginDialog } = useLoginGate()
-  const items: NavItemType[] =
-    user?.role === 'ADMIN' ? [...BASE_ITEMS, 'AdminShop'] : BASE_ITEMS
   const isAdmin = user?.role === 'ADMIN'
 
   const handleLogout = async () => {
@@ -125,7 +123,24 @@ export function SideNav({ activeType, onNavigate, className }: SideNavProps) {
         )}
       </div>
 
-      {items.map((t) => (
+      {/* 사장 전용 (위) — ADMIN role 일 때만 노출 */}
+      {isAdmin && (
+        <>
+          {ADMIN_ITEMS.map((t) => (
+            <NavItem
+              key={t}
+              type={t}
+              active={t === activeType}
+              onClick={onNavigate ? () => onNavigate(t) : undefined}
+            />
+          ))}
+          {/* 분리선 — 사장 영역 ↔ 일반 사용자 영역 */}
+          <div className="mx-auto my-sm h-px w-[60%] bg-neutral-white/20" aria-hidden />
+        </>
+      )}
+
+      {/* 일반 사용자 메뉴 (아래) — 항상 노출 */}
+      {USER_ITEMS.map((t) => (
         <NavItem
           key={t}
           type={t}

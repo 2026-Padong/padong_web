@@ -40,6 +40,18 @@ select {
   font-family: inherit;
 }
 
+/* input[type="time"] 의 시간 표시 webkit pseudo-elements 도 Pretendard 적용 */
+input[type='time']::-webkit-datetime-edit,
+input[type='time']::-webkit-datetime-edit-fields-wrapper,
+input[type='time']::-webkit-datetime-edit-hour-field,
+input[type='time']::-webkit-datetime-edit-minute-field,
+input[type='time']::-webkit-datetime-edit-ampm-field,
+input[type='time']::-webkit-datetime-edit-text {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
 /* Kakao Maps 컨트롤(줌/지도타입/마커) — Tailwind preflight의 img display:block 영향 차단 */
 .kakao-map-wrap img {
   display: inline-block;

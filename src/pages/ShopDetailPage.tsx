@@ -8,58 +8,7 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useShopList } from '@/api/queries/useShopList'
 import { useShopDetail } from '@/api/queries/useShopDetail'
-import type { ShopSummaryResponse, ShopDetailResponse } from '@/api/contracts/shops'
-import type { MockShop, ShopStatus } from '@/data/mocks'
-
-function dtoToShop(dto: ShopSummaryResponse): MockShop {
-  return {
-    id: String(dto.id),
-    image: dto.imageUrl,
-    name: dto.name,
-    category: dto.category,
-    description: dto.description || undefined,
-    status: dto.status.toLowerCase() as ShopStatus,
-    participantCurrent: dto.participantCurrent,
-    participantTotal: dto.participantTotal,
-    liked: dto.likedByCurrentUser,
-    bookmarked: false,
-    images: [dto.imageUrl],
-    menuCategories: [],
-    menus: [],
-    infoRows: [],
-  }
-}
-
-// 백엔드 ShopDetailResponse (GET /stores/{id}) → 내부 MockShop 형태로 매핑
-// 추후 ShopDetailPanel 이 ShopDetailResponse 직접 받게 리팩토링 시 제거 가능
-function detailToShop(dto: ShopDetailResponse): MockShop {
-  return {
-    id: String(dto.id),
-    image: dto.imageUrl,
-    name: dto.name,
-    category: dto.category,
-    description: dto.description || undefined,
-    status: dto.status.toLowerCase() as ShopStatus,
-    participantCurrent: dto.participantCurrent,
-    participantTotal: dto.participantTotal,
-    liked: dto.likedByCurrentUser,
-    bookmarked: false,
-    images: dto.images,
-    menuCategories: dto.menuCategories,
-    menus: dto.menus.map((m) => ({
-      id: m.id,
-      name: m.name,
-      price: m.price,
-    })),
-    infoRows: [
-      { label: '주소', value: dto.address },
-      { label: '전화', value: dto.phoneNumber },
-    ],
-    currentGroupOrderId: dto.currentGroupOrderId,
-    latitude: dto.latitude ?? null,
-    longitude: dto.longitude ?? null,
-  }
-}
+import { summaryToShop as dtoToShop, detailToShop } from '@/features/shop/utils/shopAdapters'
 
 export function ShopDetailPage() {
   const { id } = useParams<{ id: string }>()

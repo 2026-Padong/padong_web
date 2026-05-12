@@ -90,6 +90,11 @@ export interface MockShop {
   /** 가게 위경도 — 백엔드 응답에 추가 예정 (현재 미적재) */
   latitude?: number | null
   longitude?: number | null
+  /** 영업 시간 — "HH:mm" */
+  openTime?: string
+  closeTime?: string
+  /** 영업 요일 비트마스크 (bit0=MON .. bit6=SUN) */
+  weekdayMask?: number
 }
 
 export interface LifestyleType {
