@@ -80,12 +80,12 @@ export function AdminShopsPage() {
               </div>
             </aside>
 
-            {/* RIGHT — 모임 현황 + 가게 관리. min-h 로 panel 의 최소 높이 보장 (콘텐츠 적어도 너무 짧지 않게) */}
-            <section className="flex flex-col gap-md lg:min-h-[640px]">
+            {/* RIGHT — 모임 현황(위) + 가게 관리(아래). 좌측 패널 top 과 동일 row 시작 → align-self start */}
+            <section className="flex flex-col items-stretch gap-md self-start lg:min-h-[640px]">
               <div className="flex flex-col gap-md">
                 <div className="flex items-baseline justify-between gap-sm">
                   <div className="flex items-center gap-md">
-                    <h2 className="text-h3 font-bold text-text-primary">모임 현황</h2>
+                    <h2 className="text-h3 font-bold text-text-primary leading-none">모임 현황</h2>
                     <ActiveOrderBadge storeId={store.id} />
                   </div>
                   <button

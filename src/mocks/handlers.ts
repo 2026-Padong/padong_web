@@ -38,7 +38,11 @@ const mockStore = {
   openTime: '10:00',
   closeTime: '22:00',
   weekdayMask: 0b1111111, // 매일
-  images: [] as { id: number; url: string; sortOrder: number }[],
+  images: [
+    { id: 101, url: 'https://padong.s3.ap-northeast-2.amazonaws.com/gonggu_store_pic/cheese.png', sortOrder: 0 },
+    { id: 102, url: 'https://padong.s3.ap-northeast-2.amazonaws.com/gonggu_store_pic/choco.png',  sortOrder: 1 },
+    { id: 103, url: 'https://padong.s3.ap-northeast-2.amazonaws.com/gonggu_store_pic/matcha.png', sortOrder: 2 },
+  ] as { id: number; url: string; sortOrder: number }[],
   menus: [
     { id: 11, name: '바스크 치즈케이크', price: 8500, soldOut: false },
     { id: 12, name: '얼그레이 치즈케이크', price: 9000, soldOut: false },
@@ -125,6 +129,7 @@ const mockFlows: Record<number, {
 const mockFlowHistory = [
   {
     id: 301, storeId: 1, status: 'COMPLETED',
+    name: '바스크 치즈케이크 + 얼그레이 모임',
     menus: [
       { menuId: 11, name: '바스크 치즈케이크', price: 8500 },
       { menuId: 12, name: '얼그레이 치즈케이크', price: 9000 },
@@ -137,6 +142,7 @@ const mockFlowHistory = [
   },
   {
     id: 302, storeId: 1, status: 'COMPLETED',
+    name: '말차·초콜릿 시즌 모임',
     menus: [
       { menuId: 13, name: '말차 치즈케이크', price: 9500 },
       { menuId: 14, name: '초콜릿 바스크', price: 9000 },
@@ -149,6 +155,7 @@ const mockFlowHistory = [
   },
   {
     id: 303, storeId: 1, status: 'REJECTED',
+    name: '핸드드립 커피 단체 주문',
     menus: [
       { menuId: 18, name: '핸드드립 커피', price: 5500 },
     ],
@@ -185,6 +192,94 @@ function transitionFlow(menuId: number, action: 'approve' | 'reject' | 'ready' |
   mockFlows[menuId] = next
   return next
 }
+
+// 가게 목록 mock — 다양한 status 분포로 OUT_OF_HOURS 보이지 않게
+type MockShopRow = {
+  id: number; name: string; thumbnailUrl: string; category: string; categoryLabel: string;
+  description: string; participantCurrent: number; participantTotal: number;
+  recruitmentStatus: 'RECRUITING' | 'CLOSING_SOON' | 'IN_PROGRESS' | 'NO_FLOW' | 'OUT_OF_HOURS';
+  likeCount: number; likedByCurrentUser: boolean; latitude: number; longitude: number; weekdayMask: number;
+}
+const MOCK_STORE_LIST: MockShopRow[] = [
+  { id: 1, name: '이태원 치즈케이크', thumbnailUrl: 'https://picsum.photos/seed/shop1/600/400', category: 'DESSERT',  categoryLabel: '디저트',   description: '수제 바스크 치즈케이크', participantCurrent: 3, participantTotal: 5,  recruitmentStatus: 'RECRUITING',  likeCount: 27,  likedByCurrentUser: true,  latitude: 37.5347, longitude: 126.9947, weekdayMask: 127 },
+  { id: 2, name: '연남 베이커리',    thumbnailUrl: 'https://picsum.photos/seed/shop2/600/400', category: 'BAKERY',   categoryLabel: '베이커리', description: '천연효모 빵',           participantCurrent: 4, participantTotal: 6,  recruitmentStatus: 'CLOSING_SOON', likeCount: 51,  likedByCurrentUser: false, latitude: 37.5641, longitude: 126.9230, weekdayMask: 127 },
+  { id: 3, name: '망원 분식',        thumbnailUrl: 'https://picsum.photos/seed/shop3/600/400', category: 'SNACK',    categoryLabel: '분식',     description: '망원시장 떡볶이',       participantCurrent: 2, participantTotal: 4,  recruitmentStatus: 'RECRUITING',  likeCount: 14,  likedByCurrentUser: false, latitude: 37.5563, longitude: 126.9100, weekdayMask: 127 },
+  { id: 4, name: '합정 한식당',      thumbnailUrl: 'https://picsum.photos/seed/shop4/600/400', category: 'KOREAN',   categoryLabel: '한식',     description: '솥밥 정식',              participantCurrent: 5, participantTotal: 5,  recruitmentStatus: 'IN_PROGRESS', likeCount: 88,  likedByCurrentUser: true,  latitude: 37.5497, longitude: 126.9119, weekdayMask: 127 },
+  { id: 5, name: '서교 카페',        thumbnailUrl: 'https://picsum.photos/seed/shop5/600/400', category: 'CAFE',     categoryLabel: '카페',     description: '홍대 스페셜티 핸드드립', participantCurrent: 0, participantTotal: 6,  recruitmentStatus: 'NO_FLOW',     likeCount: 132, likedByCurrentUser: false, latitude: 37.5556, longitude: 126.9221, weekdayMask: 127 },
+  { id: 6, name: '한남 일식당',      thumbnailUrl: 'https://picsum.photos/seed/shop6/600/400', category: 'JAPANESE', categoryLabel: '일식',     description: '오마카세 8피스',         participantCurrent: 3, participantTotal: 4,  recruitmentStatus: 'RECRUITING',  likeCount: 47,  likedByCurrentUser: false, latitude: 37.5345, longitude: 127.0009, weekdayMask: 127 },
+  { id: 7, name: '성수 베이커리 카페', thumbnailUrl: 'https://picsum.photos/seed/shop7/600/400', category: 'BAKERY',   categoryLabel: '베이커리', description: '브런치 박스 + 핸드드립', participantCurrent: 4, participantTotal: 5,  recruitmentStatus: 'CLOSING_SOON', likeCount: 96,  likedByCurrentUser: true,  latitude: 37.5446, longitude: 127.0556, weekdayMask: 127 },
+  { id: 8, name: '역삼 직장인 한식',  thumbnailUrl: 'https://picsum.photos/seed/shop8/600/400', category: 'KOREAN',   categoryLabel: '한식',     description: '점심 정식 도시락',       participantCurrent: 6, participantTotal: 10, recruitmentStatus: 'RECRUITING',  likeCount: 38,  likedByCurrentUser: false, latitude: 37.5009, longitude: 127.0364, weekdayMask: 127 },
+  { id: 9, name: '신사 가로수길 양식', thumbnailUrl: 'https://picsum.photos/seed/shop9/600/400', category: 'WESTERN',  categoryLabel: '양식',     description: '파스타 + 와인 페어링',   participantCurrent: 2, participantTotal: 6,  recruitmentStatus: 'RECRUITING',  likeCount: 64,  likedByCurrentUser: false, latitude: 37.5172, longitude: 127.0205, weekdayMask: 127 },
+  { id: 10,name: '코엑스 치킨',       thumbnailUrl: 'https://picsum.photos/seed/shop10/600/400',category: 'CHICKEN',  categoryLabel: '치킨',     description: '바삭한 갈릭 치킨',       participantCurrent: 8, participantTotal: 10, recruitmentStatus: 'CLOSING_SOON', likeCount: 23,  likedByCurrentUser: false, latitude: 37.5145, longitude: 127.0628, weekdayMask: 127 },
+  { id: 11,name: '종로 노포 중식',    thumbnailUrl: 'https://picsum.photos/seed/shop11/600/400',category: 'CHINESE',  categoryLabel: '중식',     description: '40년 노포 짜장 짬뽕',     participantCurrent: 3, participantTotal: 8,  recruitmentStatus: 'IN_PROGRESS', likeCount: 109, likedByCurrentUser: false, latitude: 37.5712, longitude: 126.9794, weekdayMask: 127 },
+  { id: 12,name: '잠실 피자 공방',    thumbnailUrl: 'https://picsum.photos/seed/shop12/600/400',category: 'PIZZA',    categoryLabel: '피자',     description: '나폴리 화덕피자',         participantCurrent: 5, participantTotal: 6,  recruitmentStatus: 'RECRUITING',  likeCount: 76,  likedByCurrentUser: true,  latitude: 37.5117, longitude: 127.1003, weekdayMask: 127 },
+]
+
+// 내 주문 내역 mock (/orders/me, /orders/:id) — 결제 상태/플로우 다양
+type MockOrderItem = { menuId: number; name: string; price: number; quantity: number }
+type MockOrder = {
+  orderId: number; orderNumber: string; paymentId: string;
+  paidAt: string | null; paymentMethod: 'card' | 'transfer' | null;
+  totalAmount: number;
+  status: 'READY' | 'PAID' | 'CANCELED' | 'FAILED';
+  flowStatus: 'PENDING' | 'WAITING_APPROVAL' | 'APPROVED' | 'READY' | 'COMPLETED' | 'REJECTED';
+  shop: { id: number; name: string; imageUrl?: string; category: string; address: string; phoneNumber: string; openTime: string; closeTime: string };
+  items: MockOrderItem[];
+}
+const MOCK_MY_ORDERS: MockOrder[] = [
+  {
+    orderId: 1001, orderNumber: 'P2026051301', paymentId: 'pay-1001',
+    paidAt: '2026-05-13T10:24:00Z', paymentMethod: 'card', totalAmount: 17500,
+    status: 'PAID', flowStatus: 'READY',
+    shop: { id: 1, name: '이태원 치즈케이크', imageUrl: 'https://picsum.photos/seed/shop1/600/400', category: 'DESSERT', address: '서울특별시 용산구 이태원로 200', phoneNumber: '02-794-7777', openTime: '10:00', closeTime: '22:00' },
+    items: [
+      { menuId: 11, name: '바스크 치즈케이크', price: 8500, quantity: 1 },
+      { menuId: 12, name: '얼그레이 치즈케이크', price: 9000, quantity: 1 },
+    ],
+  },
+  {
+    orderId: 1002, orderNumber: 'P2026051202', paymentId: 'pay-1002',
+    paidAt: '2026-05-12T18:11:00Z', paymentMethod: 'transfer', totalAmount: 30000,
+    status: 'PAID', flowStatus: 'COMPLETED',
+    shop: { id: 2, name: '연남 베이커리', imageUrl: 'https://picsum.photos/seed/shop2/600/400', category: 'BAKERY', address: '서울특별시 마포구 연남로 38', phoneNumber: '02-322-1234', openTime: '08:00', closeTime: '21:00' },
+    items: [{ menuId: 21, name: '천연효모 빵 박스', price: 15000, quantity: 2 }],
+  },
+  {
+    orderId: 1003, orderNumber: 'P2026051103', paymentId: 'pay-1003',
+    paidAt: '2026-05-11T12:05:00Z', paymentMethod: 'card', totalAmount: 12000,
+    status: 'PAID', flowStatus: 'APPROVED',
+    shop: { id: 3, name: '망원 분식', imageUrl: 'https://picsum.photos/seed/shop3/600/400', category: 'SNACK', address: '서울특별시 마포구 망원로 110', phoneNumber: '02-333-9999', openTime: '11:00', closeTime: '21:00' },
+    items: [{ menuId: 31, name: '떡볶이 2인 세트', price: 12000, quantity: 1 }],
+  },
+  {
+    orderId: 1004, orderNumber: 'P2026051104', paymentId: 'pay-1004',
+    paidAt: null, paymentMethod: null, totalAmount: 28000,
+    status: 'READY', flowStatus: 'WAITING_APPROVAL',
+    shop: { id: 4, name: '합정 한식당', imageUrl: 'https://picsum.photos/seed/shop4/600/400', category: 'KOREAN', address: '서울특별시 마포구 양화로 25', phoneNumber: '02-323-4321', openTime: '11:00', closeTime: '22:00' },
+    items: [{ menuId: 41, name: '솥밥 정식', price: 14000, quantity: 2 }],
+  },
+  {
+    orderId: 1005, orderNumber: 'P2026051005', paymentId: 'pay-1005',
+    paidAt: '2026-05-10T09:42:00Z', paymentMethod: 'card', totalAmount: 45000,
+    status: 'PAID', flowStatus: 'COMPLETED',
+    shop: { id: 7, name: '성수 베이커리 카페', imageUrl: 'https://picsum.photos/seed/shop7/600/400', category: 'BAKERY', address: '서울특별시 성동구 성수일로 56', phoneNumber: '02-465-7878', openTime: '08:00', closeTime: '22:00' },
+    items: [{ menuId: 71, name: '브런치 박스', price: 22500, quantity: 2 }],
+  },
+  {
+    orderId: 1006, orderNumber: 'P2026050906', paymentId: 'pay-1006',
+    paidAt: '2026-05-09T20:08:00Z', paymentMethod: 'card', totalAmount: 19500,
+    status: 'CANCELED', flowStatus: 'REJECTED',
+    shop: { id: 10, name: '코엑스 치킨', imageUrl: 'https://picsum.photos/seed/shop10/600/400', category: 'CHICKEN', address: '서울특별시 강남구 영동대로 513', phoneNumber: '02-555-9876', openTime: '14:00', closeTime: '02:00' },
+    items: [{ menuId: 101, name: '갈릭 치킨', price: 19500, quantity: 1 }],
+  },
+  {
+    orderId: 1007, orderNumber: 'P2026050807', paymentId: 'pay-1007',
+    paidAt: '2026-05-08T13:30:00Z', paymentMethod: 'card', totalAmount: 24000,
+    status: 'PAID', flowStatus: 'COMPLETED',
+    shop: { id: 8, name: '역삼 직장인 한식', imageUrl: 'https://picsum.photos/seed/shop8/600/400', category: 'KOREAN', address: '서울특별시 강남구 테헤란로 152', phoneNumber: '02-565-1212', openTime: '11:00', closeTime: '21:00' },
+    items: [{ menuId: 81, name: '도시락 정식', price: 12000, quantity: 2 }],
+  },
+]
 
 export const handlers = [
   // multipart auth — explicit passthrough (FormData 손상 회피)
@@ -229,8 +324,60 @@ export const handlers = [
     ),
   ),
 
+  // 가게 목록 (/stores) — ShopsPage / 검색·필터 페이징
+  http.get(`${BASE}/stores`, ({ request }) => {
+    const url = new URL(request.url)
+    const page = Number(url.searchParams.get('page') ?? 0)
+    const size = Number(url.searchParams.get('size') ?? 20)
+    const q = (url.searchParams.get('q') ?? '').trim()
+    const category = url.searchParams.get('category') ?? undefined
+    const status = url.searchParams.get('status') ?? undefined
+    const likedOnly = url.searchParams.get('likedOnly') === 'true'
+    let items = MOCK_STORE_LIST
+    if (q) items = items.filter((s) => s.name.includes(q) || s.categoryLabel.includes(q))
+    if (category) items = items.filter((s) => s.category === category)
+    if (status) items = items.filter((s) => s.recruitmentStatus === status)
+    if (likedOnly) items = items.filter((s) => s.likedByCurrentUser)
+    const total = items.length
+    const totalPages = Math.max(1, Math.ceil(total / size))
+    const start = page * size
+    const slice = items.slice(start, start + size)
+    return HttpResponse.json(ok({
+      content: slice, page, size, totalElements: total, totalPages,
+      first: page === 0, last: page >= totalPages - 1,
+      hasNext: page < totalPages - 1, hasPrevious: page > 0,
+    }))
+  }),
+
+  // 랜덤 가게 — 홈 GroupPurchaseSection
+  http.get(`${BASE}/stores/random`, ({ request }) => {
+    const size = Number(new URL(request.url).searchParams.get('size') ?? 3)
+    const shuffled = [...MOCK_STORE_LIST].sort(() => Math.random() - 0.5).slice(0, size)
+    return HttpResponse.json(ok(shuffled))
+  }),
+
   // 가게 상세 — id 무시하고 mockStore 반환
   http.get(`${BASE}/stores/:id`, () => HttpResponse.json(ok(mockStore))),
+
+  // 내 주문 내역 (cursor 페이징) — 결제 완료/대기/취소 다양
+  http.get(`${BASE}/orders/me`, ({ request }) => {
+    const url = new URL(request.url)
+    const size = Number(url.searchParams.get('size') ?? 20)
+    const cursor = url.searchParams.get('cursor') ? Number(url.searchParams.get('cursor')) : null
+    let items = MOCK_MY_ORDERS
+    if (cursor != null) items = items.filter((o) => o.orderId < cursor)
+    items = items.slice(0, size)
+    const nextCursor = items.length === size ? items[items.length - 1].orderId : null
+    return HttpResponse.json(ok({ items, nextCursor, hasNext: nextCursor != null }))
+  }),
+
+  // 주문 단건 상세
+  http.get(`${BASE}/orders/:orderId`, ({ params }) => {
+    const id = Number(params.orderId)
+    const o = MOCK_MY_ORDERS.find((x) => x.orderId === id)
+    if (!o) return HttpResponse.json({ statusCode: '404', message: '주문 없음', data: null }, { status: 404 })
+    return HttpResponse.json(ok(o))
+  }),
 
   // 가게 수정
   http.put(`${BASE}/stores`, ({ request }) => {
@@ -346,29 +493,29 @@ export const handlers = [
       {
         userId: 1, userName: '김예일', joinedAt: '2026-05-13 09:30',
         items: [
-          { menuId: 11, name: '바스크 치즈케이크', price: 8500, quantity: 1 },
-          { menuId: 12, name: '얼그레이 치즈케이크', price: 9000, quantity: 1 },
+          { menuId: 11, menuInfo: '바스크 치즈케이크', price: 8500, quantity: 1 },
+          { menuId: 12, menuInfo: '얼그레이 치즈케이크', price: 9000, quantity: 1 },
         ],
         totalAmount: 17500, paymentStatus: 'PAID',
       },
       {
         userId: 2, userName: '이수민', joinedAt: '2026-05-13 10:15',
         items: [
-          { menuId: 11, name: '바스크 치즈케이크', price: 8500, quantity: 2 },
+          { menuId: 11, menuInfo: '바스크 치즈케이크', price: 8500, quantity: 2 },
         ],
         totalAmount: 17000, paymentStatus: 'PAID',
       },
       {
         userId: 3, userName: '박지훈', joinedAt: '2026-05-13 11:00',
         items: [
-          { menuId: 13, name: '말차 치즈케이크', price: 9500, quantity: 1 },
+          { menuId: 13, menuInfo: '말차 치즈케이크', price: 9500, quantity: 1 },
         ],
         totalAmount: 9500, paymentStatus: 'PENDING',
       },
       {
         userId: 4, userName: '최서연', joinedAt: '2026-05-13 11:45',
         items: [
-          { menuId: 11, name: '바스크 치즈케이크', price: 8500, quantity: 1 },
+          { menuId: 11, menuInfo: '바스크 치즈케이크', price: 8500, quantity: 1 },
         ],
         totalAmount: 8500, paymentStatus: 'CANCELLED',
       },

@@ -276,7 +276,7 @@ export function ShopDetailPanel({
       </div>
 
       <div className="flex w-full flex-col items-center gap-lg py-xxs">
-        <div className="flex w-full items-end justify-center">
+        <div className="flex w-full items-center justify-center">
           <div className="flex flex-col items-start gap-xxs">
             {shop.recruitmentStatus && <RecruitmentBadge status={shop.recruitmentStatus} />}
             <div className="flex items-center gap-md text-subhead font-bold whitespace-nowrap">
@@ -305,18 +305,33 @@ export function ShopDetailPanel({
             )}
           </div>
         </div>
-        <button
-          type="button"
-          onClick={handleJoin}
-          disabled={totalAmount === 0 || !shop.currentGroupOrder || totalAmount < (shop.currentGroupOrder?.minOrderPerPerson ?? 0)}
-          className="flex w-full items-center justify-center rounded-md bg-brand-primary py-sm text-subhead font-bold text-neutral-white transition-colors hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {!shop.currentGroupOrder
+        {(() => {
+          const groupFull =
+            shop.participantCurrent != null &&
+            shop.participantTotal != null &&
+            shop.participantCurrent >= shop.participantTotal
+          const minOrder = shop.currentGroupOrder?.minOrderPerPerson ?? 0
+          const underMin = totalAmount > 0 && totalAmount < minOrder
+          const disabled =
+            !shop.currentGroupOrder || groupFull || totalAmount === 0 || underMin
+          const label = !shop.currentGroupOrder
             ? '모집 마감'
-            : totalAmount > 0 && totalAmount < shop.currentGroupOrder.minOrderPerPerson
-              ? `최소 ${fmtPrice(shop.currentGroupOrder.minOrderPerPerson)}부터 참여 가능`
-              : '참여하기'}
-        </button>
+            : groupFull
+              ? '모집 인원 마감'
+              : underMin
+                ? `최소 ${fmtPrice(minOrder)}부터 참여 가능`
+                : '참여하기'
+          return (
+            <button
+              type="button"
+              onClick={handleJoin}
+              disabled={disabled}
+              className="flex w-full items-center justify-center rounded-md bg-brand-primary py-sm text-subhead font-bold text-neutral-white transition-colors hover:bg-brand-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {label}
+            </button>
+          )
+        })()}
       </div>
 
       {loginDialog}
