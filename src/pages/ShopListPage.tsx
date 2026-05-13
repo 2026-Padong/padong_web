@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { SideNav } from '@/components/layout/SideNav'
 import { BottomNav } from '@/components/layout/BottomNav'
-import { MapPlaceholder } from '@/components/ui/MapPlaceholder'
+import { KakaoMap, type MapMarker } from '@/components/map/KakaoMap'
 import { ShopListPanel } from '@/features/shop/components/ShopListPanel'
 import { ShopDetailPanel } from '@/features/shop/components/ShopDetailPanel'
-import { ShopDetailMapPanel } from '@/features/shop/components/ShopDetailMapPanel'
+import { MapOverlayCard } from '@/features/shop/components/MapOverlayCard'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useShopList } from '@/api/queries/useShopList'
 import { useShopDetail } from '@/api/queries/useShopDetail'
 
-// 단일 라우트 패턴 — JobFinder 와 동일.
-// 카드 클릭 시 route 변경 없이 detail 패널만 토글 → list 상태(page/검색/필터) 자연 보존.
+// 단일 라우트 + 단일 KakaoMap 인스턴스 패턴 (JobFinder 와 동일).
+// 카드 클릭 시 route 변경 없이 detail 패널만 토글. KakaoMap 은 항상 같은 컴포넌트로
+// 마운트 유지 → 선택 시 marker/overlay 만 추가됨 → 깜빡임 없음.
 // /shops/:id 직접 진입은 ShopDetailPage 가 별도 처리 (deeplink 호환).
 export function ShopListPage() {
   const [adminDongCode, setAdminDongCode] = useState<string | undefined>(undefined)
@@ -29,9 +30,17 @@ export function ShopListPage() {
 
   const showDetail = selectedShopId != null
   // 리스트 캐시에서 selected 가게 summary 즉시 추출 — name/thumbnail/coord 등은
-  // detail 로딩 끝나기 전부터 표시 가능. 클릭 즉시 해당 가게 overlay 가 뜸.
+  // detail 로딩 끝나기 전부터 표시 가능.
   const selectedSummary =
     selectedShopId != null ? data?.content.find((s) => s.id === selectedShopId) : undefined
+
+  const mapCenter =
+    selectedSummary && selectedSummary.latitude != null && selectedSummary.longitude != null
+      ? { lat: selectedSummary.latitude, lng: selectedSummary.longitude }
+      : undefined
+  const mapMarkers: MapMarker[] = selectedSummary
+    ? [{ id: 'shop', position: mapCenter ?? { lat: 37.5665, lng: 126.978 }, label: selectedSummary.name, selected: true }]
+    : []
 
   return (
     <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
@@ -70,7 +79,6 @@ export function ShopListPage() {
             onBack={handleDeselect}
           />
         ) : (
-          // detail 로딩 중 — 패널 자리 유지하여 가게 전환 시 깜빡임 방지.
           <aside className="flex w-full flex-col items-center gap-md bg-neutral-white px-xl pb-sm pt-xl md:w-[450px] md:shrink-0">
             <Skeleton className="h-[19px] w-full" />
             <Skeleton className="h-[28px] w-[180px]" />
@@ -78,19 +86,23 @@ export function ShopListPage() {
             <Skeleton className="h-[300px] w-full" />
           </aside>
         ))}
-      {showDetail && selectedSummary ? (
-        <ShopDetailMapPanel
-          name={selectedSummary.name}
-          thumbnailUrl={selectedSummary.thumbnailUrl}
-          address={detail.data?.address}
-          latitude={selectedSummary.latitude}
-          longitude={selectedSummary.longitude}
-          topMenus={detail.data?.menus.slice(0, 3).map((m) => m.name)}
-          className="hidden md:block flex-1 min-w-0"
-        />
-      ) : (
-        <MapPlaceholder className="hidden md:block flex-1 min-w-0" />
-      )}
+      {/* 지도 영역 — 항상 같은 컴포넌트로 유지. selection 시 marker + overlay 만 추가. */}
+      <div className="relative hidden flex-1 min-w-0 bg-surface-cool md:block">
+        <KakaoMap center={mapCenter} level={4} markers={mapMarkers} className="h-full w-full" />
+        {showDetail && selectedSummary && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-[30px] flex justify-center px-md">
+            <div className="pointer-events-auto w-full max-w-[400px]">
+              <MapOverlayCard
+                image={selectedSummary.thumbnailUrl || undefined}
+                name={selectedSummary.name}
+                address={detail.data?.address ?? ''}
+                topMenus={detail.data?.menus.slice(0, 3).map((m) => m.name) ?? []}
+                actionLabel="참여하기"
+              />
+            </div>
+          </div>
+        )}
+      </div>
       <BottomNav activeType="LocalShop" className="lg:hidden" />
     </div>
   )
