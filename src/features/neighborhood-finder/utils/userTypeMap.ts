@@ -15,7 +15,7 @@ export const USER_TYPE_META: Record<string, UserTypeMeta> = {
   '현실 라이프형':       { emoji: '🏙️', description: '편안하고 실속 있는 일상을 추구하는 타입' },
   '효율 생활형':         { emoji: '🚀', description: '효율적인 동선과 일상을 선호하는 타입' },
   '네트워킹형':          { emoji: '🤝', description: '사람들과 어울리며 부지런히 움직이는 타입' },
-  '균형 잡힌 올라운더형': { emoji: '🎈', description: '어디서든 잘 어울리는 균형형' },
+  '균형 잡힌 올라운더형': { emoji: '🎈', description: '어디서든 잘 어울리는 균형 잡힌 타입' },
 }
 
 export interface ResolvedUserType {

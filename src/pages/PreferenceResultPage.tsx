@@ -9,7 +9,7 @@ import { RESULTS_PAGE_SIZE } from '@/features/neighborhood-finder/components/Res
 import { DetailPanel } from '@/features/neighborhood-finder/components/DetailPanel'
 import { KakaoMap } from '@/components/map/KakaoMap'
 import { buildDetailProps, buildDetailPropsFromApi } from '@/features/neighborhood-finder/utils/buildDetailProps'
-import { mobilityToResultDto } from '@/features/neighborhood-finder/utils/mobilityToResult'
+import { mobilityToResultDtoForPreference } from '@/features/neighborhood-finder/utils/mobilityToResult'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Chip } from '@/components/ui/Chip'
 import {
@@ -97,10 +97,10 @@ export function PreferenceResultPage() {
     }
   }
 
-  // 출퇴근과 동일하게 MobilityResponse → ResultDto (mobilityToResultDto 재사용)
+  // 취향 추천 카드 — 안전·주거·인구 3 chip 으로 표기 (출퇴근/유동 X)
   const allItems = useMemo(() => {
     if (!rec) return []
-    return rec.page.content.map((m) => mobilityToResultDto(m))
+    return rec.page.content.map((m) => mobilityToResultDtoForPreference(m))
   }, [rec])
 
   const total = allItems.length
@@ -221,6 +221,11 @@ export function PreferenceResultPage() {
             onBack={handleDeselect}
             {...detailProps}
             score={selectedRank}
+            hideMobility
+            placeImageUrl={
+              detailQuery.data?.images?.[0]
+              ?? `https://picsum.photos/seed/dong-${encodeURIComponent(selectedResult.id)}/640/400`
+            }
           />
         </div>
       )}

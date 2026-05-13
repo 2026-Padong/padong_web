@@ -11,13 +11,19 @@ import { cn } from '@/lib/cn'
 // 380×900 (Figma 의도) — 모바일 풀폭, md+ 고정
 // BackButton + DetailHeader + StatCellBordered + SafetyGradeCard
 // SectionTitle "임대료" + 4 RentRows
-// SectionTitle "이동 시간" + MobilityRow
+// [옵션] "이동 시간" MobilityRow — hideMobility=true 면 미노출
+// [옵션] "동네 사진" — placeImageUrl 있으면 노출
 export interface DetailPanelProps
   extends DetailHeaderProps, StatCellBorderedProps, SafetyGradeCardProps, MobilityRowProps {
   onBack?: () => void
   rents: RentRowProps[]
   rentSectionTitle?: string
   mobilitySectionTitle?: string
+  /** 이동 시간 섹션 숨김 — 출발지 없는 추천 흐름(취향) 등에서 사용 */
+  hideMobility?: boolean
+  /** 동네 사진 URL — 있으면 임대료 아래(또는 이동 시간 아래) "동네 사진" 카드 노출 */
+  placeImageUrl?: string
+  placeImageAlt?: string
   className?: string
 }
 
@@ -32,6 +38,9 @@ export function DetailPanel({
   cells,
   rentSectionTitle = '임대료',
   mobilitySectionTitle = '이동 시간',
+  hideMobility = false,
+  placeImageUrl,
+  placeImageAlt,
   className,
 }: DetailPanelProps) {
   return (
@@ -49,8 +58,22 @@ export function DetailPanel({
       {rents.map((r, i) => (
         <RentRow key={i} {...r} />
       ))}
-      <SectionTitle>{mobilitySectionTitle}</SectionTitle>
-      <MobilityRow cells={cells} />
+      {!hideMobility && (
+        <>
+          <SectionTitle>{mobilitySectionTitle}</SectionTitle>
+          <MobilityRow cells={cells} />
+        </>
+      )}
+      {placeImageUrl && (
+        <>
+          <SectionTitle>동네 사진</SectionTitle>
+          <img
+            src={placeImageUrl}
+            alt={placeImageAlt ?? `${dong} 사진`}
+            className="aspect-[16/10] w-full rounded-md object-cover"
+          />
+        </>
+      )}
     </aside>
   )
 }

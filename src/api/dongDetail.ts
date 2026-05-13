@@ -82,6 +82,8 @@ export interface DongDetailResponse {
   safety: SafetyIndex | null
   rentPrice: RentPrice | null
   paths: DongPaths | null
+  /** 동네 사진 URL 목록 (관광공사 사진). 첫 번째 항목이 대표 이미지. 없으면 빈 배열. */
+  images?: string[]
   likeCount: number
   likedByCurrentUser: boolean
   boundary?: BoundaryGeoJSON

@@ -331,6 +331,10 @@ export function JobFinderPage() {
             onBack={handleDeselect}
             {...detailProps}
             score={selectedRank}
+            placeImageUrl={
+              detailQuery.data?.images?.[0]
+              ?? `https://picsum.photos/seed/dong-${encodeURIComponent(selectedResult.id)}/640/400`
+            }
           />
         </div>
       )}

@@ -25,6 +25,43 @@ const fmtCount = (n: number) => {
   return `${Math.round(n)}`
 }
 
+// 취향 추천 전용 변환 — 출퇴근/유동 대신 안전·주거·총인구 3 chip 으로 구성.
+// 백엔드가 추천 응답에 totalPopulation / rentPrice 를 채워주면 자동 표시.
+export function mobilityToResultDtoForPreference(m: MobilityResponse): ResultDto {
+  const props = m.boundary?.properties
+  const name = props?.name ?? m.departureDong.address ?? '-'
+  const guName = props?.guName ?? ''
+  const fullAddress = m.departureDong.address ?? (guName ? `서울특별시 ${guName} ${name}` : name)
+  const tags: string[] = []
+  tags.push(`안전 ${m.safetyGrade ?? '-'}`)
+  const rp = m.rentPrice
+  if (rp?.price) {
+    const tradeLabel = rp.tradeType?.tradeTypeLabel ?? ''
+    const { amount, monthlyRent, deposit } = rp.price
+    const val = monthlyRent ?? amount ?? deposit
+    if (val != null) tags.push(`${tradeLabel} ${fmt만원(val)}`)
+    else tags.push('주거 정보 없음')
+  } else {
+    tags.push('주거 정보 없음')
+  }
+  if (typeof m.totalPopulation === 'number') {
+    tags.push(`인구 ${fmtCount(m.totalPopulation)}`)
+  } else {
+    tags.push('인구 -')
+  }
+  return {
+    id: m.departureDong.adminDongCode,
+    image: '',
+    dong: name,
+    fullAddress,
+    liked: m.likedByCurrentUser ?? false,
+    tags,
+    score: 0,
+    geometry: boundaryToPaths(m.boundary),
+    center: centerOfBoundary(m.boundary),
+  }
+}
+
 export function mobilityToResultDto(m: MobilityResponse): ResultDto {
   const props = m.boundary?.properties
   const name = props?.name ?? m.departureDong.address ?? '-'

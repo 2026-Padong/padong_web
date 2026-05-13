@@ -65,6 +65,8 @@ export interface MobilityResponse {
   likeCount: number
   likedByCurrentUser: boolean
   boundary?: BoundaryGeoJSON
+  /** 총 인구수 — 추천 결과 카드에 노출용. 백엔드 적재되면 자동 표시. */
+  totalPopulation?: number | null
 }
 
 export interface MobilityFilters {

@@ -127,7 +127,7 @@ export function HomePage() {
 
             {/* NewsSection — 백엔드 GET /news/random?size=3 */}
             <div className="flex w-full flex-col gap-md">
-              <SectionHeader type="Title" title="뉴스" />
+              <SectionHeader type="Title" title="동네 뉴스" />
               <div className="flex flex-col gap-md">
                 {newsPending ? (
                   <>

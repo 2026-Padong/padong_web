@@ -19,7 +19,7 @@ const LABEL: Record<HeaderNavItemType, string> = {
   Commute: '출퇴근 동네 찾기',
   Custom: '맞춤 동네 찾기',
   LocalShop: '우리 동네 가게',
-  News: '뉴스',
+  News: '동네 뉴스',
   MyPage: '마이페이지',
   Guide: '가이드',
   AdminShop: '매장 관리',
