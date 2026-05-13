@@ -65,15 +65,15 @@ export function MapOverlayCard({
               </span>
             </p>
           )}
-          {/* 메뉴 칩 */}
+          {/* 메뉴 칩 — flex-wrap 으로 좁아지면 다음 줄로 */}
           {topMenus.length > 0 && (
-            <div className="flex w-full items-start justify-start gap-xs">
+            <div className="flex w-full flex-wrap items-start justify-start gap-xs">
               {topMenus.slice(0, 3).map((m) => (
                 <div
                   key={m}
-                  className="flex flex-1 items-center justify-center rounded-xl bg-surface-subtle py-xxs"
+                  className="flex shrink-0 items-center justify-center rounded-xl bg-surface-subtle px-xs py-xxs"
                 >
-                  <span className="text-caption font-normal text-text-secondary truncate px-xxs">
+                  <span className="text-caption font-normal text-text-secondary whitespace-nowrap">
                     {m}
                   </span>
                 </div>
