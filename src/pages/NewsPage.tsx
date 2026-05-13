@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { HeaderNav } from '@/components/layout/HeaderNav'
@@ -14,27 +14,35 @@ import { AdminDongPicker } from '@/features/auth/components/AdminDongPicker'
 export function NewsPage() {
   const nav = useNavigate()
   const { user } = useAuth()
-  // 선택된 동네 id — 기본값: user.adminDongId
-  const [selectedDongId, setSelectedDongId] = useState<number | undefined>(user?.adminDongId)
+  // picker 로 수동 선택했을 때만 채워지는 상태. undefined 면 user 의 우리 동네 fallback.
+  const [pickedDongId, setPickedDongId] = useState<number | undefined>(undefined)
 
-  // adminDong tree → id ↔ name 매핑
+  // adminDong tree → id ↔ name 매핑 (이름만 있을 때 ID 역추적용 fallback)
   const treeQuery = useQuery({
     queryKey: ['admin-dong-tree'],
     queryFn: fetchAdminDongTree,
     staleTime: 30 * 60_000,
   })
   const tree = treeQuery.data ?? null
+
+  // 최종 선택 동네 ID — 우선순위: 수동 선택 > user.adminDongId > tree에서 name 으로 역추적
+  const selectedDongId = useMemo(() => {
+    if (pickedDongId !== undefined) return pickedDongId
+    if (user?.adminDongId) return user.adminDongId
+    // localStorage 캐시에 name 만 있고 id 가 빠진 케이스 — tree 로 id 찾기
+    if (user?.adminDongName && tree) {
+      for (const district of tree) {
+        const found = district.dongs.find((d) => d.name === user.adminDongName)
+        if (found) return found.id
+      }
+    }
+    return undefined
+  }, [pickedDongId, user?.adminDongId, user?.adminDongName, tree])
+
   const dongName = useMemo(
     () => resolveDongName(tree, selectedDongId) ?? user?.adminDongName ?? '',
     [tree, selectedDongId, user?.adminDongName],
   )
-
-  // 사용자 우리 동네가 바뀌면 selectedDongId 도 따라감 (최초 마운트 후)
-  useEffect(() => {
-    if (selectedDongId === undefined && user?.adminDongId) {
-      setSelectedDongId(user.adminDongId)
-    }
-  }, [user?.adminDongId, selectedDongId])
 
   const newsQuery = useQuery({
     queryKey: ['news', 'admin-dong', selectedDongId],
@@ -68,7 +76,7 @@ export function NewsPage() {
             <AdminDongPicker
               label=""
               selectedDongId={selectedDongId}
-              onChange={(id) => setSelectedDongId(id)}
+              onChange={(id) => setPickedDongId(id)}
               placeholder="동네를 선택해주세요"
             />
           </div>

@@ -19,6 +19,10 @@ export interface LifestyleResultPanelProps {
   resultDescription?: string
   recommendedCount?: number
   resultSubtitle?: string
+  /** LifestyleResultBlock 오른쪽 상단 영역 — 자치구/주거 필터 칩 등 */
+  filterSlot?: React.ReactNode
+  /** "다시 설문하기" 버튼 클릭 핸들러 — 주어지면 우측 상단에 노출 */
+  onRestart?: () => void
   /** 추천 동네 카드 */
   cards: ResultCardProps[]
   /** 선택된 카드 id — 클릭 시 호출되는 onSelect와 함께 사용 */
@@ -36,6 +40,8 @@ export function LifestyleResultPanel({
   resultDescription,
   recommendedCount,
   resultSubtitle,
+  filterSlot,
+  onRestart,
   cards,
   selectedId,
   onSelect,
@@ -51,8 +57,17 @@ export function LifestyleResultPanel({
         className,
       )}
     >
-      <div className="flex w-full">
+      <div className="flex w-full items-center justify-between gap-sm">
         <PageHeader type="Search" title={title} />
+        {onRestart && (
+          <button
+            type="button"
+            onClick={onRestart}
+            className="shrink-0 cursor-pointer rounded-md border border-border-default px-md py-xs text-body font-medium text-text-secondary transition-colors hover:border-brand-primary hover:text-brand-primary"
+          >
+            다시 설문하기
+          </button>
+        )}
       </div>
       <div className="flex h-[753.976px] w-full flex-col items-center justify-between">
         <QuestionProgress
@@ -63,12 +78,17 @@ export function LifestyleResultPanel({
           showCount={false}
         />
         <div className="flex w-full flex-1 flex-col items-center gap-md py-md">
-          <LifestyleResultBlock
-            title={resultTitle}
-            description={resultDescription}
-            recommendedCount={recommendedCount}
-            subtitle={resultSubtitle}
-          />
+          <div className="flex w-full items-start justify-between gap-sm">
+            <div className="flex-1 min-w-0">
+              <LifestyleResultBlock
+                title={resultTitle}
+                description={resultDescription}
+                recommendedCount={recommendedCount}
+                subtitle={resultSubtitle}
+              />
+            </div>
+            {filterSlot && <div className="shrink-0">{filterSlot}</div>}
+          </div>
           <ResultListPanel results={cards} selectedId={selectedId} onSelect={onSelect} />
           <PageNavigation current={currentPage} total={totalPages} onChange={onPageChange} />
         </div>

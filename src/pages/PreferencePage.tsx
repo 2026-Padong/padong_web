@@ -1,5 +1,6 @@
-import { useNavigate } from 'react-router'
-import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router'
+import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { SideNav } from '@/components/layout/SideNav'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { LifestyleQuestionPanelWide } from '@/features/neighborhood-finder/components/LifestyleQuestionPanelWide'
@@ -8,6 +9,8 @@ import { NavButton } from '@/features/neighborhood-finder/components/NavButton'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { usePreferenceQuestions } from '@/api/queries/usePreferenceQuestions'
+import { fetchMyPreferenceAnswers } from '@/api/preference'
+import { loadPreferenceAnswers } from '@/lib/preferenceStorage'
 
 const TOTAL = 10
 
@@ -17,7 +20,31 @@ type Likert = 1 | 2 | 3 | 4 | 5
 // 전체 10개 질문을 세로 스택으로 한 페이지에 나열, 사용자가 각자 답변 후 마지막에 분석 시작
 export function PreferencePage() {
   const nav = useNavigate()
+  const location = useLocation()
   const [answers, setAnswers] = useState<Record<number, Likert>>({})
+  // 결과 페이지의 "다시 설문하기" 진입 시 nav state.restart=true → 저장 답변 무시하고 설문 진행
+  const restartMode = (location.state as { restart?: boolean } | null)?.restart === true
+
+  // 이미 저장된 답변이 있으면 설문 받지 않고 결과 페이지로 즉시 이동.
+  // 로그인: GET /api/preference/me/answers / 비로그인: localStorage 폴백.
+  const savedAnswers = useQuery({
+    queryKey: ['preference', 'me', 'answers', 'check'],
+    queryFn: async () => {
+      const fromDb = await fetchMyPreferenceAnswers().catch(() => null)
+      if (fromDb) return fromDb
+      return loadPreferenceAnswers()
+    },
+    retry: false,
+    staleTime: 60_000,
+    enabled: !restartMode,
+  })
+
+  useEffect(() => {
+    if (restartMode) return
+    if (!savedAnswers.isPending && savedAnswers.data) {
+      nav('/finder/preference/result', { replace: true })
+    }
+  }, [restartMode, savedAnswers.isPending, savedAnswers.data, nav])
 
   const { data, isLoading, error, refetch } = usePreferenceQuestions()
 
@@ -33,7 +60,8 @@ export function PreferencePage() {
     nav('/finder/preference/analyzing', { state: { answers }, viewTransition: true })
   }
 
-  if (isLoading) {
+  // 저장된 답변 확인 중 (restart 모드 시 skip) — 질문 fetch 와 동일한 스켈레톤
+  if ((!restartMode && savedAnswers.isPending) || isLoading) {
     return (
       <div className="flex min-h-screen w-full pb-14 lg:pb-0">
         <SideNav activeType="Custom" />

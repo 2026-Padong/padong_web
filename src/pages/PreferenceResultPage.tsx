@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
+import { clearPreferenceAnswers } from '@/lib/preferenceStorage'
 import { SideNav } from '@/components/layout/SideNav'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { LifestyleResultPanel } from '@/features/neighborhood-finder/components/LifestyleResultPanel'
@@ -9,6 +11,7 @@ import { KakaoMap } from '@/components/map/KakaoMap'
 import { buildDetailProps, buildDetailPropsFromApi } from '@/features/neighborhood-finder/utils/buildDetailProps'
 import { mobilityToResultDto } from '@/features/neighborhood-finder/utils/mobilityToResult'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { Chip } from '@/components/ui/Chip'
 import {
   usePreferenceRecommendation,
   type DongneRecommendationResponse,
@@ -17,8 +20,10 @@ import { useDongDetail } from '@/api/queries/useDongDetail'
 import { toggleDongneLike } from '@/api/likes'
 import { useLoginGate } from '@/lib/useLoginGate'
 import { useRecommendationTracking } from '@/lib/useRecommendationTracking'
+import { resolveUserType } from '@/features/neighborhood-finder/utils/userTypeMap'
 
 export function PreferenceResultPage() {
+  const nav = useNavigate()
   const [page, setPage] = useState(1)
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
   // DB(엔티티)에 저장된 답변 → 추천 결과를 항상 백엔드 기준으로 조회 (메모리 캐시 shortcut X)
@@ -29,6 +34,16 @@ export function PreferenceResultPage() {
   const { requireLogin, loginDialog } = useLoginGate()
   const qc = useQueryClient()
   const track = useRecommendationTracking()
+
+  // "다시 설문하기" — localStorage 폴백 비우고 캐시 정리 후 설문 페이지로.
+  // PreferencePage 가 state.restart 를 보면 자동 redirect 우회.
+  // 새 답변 제출 시 백엔드가 entity upsert 하므로 DB 답변도 자연스럽게 갱신됨.
+  const handleRestart = () => {
+    clearPreferenceAnswers()
+    qc.removeQueries({ queryKey: ['preference', 'me', 'answers', 'check'] })
+    qc.removeQueries({ queryKey: ['preference', 'recommendation'] })
+    nav('/finder/preference', { state: { restart: true }, replace: true })
+  }
 
   const handleSelect = (adminDongCode: string) => {
     setSelectedId(adminDongCode)
@@ -104,7 +119,9 @@ export function PreferenceResultPage() {
       : buildDetailProps(selectedResult)
   }, [selectedResult, detailQuery.data])
 
-  const resultTitle = rec?.userType ?? '내 취향 분석'
+  const userTypeMeta = resolveUserType(rec?.userType)
+  const resultTitle = userTypeMeta.display
+  const resultSubDescription = userTypeMeta.description
 
   // 디버그 — 결과 페이지 상태/응답 추적 (console.group 으로 라벨링)
   useEffect(() => {
@@ -168,8 +185,17 @@ export function PreferenceResultPage() {
         <LifestyleResultPanel
           title="내 취향 기반"
           resultTitle={resultTitle}
-          resultDescription={`${total}개 동네를 추천했어요`}
-          recommendedCount={total}
+          resultDescription={resultSubDescription}
+          onRestart={handleRestart}
+          filterSlot={
+            <div className="flex flex-wrap items-center justify-end gap-xs">
+              {['자치구', '주거'].map((label) => (
+                <Chip key={label} state="default" className="cursor-pointer whitespace-nowrap">
+                  {label} ▾
+                </Chip>
+              ))}
+            </div>
+          }
           cards={pageItems.map((r) => ({
             id: r.id,
             dong: r.dong,
