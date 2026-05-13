@@ -46,7 +46,7 @@ export function DetailPanel({
   return (
     <aside
       className={cn(
-        'flex w-full flex-col items-start gap-md overflow-clip border border-border-default p-xl md:w-[380px] md:shrink-0 md:min-h-screen',
+        'flex w-full flex-col items-start gap-md border border-border-default p-xl md:w-[380px] md:shrink-0 md:h-screen md:overflow-y-auto',
         className,
       )}
     >
