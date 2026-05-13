@@ -39,8 +39,8 @@ export function ShopDetailMapPanel({
     <div className={cn('relative bg-surface-cool', className)}>
       <KakaoMap center={coord} level={4} markers={markers} className="h-full w-full" />
 
-      {/* MapOverlayCard — map 영역 하단 중앙 (max 400w). */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[30px] flex justify-center px-md">
+      {/* MapOverlayCard — map 영역 하단 중앙 (max 400w). z-10 으로 Kakao map 레이어 위. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-[30px] z-10 flex justify-center px-md">
         <div className="pointer-events-auto w-full max-w-[400px]">
           <MapOverlayCard
             image={thumbnailUrl || undefined}

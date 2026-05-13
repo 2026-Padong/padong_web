@@ -90,7 +90,7 @@ export function ShopListPage() {
       <div className="relative hidden flex-1 min-w-0 bg-surface-cool md:block">
         <KakaoMap center={mapCenter} level={4} markers={mapMarkers} className="h-full w-full" />
         {showDetail && selectedSummary && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-[30px] flex justify-center px-md">
+          <div className="pointer-events-none absolute inset-x-0 bottom-[30px] z-10 flex justify-center px-md">
             <div className="pointer-events-auto w-full max-w-[400px]">
               <MapOverlayCard
                 image={selectedSummary.thumbnailUrl || undefined}
