@@ -1,4 +1,4 @@
-import { useNavigate, useParams, useSearchParams } from 'react-router'
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router'
 import { SideNav } from '@/components/layout/SideNav'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { ShopListPanel } from '@/features/shop/components/ShopListPanel'
@@ -12,7 +12,12 @@ import { useShopDetail } from '@/api/queries/useShopDetail'
 export function ShopDetailPage() {
   const { id } = useParams<{ id: string }>()
   const nav = useNavigate()
+  const location = useLocation()
   const [params, setParams] = useSearchParams()
+  // 직접 진입 (공유 링크 등) 이면 history 가 비어있어 nav(-1) 이 안전하지 않음.
+  // react-router 가 SPA 라우팅으로 진입한 경우엔 location.key 가 default 가 아님.
+  const handleBack = () =>
+    location.key !== 'default' ? nav(-1) : nav('/shops', { viewTransition: true })
   const tab = (params.get('tab') ?? 'Menu') as 'Menu' | 'Info'
 
   const list = useShopList()
@@ -77,7 +82,7 @@ export function ShopDetailPage() {
         shop={shop}
         tab={tab}
         onTabChange={(t) => setParams({ tab: t })}
-        onBack={() => nav('/shops', { viewTransition: true })}
+        onBack={handleBack}
       />
       <ShopDetailMapPanel shop={shop} className="hidden md:block flex-1 min-w-0" />
       <BottomNav activeType="LocalShop" className="lg:hidden" />
