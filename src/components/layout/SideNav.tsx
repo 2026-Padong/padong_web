@@ -43,7 +43,7 @@ export function SideNav({ activeType, onNavigate, className }: SideNavProps) {
     <nav
       aria-label="주 내비게이션"
       className={cn(
-        'hidden w-[112px] shrink-0 flex-col items-stretch bg-brand-primary pt-xs lg:flex lg:min-h-screen',
+        'hidden w-[112px] shrink-0 flex-col items-stretch bg-brand-primary pt-xl lg:flex lg:min-h-screen',
         className,
       )}
     >
