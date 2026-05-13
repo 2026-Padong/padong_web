@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { SearchInput } from '@/components/ui/SearchInput'
@@ -81,20 +80,7 @@ export function ShopListPanel({
   }
 
   const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({})
-  // page 는 URL 에 저장 (?page=N) — 상세 → 뒤로가기 시 위치 복원.
-  const [searchParams, setSearchParams] = useSearchParams()
-  const page = Math.max(1, Number(searchParams.get('page')) || 1)
-  const setPage = (next: number) => {
-    setSearchParams(
-      (prev) => {
-        const sp = new URLSearchParams(prev)
-        if (next <= 1) sp.delete('page')
-        else sp.set('page', String(next))
-        return sp
-      },
-      { replace: false },
-    )
-  }
+  const [page, setPage] = useState(1)
 
   // 클라이언트 필터는 칩 (status/category/liked) 만 — 동 필터는 백엔드가 adminDongCode 로 처리
   const filtered = shops.filter((s) => {

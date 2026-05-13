@@ -1,19 +1,33 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
 import { SideNav } from '@/components/layout/SideNav'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { MapPlaceholder } from '@/components/ui/MapPlaceholder'
 import { ShopListPanel } from '@/features/shop/components/ShopListPanel'
+import { ShopDetailPanel } from '@/features/shop/components/ShopDetailPanel'
+import { ShopDetailMapPanel } from '@/features/shop/components/ShopDetailMapPanel'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useShopList } from '@/api/queries/useShopList'
+import { useShopDetail } from '@/api/queries/useShopDetail'
 
+// 단일 라우트 패턴 — JobFinder 와 동일.
+// 카드 클릭 시 route 변경 없이 detail 패널만 토글 → list 상태(page/검색/필터) 자연 보존.
+// /shops/:id 직접 진입은 ShopDetailPage 가 별도 처리 (deeplink 호환).
 export function ShopListPage() {
-  const nav = useNavigate()
-  // 자동완성에서 동 선택 시 adminDongCode 저장 → useShopList 파라미터로 → React Query 자동 refetch
   const [adminDongCode, setAdminDongCode] = useState<string | undefined>(undefined)
-  // isPending = 최초 로딩만 (refetch 시엔 keepPreviousData 로 이전 데이터 유지 → panel unmount 방지)
+  const [selectedShopId, setSelectedShopId] = useState<number | undefined>(undefined)
+  const [detailTab, setDetailTab] = useState<'Menu' | 'Info'>('Menu')
+
   const { data, isPending, error, refetch } = useShopList({ adminDongCode })
+  const detail = useShopDetail(selectedShopId != null ? String(selectedShopId) : undefined)
+
+  const handleSelect = (id: number) => {
+    setSelectedShopId(id)
+    setDetailTab('Menu')
+  }
+  const handleDeselect = () => setSelectedShopId(undefined)
+
+  const showDetail = selectedShopId != null
 
   return (
     <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
@@ -36,14 +50,26 @@ export function ShopListPage() {
           <ErrorState title="가게를 불러올 수 없어요" onRetry={() => refetch()} />
         </div>
       ) : (
-        // 빈 결과도 패널은 항상 렌더 — 검색/필터/위치칩 유지, 카드 영역에서만 "가게가 없어요"
         <ShopListPanel
           shops={data?.content ?? []}
-          onShopClick={(id) => nav(`/shops/${id}`, { viewTransition: true })}
+          onShopClick={handleSelect}
           onAdminDongChange={(item) => setAdminDongCode(item.adminDongCode)}
+          className={showDetail ? 'hidden md:flex' : undefined}
         />
       )}
-      <MapPlaceholder className="hidden md:block flex-1 min-w-0" />
+      {showDetail && detail.data && (
+        <ShopDetailPanel
+          shop={detail.data}
+          tab={detailTab}
+          onTabChange={setDetailTab}
+          onBack={handleDeselect}
+        />
+      )}
+      {showDetail && detail.data ? (
+        <ShopDetailMapPanel shop={detail.data} className="hidden md:block flex-1 min-w-0" />
+      ) : (
+        <MapPlaceholder className="hidden md:block flex-1 min-w-0" />
+      )}
       <BottomNav activeType="LocalShop" className="lg:hidden" />
     </div>
   )
