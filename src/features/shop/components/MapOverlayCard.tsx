@@ -35,12 +35,16 @@ export function MapOverlayCard({
   return (
     <div className="flex w-full max-w-[400px] flex-col items-start justify-center gap-md rounded-md border border-border-default bg-neutral-white p-md">
       <div className="flex w-full items-center justify-between gap-md">
-        <div className="flex h-[117px] w-[120px] shrink-0 items-center justify-center overflow-clip rounded-md border border-border-default p-xs">
+        <div className="relative h-[117px] w-[120px] shrink-0 overflow-clip rounded-md bg-surface-subtle">
           <Img
             src={image}
             alt={name}
-            className="h-full w-full rounded-md object-contain"
-            fallback={<ImageIcon size={32} className="text-border-default" />}
+            className="absolute inset-0 h-full w-full object-cover"
+            fallback={
+              <div className="flex h-full w-full items-center justify-center">
+                <ImageIcon size={32} className="text-border-default" />
+              </div>
+            }
           />
         </div>
         <div className="flex h-full min-w-0 flex-1 flex-col items-start justify-center gap-sm overflow-clip">
