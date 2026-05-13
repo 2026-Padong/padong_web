@@ -54,7 +54,7 @@ export function ShopListPage() {
           shops={data?.content ?? []}
           onShopClick={handleSelect}
           onAdminDongChange={(item) => setAdminDongCode(item.adminDongCode)}
-          className={showDetail ? 'hidden xl:flex' : undefined}
+          className={showDetail ? 'hidden md:flex' : undefined}
         />
       )}
       {showDetail && detail.data && (
