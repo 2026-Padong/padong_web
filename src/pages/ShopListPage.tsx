@@ -97,6 +97,9 @@ export function ShopListPage() {
                 name={selectedSummary.name}
                 address={detail.data?.address ?? ''}
                 topMenus={detail.data?.menus.slice(0, 3).map((m) => m.name) ?? []}
+                recruitmentStatus={selectedSummary.recruitmentStatus}
+                participantCurrent={selectedSummary.participantCurrent}
+                participantTotal={selectedSummary.participantTotal}
                 actionLabel="참여하기"
               />
             </div>

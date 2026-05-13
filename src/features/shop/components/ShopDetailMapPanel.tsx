@@ -1,6 +1,7 @@
 import { KakaoMap, type MapMarker } from '@/components/map/KakaoMap'
 import { MapOverlayCard } from './MapOverlayCard'
 import { cn } from '@/lib/cn'
+import type { RecruitmentStatus } from '@/api/contracts/shops'
 
 // Figma 1:1: ShopDetailPage MenuGroup·InfoGroup의 Map Panel (591:10795 / 1691:6381)
 // 내용: 가게 위치 마커 + 하단 중앙 MapOverlayCard
@@ -14,6 +15,9 @@ export interface ShopDetailMapPanelProps {
   latitude?: number | null
   longitude?: number | null
   topMenus?: string[]
+  recruitmentStatus?: RecruitmentStatus
+  participantCurrent?: number
+  participantTotal?: number | null
   className?: string
   onJoin?: () => void
 }
@@ -27,6 +31,9 @@ export function ShopDetailMapPanel({
   latitude,
   longitude,
   topMenus,
+  recruitmentStatus,
+  participantCurrent,
+  participantTotal,
   className,
   onJoin,
 }: ShopDetailMapPanelProps) {
@@ -47,6 +54,9 @@ export function ShopDetailMapPanel({
             name={name}
             address={address ?? ''}
             topMenus={topMenus ?? []}
+            recruitmentStatus={recruitmentStatus}
+            participantCurrent={participantCurrent}
+            participantTotal={participantTotal}
             actionLabel="참여하기"
             onAction={onJoin}
           />

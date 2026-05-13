@@ -1,22 +1,20 @@
 import { Image as ImageIcon } from 'lucide-react'
 import { Icon } from '@/components/ui/Icon'
 import { Img } from '@/components/ui/Img'
+import { RecruitmentBadge } from './RecruitmentBadge'
+import type { RecruitmentStatus } from '@/api/contracts/shops'
 
 // Figma 1:1: Tile · MapOverlayCard (660:1998) > MapOverlayCard COMPONENT
-// w-[400px] V gap-lg items-start justify-center p-md rounded-xl border bg-white
-// 상단 H gap-md h-[137px] py-xs justify-between:
-//   - 이미지 박스 120x117 rounded-md border p-xs
-//   - 우측 V gap-lg flex-1 pl-md pt-md:
-//     - 헤더 V h-[38px] justify-between:
-//       - 가게명 18px Bold text-primary
-//       - 주소: location pin + 11px Medium text-secondary
-//     - 메뉴 칩 H gap-xs justify-center: 각 칩 flex-1 bg-surface-subtle px-0 py-xxs rounded-xl, 10px Regular text-secondary
-// 하단 CTA: bg-brand-primary h-[47px] rounded-md, "참여하기" 16px Bold white
 export interface MapOverlayCardProps {
   image?: string
   name: string
   address: string
   topMenus?: string[]
+  /** 모집 상태 — 미지정 시 뱃지 미표시 */
+  recruitmentStatus?: RecruitmentStatus
+  /** 현재 참여 인원 — total 과 함께 있을 때 표시 */
+  participantCurrent?: number
+  participantTotal?: number | null
   actionLabel?: string
   onAction?: () => void
 }
@@ -26,12 +24,17 @@ export function MapOverlayCard({
   name,
   address,
   topMenus = [],
+  recruitmentStatus,
+  participantCurrent,
+  participantTotal,
   actionLabel = '참여하기',
   onAction,
 }: MapOverlayCardProps) {
+  const showParticipants =
+    participantCurrent != null && participantTotal != null && participantTotal > 0
   return (
-    <div className="flex w-full max-w-[400px] flex-col items-start justify-center gap-lg rounded-md border border-border-default bg-neutral-white p-md">
-      <div className="flex h-[137px] w-full items-center justify-between gap-md py-xs">
+    <div className="flex w-full max-w-[400px] flex-col items-start justify-center gap-md rounded-md border border-border-default bg-neutral-white p-md">
+      <div className="flex w-full items-center justify-between gap-md">
         <div className="flex h-[117px] w-[120px] shrink-0 items-center justify-center overflow-clip rounded-md border border-border-default p-xs">
           <Img
             src={image}
@@ -40,24 +43,37 @@ export function MapOverlayCard({
             fallback={<ImageIcon size={32} className="text-border-default" />}
           />
         </div>
-        <div className="flex h-full flex-1 flex-col items-start justify-center gap-lg overflow-clip pl-md pt-md">
-          <div className="flex h-[38px] w-full flex-col items-start justify-between">
+        <div className="flex h-full min-w-0 flex-1 flex-col items-start justify-center gap-sm overflow-clip">
+          {/* 헤더 — 가게명 + 모집중 뱃지 */}
+          <div className="flex w-full items-center justify-between gap-xs">
             <p className="text-h4 font-bold text-text-primary whitespace-nowrap">{name}</p>
-            <div className="flex w-full items-center gap-xxs">
-              <Icon name="icon-location" size={11} className="shrink-0 text-text-secondary" aria-hidden />
-              <span className="text-body-s font-medium text-text-secondary whitespace-nowrap">
-                {address}
-              </span>
-            </div>
+            {recruitmentStatus && <RecruitmentBadge status={recruitmentStatus} />}
           </div>
+          {/* 주소 */}
+          <div className="flex w-full items-center gap-xxs">
+            <Icon name="icon-location" size={11} className="shrink-0 text-text-secondary" aria-hidden />
+            <span className="text-body-s font-medium text-text-secondary truncate">
+              {address}
+            </span>
+          </div>
+          {/* 현재 인원 */}
+          {showParticipants && (
+            <p className="text-body-s font-medium text-text-secondary">
+              현재 인원{' '}
+              <span className="font-bold text-text-primary">
+                {participantCurrent} / {participantTotal}명
+              </span>
+            </p>
+          )}
+          {/* 메뉴 칩 */}
           {topMenus.length > 0 && (
-            <div className="flex w-full items-start justify-center gap-xs">
+            <div className="flex w-full items-start justify-start gap-xs">
               {topMenus.slice(0, 3).map((m) => (
                 <div
                   key={m}
                   className="flex flex-1 items-center justify-center rounded-xl bg-surface-subtle py-xxs"
                 >
-                  <span className="text-caption font-normal text-text-secondary whitespace-nowrap">
+                  <span className="text-caption font-normal text-text-secondary truncate px-xxs">
                     {m}
                   </span>
                 </div>

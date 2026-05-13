@@ -91,6 +91,9 @@ export function ShopDetailPage() {
         latitude={shop.latitude}
         longitude={shop.longitude}
         topMenus={shop.menus.slice(0, 3).map((m) => m.name)}
+        recruitmentStatus={shop.recruitmentStatus}
+        participantCurrent={shop.participantCurrent}
+        participantTotal={shop.participantTotal}
         className="hidden md:block flex-1 min-w-0"
       />
       <BottomNav activeType="LocalShop" className="lg:hidden" />
