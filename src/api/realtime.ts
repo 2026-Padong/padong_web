@@ -42,6 +42,8 @@ export interface HotplaceRealtimeItem {
   gender?: { maleRate?: string; femaleRate?: string }
   transport?: unknown
   roadTraffic?: { status?: string; speed?: string }
+  /** 측정 시각 — Seoul Open API 의 PPLTN_TIME/WTHR_TIME 노출. "YYYY-MM-DD HH:mm" 형식 */
+  dataTime?: string
 }
 
 // GET /realtime/districts/{guName}/summary

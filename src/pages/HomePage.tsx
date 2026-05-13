@@ -64,6 +64,12 @@ export function HomePage() {
   )
   const currentPageItems = (hotplacePage_data?.content ?? []).map(hotplaceToPlaceCard)
   const totalPages = hotplacePage_data?.totalPages ?? 1
+  // 백엔드 핫플레이스 응답의 dataTime ("YYYY-MM-DD HH:mm" — Seoul Open API 측정 시각) 사용.
+  // 페이지 첫 카드 기준 (한 응답 안에서 동일 시점일 가능성 높음).
+  const updatedAtRaw = hotplacePage_data?.content?.[0]?.dataTime
+  const updatedLabel = updatedAtRaw
+    ? `${updatedAtRaw.slice(11, 16)} 기준`
+    : ''
 
   return (
     <div className="flex min-h-screen flex-col bg-neutral-white pb-[56px] lg:pb-0">
@@ -188,7 +194,7 @@ export function HomePage() {
             <div className="flex flex-col gap-md">
               <div className="flex items-center justify-between">
                 <AreaSectionTitle>{selectedDistrict} 지역 정보</AreaSectionTitle>
-                <TimePill>19:15 기준</TimePill>
+                {updatedLabel && <TimePill>{updatedLabel}</TimePill>}
               </div>
               <div className="flex flex-col gap-lg">
                 {hotplacesPending ? (

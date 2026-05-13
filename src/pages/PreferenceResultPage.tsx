@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { SideNav } from '@/components/layout/SideNav'
 import { BottomNav } from '@/components/layout/BottomNav'
@@ -106,6 +106,43 @@ export function PreferenceResultPage() {
 
   const resultTitle = rec?.userType ?? '내 취향 분석'
 
+  // 디버그 — 결과 페이지 상태/응답 추적 (console.group 으로 라벨링)
+  useEffect(() => {
+    console.groupCollapsed(
+      `[PreferenceResult] status=${recQuery.status} fetchStatus=${recQuery.fetchStatus} items=${allItems.length}`,
+    )
+    console.log('recQuery.isPending:', recQuery.isPending)
+    console.log('recQuery.isFetching:', recQuery.isFetching)
+    console.log('recQuery.isError:', recQuery.isError)
+    if (recQuery.error) console.error('recQuery.error:', recQuery.error)
+    console.log('recQuery.dataUpdatedAt:', recQuery.dataUpdatedAt && new Date(recQuery.dataUpdatedAt).toISOString())
+    console.log('rec (data):', rec)
+    console.log('  userType:', rec?.userType)
+    console.log('  page.content.length:', rec?.page?.content?.length)
+    console.log('  page.totalElements:', rec?.page?.totalElements)
+    console.log('  first content item:', rec?.page?.content?.[0])
+    console.log('allItems.length:', allItems.length)
+    console.log('current pageItems:', pageItems.length, 'page=', page, '/', totalPages)
+    console.log(
+      'EmptyState branch:',
+      recQuery.isPending ? 'LOADING' : !rec ? 'NO_ANSWERS' : allItems.length === 0 ? 'NO_RESULTS' : 'OK',
+    )
+    console.groupEnd()
+  }, [
+    recQuery.status,
+    recQuery.fetchStatus,
+    recQuery.isPending,
+    recQuery.isFetching,
+    recQuery.isError,
+    recQuery.error,
+    recQuery.dataUpdatedAt,
+    rec,
+    allItems.length,
+    pageItems.length,
+    page,
+    totalPages,
+  ])
+
   return (
     <div className="flex min-h-screen w-full pb-14 lg:pb-0">
       <SideNav activeType="Custom" />
@@ -113,11 +150,18 @@ export function PreferenceResultPage() {
         <div className="flex w-full items-center justify-center p-xl md:w-[420px] md:shrink-0 md:min-h-screen">
           <EmptyState title="추천 결과를 불러오는 중..." message="" />
         </div>
-      ) : !rec || allItems.length === 0 ? (
+      ) : !rec ? (
         <div className="flex w-full items-center justify-center p-xl md:w-[420px] md:shrink-0 md:min-h-screen">
           <EmptyState
             title="추천 결과가 없어요"
             message="취향 설문을 먼저 진행해주세요"
+          />
+        </div>
+      ) : allItems.length === 0 ? (
+        <div className="flex w-full items-center justify-center p-xl md:w-[420px] md:shrink-0 md:min-h-screen">
+          <EmptyState
+            title="조건에 맞는 동네가 없어요"
+            message="다른 답변으로 다시 시도해보세요"
           />
         </div>
       ) : (
