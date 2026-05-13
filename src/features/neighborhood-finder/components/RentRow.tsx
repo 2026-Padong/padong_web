@@ -17,9 +17,13 @@ export function RentRow({ iconType = 'Apart', title, meta }: RentRowProps) {
   return (
     <div className="flex w-full items-center gap-sm py-xs">
       <KindIcon type={iconType} size={36} className="shrink-0 text-text-secondary" />
-      <div className="flex flex-1 flex-col items-start gap-xxs overflow-clip whitespace-nowrap">
+      <div className="flex min-w-0 flex-1 flex-col items-start gap-xxs">
         <span className="text-subhead font-bold text-text-secondary">{title}</span>
-        {meta && <span className="text-[12px] font-normal text-text-tertiary">{meta}</span>}
+        {meta && (
+          <span className="whitespace-pre-line text-[12px] font-normal leading-snug text-text-tertiary">
+            {meta}
+          </span>
+        )}
       </div>
     </div>
   )

@@ -16,7 +16,9 @@ export function ResultListSummary({
   return (
     <div className="flex flex-col items-start">
       <span className="text-h4 font-bold text-text-primary">{title}</span>
-      <span className="text-body font-normal text-text-tertiary">{subtitle}</span>
+      {subtitle && (
+        <span className="text-body font-normal text-text-tertiary">{subtitle}</span>
+      )}
     </div>
   )
 }

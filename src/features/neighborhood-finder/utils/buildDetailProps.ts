@@ -30,15 +30,18 @@ const BUILDING_ICON: Record<string, RentRowProps['iconType']> = {
 }
 
 function rentMeta(e: RentBuildingTypeEntry): string {
-  const parts: string[] = []
+  // 두 줄로 표기: 1줄 월세, 2줄 전세·매매
+  const line1: string[] = []
   if (e.monthlyRent.deposit != null || e.monthlyRent.monthlyRent != null) {
     const dep = fmt만원(e.monthlyRent.deposit)
     const rent = fmt만원(e.monthlyRent.monthlyRent)
-    parts.push(`월세 ${dep}/${rent}`)
+    line1.push(`월세 ${dep}/${rent}`)
   }
-  if (e.jeonse.amount != null) parts.push(`전세 ${fmt만원(e.jeonse.amount)}`)
-  if (e.sale.amount != null) parts.push(`매매 ${fmt만원(e.sale.amount)}`)
-  return parts.length > 0 ? parts.join(' · ') : '정보 없음'
+  const line2: string[] = []
+  if (e.jeonse.amount != null) line2.push(`전세 ${fmt만원(e.jeonse.amount)}`)
+  if (e.sale.amount != null) line2.push(`매매 ${fmt만원(e.sale.amount)}`)
+  const out = [line1.join(''), line2.join(' · ')].filter(Boolean).join('\n')
+  return out || '정보 없음'
 }
 
 // 백엔드 상세 응답으로 DetailPanel props 생성

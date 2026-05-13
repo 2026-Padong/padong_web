@@ -9,6 +9,7 @@ import { DetailPanel } from '@/features/neighborhood-finder/components/DetailPan
 import { KakaoMap } from '@/components/map/KakaoMap'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { Chip } from '@/components/ui/Chip'
 import { useMobilityArrival, useMobilityArrivalMulti } from '@/api/queries/useMobility'
 import { useDongDetail } from '@/api/queries/useDongDetail'
 import { mobilityToResultDto } from '@/features/neighborhood-finder/utils/mobilityToResult'
@@ -190,9 +191,10 @@ export function JobFinderPage() {
   const hint = isMulti && destinations.length === 0
     ? `최대 ${MAX_DESTINATIONS}개 선택 가능`
     : undefined
+  // "추천 동네 N개" 텍스트는 제거 — 다중 모드는 "N개 직장 종합" 만 노출
   const summarySubtitle = isMulti
-    ? `추천 동네 ${total}개 · ${destinations.length}개 직장 종합`
-    : `추천 동네 ${total}개`
+    ? `${destinations.length}개 직장 종합`
+    : ''
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -311,6 +313,15 @@ export function JobFinderPage() {
             currentPage={page}
             totalPages={totalPages}
             onPageChange={setPage}
+            filterSlot={
+              <div className="flex flex-wrap items-center justify-end gap-xs">
+                {['통근시간', '자치구', '주거'].map((label) => (
+                  <Chip key={label} state="default" className="cursor-pointer whitespace-nowrap">
+                    {label} ▾
+                  </Chip>
+                ))}
+              </div>
+            }
           />
         )}
       </aside>
