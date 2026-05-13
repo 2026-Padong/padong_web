@@ -116,6 +116,15 @@ export function KakaoMap({
     return () => ro.disconnect()
   }, [])
 
+  // 마커 사용 케이스 (dongs 없음, selectedId 없음) — center prop 변경 시 panTo.
+  // Kakao Map 은 center prop 을 생성 시점에만 적용하므로 imperative panTo 필요.
+  useEffect(() => {
+    if (!mapRef.current || !center) return
+    if (dongs.length > 0 || selectedId) return // 폴리곤/선택 흐름은 위 effect 가 처리
+    mapRef.current.panTo(new window.kakao.maps.LatLng(center.lat, center.lng))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [center?.lat, center?.lng])
+
   // API 키 미설정 — placeholder 안내
   if (!apiKey) {
     return (
@@ -163,7 +172,7 @@ export function KakaoMap({
   return (
     <div ref={wrapperRef} className="h-full w-full">
     <Map
-      center={SEOUL_CENTER}
+      center={center}
       level={level}
       onCreate={(map) => {
         mapRef.current = map
