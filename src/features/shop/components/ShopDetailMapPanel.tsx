@@ -28,9 +28,9 @@ export function ShopDetailMapPanel({ shop, className, onJoin }: ShopDetailMapPan
     <div className={cn('relative bg-surface-cool', className)}>
       <KakaoMap center={coord} level={4} markers={markers} className="h-full w-full" />
 
-      {/* MapOverlayCard 절대 위치 — 좌측 하단, 400w 고정 (Figma 1:1) */}
-      <div className="pointer-events-none absolute bottom-[30px] left-[30px]">
-        <div className="pointer-events-auto">
+      {/* MapOverlayCard — map 영역 하단 중앙 (max 400w). 좁은 viewport 에서도 항상 보임. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-[30px] flex justify-center px-md">
+        <div className="pointer-events-auto w-full max-w-[400px]">
           <MapOverlayCard
             image={shop.thumbnailUrl || undefined}
             name={shop.name}
