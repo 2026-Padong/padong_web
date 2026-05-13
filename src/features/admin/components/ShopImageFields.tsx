@@ -109,9 +109,16 @@ export function ShopGalleryField({
 }: ShopGalleryFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0]
-    if (!f) return
-    onAdd(f)
+    const files = Array.from(e.target.files ?? [])
+    if (files.length === 0) return
+    // 서버 제한: 10MB / jpeg·png·webp 만 허용. 한 장이라도 위반하면 전체 reject.
+    const tooBig = files.find((f) => f.size > 10 * 1024 * 1024)
+    if (tooBig) {
+      alert(`${tooBig.name} 파일이 10MB 를 초과합니다.`)
+      if (inputRef.current) inputRef.current.value = ''
+      return
+    }
+    files.forEach(onAdd)
     if (inputRef.current) inputRef.current.value = ''
   }
   return (
@@ -127,6 +134,7 @@ export function ShopGalleryField({
             ref={inputRef}
             type="file"
             accept="image/*"
+            multiple
             className="hidden"
             onChange={handleFile}
           />
