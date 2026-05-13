@@ -87,7 +87,7 @@ export function HomePage() {
             <div className="flex w-full flex-col gap-md">
               <SectionHeader
                 type="TitleSearch"
-                title="공동구매"
+                title="소분 모임"
                 searchValue={search}
                 onSearchChange={setSearch}
               />
@@ -153,7 +153,7 @@ export function HomePage() {
           <section className="flex flex-col gap-[60px]">
             {/* CityDataSection */}
             <div className="flex flex-col gap-md">
-              <SectionHeader type="Title" title="실시간 도시데이터" />
+              <SectionHeader type="Title" title="실시간 이 동네" />
               <DataMap selectedDistrict={selectedDistrict} onDistrictClick={setSelectedDistrict} />
               <div className="grid w-full grid-cols-2 gap-md md:grid-cols-4">
                 <DataCard

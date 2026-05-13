@@ -286,14 +286,9 @@ export function ShopDetailPanel({
               </p>
             </div>
             {shop.currentGroupOrder && (
-              <>
-                <p className="text-body font-normal text-text-tertiary whitespace-nowrap">
-                  {formatDeadline(shop.currentGroupOrder.recruitmentDeadline)} 마감
-                </p>
-                <p className="text-body font-normal text-text-tertiary whitespace-nowrap">
-                  1인 최소 {fmtPrice(shop.currentGroupOrder.minOrderPerPerson)}
-                </p>
-              </>
+              <p className="text-body font-normal text-text-tertiary whitespace-nowrap">
+                {formatDeadline(shop.currentGroupOrder.recruitmentDeadline)} 마감
+              </p>
             )}
           </div>
           <div className="flex flex-1 flex-col items-end justify-center gap-xxs overflow-clip">
@@ -303,6 +298,11 @@ export function ShopDetailPanel({
             <p className="text-h3 font-bold text-brand-primary whitespace-nowrap">
               {fmtPrice(totalAmount)}
             </p>
+            {shop.currentGroupOrder && (
+              <p className="text-body font-normal text-text-tertiary whitespace-nowrap">
+                최소 주문 금액 {fmtPrice(shop.currentGroupOrder.minOrderPerPerson)}
+              </p>
+            )}
           </div>
         </div>
         <button

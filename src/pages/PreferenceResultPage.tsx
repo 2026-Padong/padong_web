@@ -10,8 +10,7 @@ import { buildDetailProps, buildDetailPropsFromApi } from '@/features/neighborho
 import { mobilityToResultDto } from '@/features/neighborhood-finder/utils/mobilityToResult'
 import { EmptyState } from '@/components/ui/EmptyState'
 import {
-  recommendationKey,
-  useRecommendation,
+  usePreferenceRecommendation,
   type DongneRecommendationResponse,
 } from '@/api/queries/useResults'
 import { useDongDetail } from '@/api/queries/useDongDetail'
@@ -22,8 +21,11 @@ import { useRecommendationTracking } from '@/lib/useRecommendationTracking'
 export function PreferenceResultPage() {
   const [page, setPage] = useState(1)
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
-  // useAnalyze 가 캐시에 넣어둔 백엔드 응답 ({userType, page: PageResponse<MobilityResponse>})
-  const rec = useRecommendation()
+  // DB(엔티티)에 저장된 답변 → 추천 결과를 항상 백엔드 기준으로 조회 (메모리 캐시 shortcut X)
+  const recQuery = usePreferenceRecommendation()
+  const rec = recQuery.data ?? undefined
+  // 좋아요 optimistic update 를 위해 query key 직접 사용
+  const PREFERENCE_REC_KEY = ['preference', 'recommendation'] as const
   const { requireLogin, loginDialog } = useLoginGate()
   const qc = useQueryClient()
   const track = useRecommendationTracking()
@@ -39,10 +41,10 @@ export function PreferenceResultPage() {
 
   const handleToggleLike = async (adminDongCode: string) => {
     if (!requireLogin({ action: '좋아요' })) return
-    const prev = qc.getQueryData<DongneRecommendationResponse>(recommendationKey)
+    const prev = qc.getQueryData<DongneRecommendationResponse>(PREFERENCE_REC_KEY)
     if (!prev) return
     // optimistic
-    qc.setQueryData<DongneRecommendationResponse>(recommendationKey, {
+    qc.setQueryData<DongneRecommendationResponse>(PREFERENCE_REC_KEY, {
       ...prev,
       page: {
         ...prev.page,
@@ -59,7 +61,7 @@ export function PreferenceResultPage() {
     })
     try {
       const result = await toggleDongneLike(adminDongCode)
-      qc.setQueryData<DongneRecommendationResponse>(recommendationKey, (old) =>
+      qc.setQueryData<DongneRecommendationResponse>(PREFERENCE_REC_KEY, (old) =>
         !old
           ? old
           : {
@@ -76,7 +78,7 @@ export function PreferenceResultPage() {
       )
       track.onCardLike(adminDongCode, result.liked)
     } catch {
-      qc.setQueryData(recommendationKey, prev)
+      qc.setQueryData(PREFERENCE_REC_KEY, prev)
     }
   }
 
@@ -107,7 +109,11 @@ export function PreferenceResultPage() {
   return (
     <div className="flex min-h-screen w-full pb-14 lg:pb-0">
       <SideNav activeType="Custom" />
-      {!rec || allItems.length === 0 ? (
+      {recQuery.isPending ? (
+        <div className="flex w-full items-center justify-center p-xl md:w-[420px] md:shrink-0 md:min-h-screen">
+          <EmptyState title="추천 결과를 불러오는 중..." message="" />
+        </div>
+      ) : !rec || allItems.length === 0 ? (
         <div className="flex w-full items-center justify-center p-xl md:w-[420px] md:shrink-0 md:min-h-screen">
           <EmptyState
             title="추천 결과가 없어요"

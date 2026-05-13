@@ -525,7 +525,7 @@ const MOCK_NEWS: MockNews[] = [
   { adminDongId: 10, dong: '잠실동', title: '잠실 한강공원 자전거 도로 재정비 완료', description: '잠실 한강공원 자전거 도로 재정비 공사가 완료되어 5월부터 정상 이용 가능.', originallink: 'https://news.example.com/jamsil-bike', thumbnail: 'https://picsum.photos/seed/news26/640/360' },
 
   // 일반 도시 뉴스 (어느 동 선택해도 fallback 가능)
-  { adminDongId: 0, dong: '서울', title: '서울시, 동네 공동주문 플랫폼 사장님 지원 사업 발표', description: '서울시가 동네 공동주문 플랫폼 입점 사장님 대상 지원 사업을 발표했다. 신청은 6월부터.', originallink: 'https://news.example.com/seoul-support', thumbnail: 'https://picsum.photos/seed/news27/640/360' },
+  { adminDongId: 0, dong: '서울', title: '서울시, 동네 소분 모임 플랫폼 사장님 지원 사업 발표', description: '서울시가 동네 소분 모임 플랫폼 입점 사장님 대상 지원 사업을 발표했다. 신청은 6월부터.', originallink: 'https://news.example.com/seoul-support', thumbnail: 'https://picsum.photos/seed/news27/640/360' },
   { adminDongId: 0, dong: '서울', title: '소상공인 디지털 전환 컨설팅 무료 지원', description: '서울시가 소상공인 대상 디지털 전환 컨설팅을 무료 지원한다고 발표했다.', originallink: 'https://news.example.com/seoul-digital', thumbnail: 'https://picsum.photos/seed/news28/640/360' },
 ]
 
