@@ -28,6 +28,10 @@ export function ShopListPage() {
   const handleDeselect = () => setSelectedShopId(undefined)
 
   const showDetail = selectedShopId != null
+  // 리스트 캐시에서 selected 가게 summary 즉시 추출 — name/thumbnail/coord 등은
+  // detail 로딩 끝나기 전부터 표시 가능. 클릭 즉시 해당 가게 overlay 가 뜸.
+  const selectedSummary =
+    selectedShopId != null ? data?.content.find((s) => s.id === selectedShopId) : undefined
 
   return (
     <div className="flex min-h-screen w-full pb-[56px] lg:pb-0">
@@ -57,16 +61,33 @@ export function ShopListPage() {
           className={showDetail ? 'hidden md:flex' : undefined}
         />
       )}
-      {showDetail && detail.data && (
-        <ShopDetailPanel
-          shop={detail.data}
-          tab={detailTab}
-          onTabChange={setDetailTab}
-          onBack={handleDeselect}
+      {showDetail &&
+        (detail.data ? (
+          <ShopDetailPanel
+            shop={detail.data}
+            tab={detailTab}
+            onTabChange={setDetailTab}
+            onBack={handleDeselect}
+          />
+        ) : (
+          // detail 로딩 중 — 패널 자리 유지하여 가게 전환 시 깜빡임 방지.
+          <aside className="flex w-full flex-col items-center gap-md bg-neutral-white px-xl pb-sm pt-xl md:w-[450px] md:shrink-0">
+            <Skeleton className="h-[19px] w-full" />
+            <Skeleton className="h-[28px] w-[180px]" />
+            <Skeleton className="h-[214px] w-full" />
+            <Skeleton className="h-[300px] w-full" />
+          </aside>
+        ))}
+      {showDetail && selectedSummary ? (
+        <ShopDetailMapPanel
+          name={selectedSummary.name}
+          thumbnailUrl={selectedSummary.thumbnailUrl}
+          address={detail.data?.address}
+          latitude={selectedSummary.latitude}
+          longitude={selectedSummary.longitude}
+          topMenus={detail.data?.menus.slice(0, 3).map((m) => m.name)}
+          className="hidden md:block flex-1 min-w-0"
         />
-      )}
-      {showDetail && detail.data ? (
-        <ShopDetailMapPanel shop={detail.data} className="hidden md:block flex-1 min-w-0" />
       ) : (
         <MapPlaceholder className="hidden md:block flex-1 min-w-0" />
       )}

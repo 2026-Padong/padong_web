@@ -84,7 +84,15 @@ export function ShopDetailPage() {
         onTabChange={(t) => setParams({ tab: t })}
         onBack={handleBack}
       />
-      <ShopDetailMapPanel shop={shop} className="hidden md:block flex-1 min-w-0" />
+      <ShopDetailMapPanel
+        name={shop.name}
+        thumbnailUrl={shop.thumbnailUrl}
+        address={shop.address}
+        latitude={shop.latitude}
+        longitude={shop.longitude}
+        topMenus={shop.menus.slice(0, 3).map((m) => m.name)}
+        className="hidden md:block flex-1 min-w-0"
+      />
       <BottomNav activeType="LocalShop" className="lg:hidden" />
     </div>
   )

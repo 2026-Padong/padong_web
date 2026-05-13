@@ -1,41 +1,52 @@
 import { KakaoMap, type MapMarker } from '@/components/map/KakaoMap'
 import { MapOverlayCard } from './MapOverlayCard'
 import { cn } from '@/lib/cn'
-import type { ShopDetailResponse } from '@/api/contracts/shops'
 
 // Figma 1:1: ShopDetailPage MenuGroup·InfoGroup의 Map Panel (591:10795 / 1691:6381)
-// 내용: 가게 위치 마커 + 좌측 하단 MapOverlayCard
-// 좌표는 ShopDetailResponse.latitude/longitude — 백엔드 적재 대기 (없으면 서울 시청 fallback)
+// 내용: 가게 위치 마커 + 하단 중앙 MapOverlayCard
+//
+// props 는 list summary 만으로 즉시 렌더 가능하고 detail 로드 후 enrich 되는 구조.
+// (가게 카드 클릭 → 캐시된 name/thumbnail/lat/lng 로 즉시 표시 → menus 채워짐)
 export interface ShopDetailMapPanelProps {
-  shop: ShopDetailResponse
+  name: string
+  thumbnailUrl?: string
+  address?: string
+  latitude?: number | null
+  longitude?: number | null
+  topMenus?: string[]
   className?: string
   onJoin?: () => void
 }
 
 const SEOUL_CITY_HALL = { lat: 37.5665, lng: 126.978 }
 
-export function ShopDetailMapPanel({ shop, className, onJoin }: ShopDetailMapPanelProps) {
-  // 백엔드가 좌표 적재하면 자동 표시. 미적재 시 서울 시청 fallback (모든 가게 동일 위치 — 시각적 placeholder).
+export function ShopDetailMapPanel({
+  name,
+  thumbnailUrl,
+  address,
+  latitude,
+  longitude,
+  topMenus,
+  className,
+  onJoin,
+}: ShopDetailMapPanelProps) {
+  // 좌표 미적재 시 서울 시청 fallback.
   const coord =
-    shop.latitude != null && shop.longitude != null
-      ? { lat: shop.latitude, lng: shop.longitude }
-      : SEOUL_CITY_HALL
-  const markers: MapMarker[] = [
-    { id: 'shop', position: coord, label: shop.name, selected: true },
-  ]
+    latitude != null && longitude != null ? { lat: latitude, lng: longitude } : SEOUL_CITY_HALL
+  const markers: MapMarker[] = [{ id: 'shop', position: coord, label: name, selected: true }]
 
   return (
     <div className={cn('relative bg-surface-cool', className)}>
       <KakaoMap center={coord} level={4} markers={markers} className="h-full w-full" />
 
-      {/* MapOverlayCard — map 영역 하단 중앙 (max 400w). 좁은 viewport 에서도 항상 보임. */}
+      {/* MapOverlayCard — map 영역 하단 중앙 (max 400w). */}
       <div className="pointer-events-none absolute inset-x-0 bottom-[30px] flex justify-center px-md">
         <div className="pointer-events-auto w-full max-w-[400px]">
           <MapOverlayCard
-            image={shop.thumbnailUrl || undefined}
-            name={shop.name}
-            address={shop.address}
-            topMenus={shop.menus.slice(0, 3).map((m) => m.name)}
+            image={thumbnailUrl || undefined}
+            name={name}
+            address={address ?? ''}
+            topMenus={topMenus ?? []}
             actionLabel="참여하기"
             onAction={onJoin}
           />
