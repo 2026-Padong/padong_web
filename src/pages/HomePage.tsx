@@ -14,6 +14,7 @@ import { TimePill } from '@/components/ui/TimePill'
 import { DataMap } from '@/features/home/components/DataMap'
 import { PageNavigation } from '@/components/ui/PageNavigation'
 import { useRandomStores } from '@/api/queries/useRandomStores'
+import { useShopList } from '@/api/queries/useShopList'
 import { useRandomNews } from '@/api/queries/useNews'
 import { useDistrictSummary, useDistrictHotplaces } from '@/api/queries/useDistrictRealtime'
 import { kindFromStatus } from '@/components/ui/WeatherIcon'
@@ -47,7 +48,16 @@ export function HomePage() {
   const [search, setSearch] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('용산구')
   const { data: randomStores } = useRandomStores(3)
-  const recruiting = randomStores ?? []
+  // 검색어 입력 시 BE q 검색으로 전환, 아니면 랜덤 3개. enabled 로 불필요한 fetch 방지.
+  const searchQuery = search.trim()
+  const isSearching = searchQuery.length > 0
+  const { data: searchResults } = useShopList(
+    { q: searchQuery, size: 3 },
+    { enabled: isSearching },
+  )
+  const recruiting = isSearching
+    ? (searchResults?.content ?? [])
+    : (randomStores ?? [])
   const { data: news, isPending: newsPending } = useRandomNews(3)
   const topNews = news ?? []
   // 날씨 4-카드
@@ -114,6 +124,10 @@ export function HomePage() {
                       onClick={() => nav(`/shops/${s.id}`, { viewTransition: true })}
                     />
                   ))
+                ) : isSearching ? (
+                  <p className="py-xl text-center text-body-l font-medium text-text-tertiary">
+                    "{searchQuery}" 검색 결과가 없어요
+                  </p>
                 ) : (
                   <>
                     <Skeleton className="h-[131px] w-full" />

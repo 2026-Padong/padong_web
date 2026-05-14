@@ -12,7 +12,7 @@ export function shopListKey(query?: ShopListQueryParams) {
 // 비로그인도 호출 가능. likedOnly=true 는 JWT 있을 때만 의미.
 // placeholderData: keepPreviousData — 파라미터 변경(검색·필터) 시 이전 데이터 유지하며 백그라운드 refetch
 //   → ShopListPanel 이 unmount/remount 안 됨 → 검색 input/query state 보존
-export function useShopList(query?: ShopListQueryParams) {
+export function useShopList(query?: ShopListQueryParams, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: shopListKey(query),
     queryFn: async (): Promise<PageResponse<ShopSummaryResponse>> => {
@@ -29,5 +29,6 @@ export function useShopList(query?: ShopListQueryParams) {
       return res.data
     },
     placeholderData: keepPreviousData,
+    enabled: options?.enabled ?? true,
   })
 }
