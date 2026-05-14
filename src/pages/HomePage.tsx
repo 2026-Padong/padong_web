@@ -34,9 +34,14 @@ function stripHtml(s: string): string {
 
 // 백엔드 WeatherSummary 값 normalize — 백엔드가 단위(%·°C) 포함 여부 가변
 const stripUnit = (v: string | undefined) => (v ?? '').replace(/[°℃%㎍/㎥\s]+$/g, '').trim()
-const fmtPercent = (v: string | undefined) => (v ? `${stripUnit(v)}%` : '-')
-const fmtCelsius = (v: string | undefined) => (v ? `${stripUnit(v)}°C` : '-')
-const fmtDust = (v: string | undefined) => (v ? `${stripUnit(v)} ㎍/㎥` : '-')
+// 숫자(소수 포함) 인 경우만 단위 부착. "정보 없음" 같은 placeholder 면 '-' 반환.
+const isNumeric = (v: string | undefined) => {
+  if (!v) return false
+  return /^-?\d+(\.\d+)?$/.test(stripUnit(v))
+}
+const fmtPercent = (v: string | undefined) => (isNumeric(v) ? `${stripUnit(v)}%` : '-')
+const fmtCelsius = (v: string | undefined) => (isNumeric(v) ? `${stripUnit(v)}°C` : '-')
+const fmtDust = (v: string | undefined) => (isNumeric(v) ? `${stripUnit(v)} ㎍/㎥` : '-')
 
 // Figma 1:1: Card · HomePage (899:3140)
 // HeaderNav (1440×80) + MainContent (1440×1648)
