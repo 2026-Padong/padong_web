@@ -13,40 +13,46 @@ import { Highlight } from '@/components/ui/Highlight'
 import { toggleStoreLike } from '@/api/stores'
 import { useLoginGate } from '@/lib/useLoginGate'
 
-// Figma 1:1: Tile · ShopListPanel (598:1662) > ShopListPanel COMPONENT (1715:6842)
-// 420x900 V gap-lg items-start px-lg py-xl bg-white
-// PanelHeader: PageHeader type=Shop title="동네 가게 추천"
-// SearchInput (full width)
-// PanelBody (flex-1 V gap-md w-full):
-//   ResultSummary + FilterChipRow + ShopList (flex-1) + PageNavigation
+// Dumb 컴포넌트 — page/filter 는 부모(ShopListPage) 가 보유, 본 컴포넌트는 props 만 받음.
+// 내부 상태는 검색 입력 버퍼 + 좋아요 낙관 토글뿐.
 export interface ShopListPanelProps {
   title?: string
   shops: ShopSummaryResponse[]
+  currentPage: number
+  totalPages: number
+  totalElements: number
+  onPageChange: (page: number) => void
+  activeFilters: { recruiting: boolean; cafe: boolean; liked: boolean }
+  onFilterToggle: (id: 'recruiting' | 'cafe' | 'liked') => void
+  /** 현재 선택된 동 이름 — ResultSummary location 표시용 */
+  locationLabel?: string
   onShopClick?: (id: number) => void
-  /** 자동완성에서 동 선택 시 — 부모가 adminDongCode 받아 useShopList 파라미터로 전달 (서버 필터) */
   onAdminDongChange?: (item: DongSuggestionItem) => void
   className?: string
 }
 
-const FILTERS = [
+const FILTERS: Array<{ id: 'recruiting' | 'cafe' | 'liked'; label: string }> = [
   { id: 'recruiting', label: '모집중' },
   { id: 'cafe', label: '카페, 디저트' },
   { id: 'liked', label: '찜' },
 ]
 
-const ITEMS_PER_PAGE = 4
-
 export function ShopListPanel({
   title = '동네 가게 추천',
   shops,
+  currentPage,
+  totalPages,
+  totalElements,
+  onPageChange,
+  activeFilters,
+  onFilterToggle,
+  locationLabel,
   onShopClick,
   onAdminDongChange,
   className,
 }: ShopListPanelProps) {
-  // 통일된 패턴 (JobFinder): search = 입력 버퍼, query = 제출된 검색어
-  // 자동완성 클릭 또는 Enter 로만 query 업데이트 → 그때만 리스트 필터 발동
+  // 검색 입력 버퍼 (자동완성용) — 자동완성 클릭 시 onAdminDongChange 로 부모에 전달
   const [search, setSearch] = useState('')
-  const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
   const { data: suggestData } = useDongSuggestions(search)
   const { requireLogin, loginDialog } = useLoginGate()
@@ -56,12 +62,12 @@ export function ShopListPanel({
 
   const handleToggleLike = async (shopId: number) => {
     if (!requireLogin({ action: '좋아요' })) return
-    const current = likedOverrides[shopId] ?? shops.find((s) => s.id === shopId)?.likedByCurrentUser ?? false
+    const current =
+      likedOverrides[shopId] ?? shops.find((s) => s.id === shopId)?.likedByCurrentUser ?? false
     setLikedOverrides((p) => ({ ...p, [shopId]: !current }))
     try {
       const res = await toggleStoreLike(shopId)
       setLikedOverrides((p) => ({ ...p, [shopId]: res.liked }))
-      // 내가 찜한 가게/목록 쿼리 갱신
       qc.invalidateQueries({ queryKey: ['stores'] })
       qc.invalidateQueries({ queryKey: ['likes', 'stores'] })
     } catch (e) {
@@ -74,28 +80,9 @@ export function ShopListPanel({
 
   const submit = (item: DongSuggestionItem) => {
     setSearch(item.name)
-    setQuery(item.name)
     setFocused(false)
-    onAdminDongChange?.(item) // 부모가 adminDongCode 받아 useShopList 파라미터로 → 서버 필터
+    onAdminDongChange?.(item)
   }
-
-  const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({})
-  const [page, setPage] = useState(1)
-
-  // 클라이언트 필터는 칩 (status/category/liked) 만 — 동 필터는 백엔드가 adminDongCode 로 처리
-  const filtered = shops.filter((s) => {
-    if (activeFilters['recruiting'] && s.recruitmentStatus !== 'RECRUITING') return false
-    const cat = s.categoryLabel
-    if (activeFilters['cafe'] && !cat.includes('카페')) return false
-    if (activeFilters['liked'] && !s.likedByCurrentUser) return false
-    return true
-  })
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE))
-  // 검색·필터 변경 시 page 가 totalPages 초과면 1로 리셋
-  const safePage = Math.min(page, totalPages)
-  const start = (safePage - 1) * ITEMS_PER_PAGE
-  const visibleShops = filtered.slice(start, start + ITEMS_PER_PAGE)
 
   return (
     <aside
@@ -107,7 +94,6 @@ export function ShopListPanel({
       <div className="flex w-full items-center gap-xs">
         <PageHeader type="Shop" title={title} />
       </div>
-      {/* 검색 + 자동완성 (JobFinder 와 동일 패턴) */}
       <div
         className="relative w-full"
         onFocus={() => setFocused(true)}
@@ -136,7 +122,7 @@ export function ShopListPanel({
                 <button
                   type="button"
                   role="option"
-                  aria-selected={item.name === query}
+                  aria-selected={item.name === search}
                   onMouseDown={(e) => {
                     e.preventDefault()
                     submit(item)
@@ -157,15 +143,15 @@ export function ShopListPanel({
       </div>
       <div className="flex min-h-px w-full flex-1 flex-col items-start gap-md">
         <ResultSummary
-          countLabel={`동네 전체 ${filtered.length}개`}
-          location={query || undefined}
+          countLabel={`동네 전체 ${totalElements}개`}
+          location={locationLabel || undefined}
         />
         <FilterChipRow
           filters={FILTERS.map((f) => ({ ...f, active: activeFilters[f.id] }))}
-          onToggle={(id) => setActiveFilters((s) => ({ ...s, [id]: !s[id] }))}
+          onToggle={(id) => onFilterToggle(id as 'recruiting' | 'cafe' | 'liked')}
         />
         <div className="flex min-h-px w-full flex-1 flex-col items-center gap-lg overflow-y-auto py-xxs">
-          {visibleShops.length === 0 ? (
+          {shops.length === 0 ? (
             <div className="flex w-full flex-1 flex-col items-center justify-center gap-xs py-2xl text-center">
               <p className="text-body-l font-bold text-text-primary">가게가 없어요</p>
               <p className="text-body font-normal text-text-tertiary">
@@ -173,7 +159,7 @@ export function ShopListPanel({
               </p>
             </div>
           ) : (
-            visibleShops.map((s, i) => (
+            shops.map((s, i) => (
               <div
                 key={s.id}
                 className="w-full animate-fade-in-up opacity-0"
@@ -196,8 +182,8 @@ export function ShopListPanel({
             ))
           )}
         </div>
-        {visibleShops.length > 0 && (
-          <PageNavigation current={page} total={totalPages} onChange={setPage} />
+        {totalPages > 1 && (
+          <PageNavigation current={currentPage} total={totalPages} onChange={onPageChange} />
         )}
       </div>
       {loginDialog}

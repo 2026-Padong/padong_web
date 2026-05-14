@@ -10,18 +10,54 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { useShopList } from '@/api/queries/useShopList'
 import { useShopDetail } from '@/api/queries/useShopDetail'
 
-// 단일 라우트 + 단일 KakaoMap 인스턴스 패턴 (JobFinder 와 동일).
-// 카드 클릭 시 route 변경 없이 detail 패널만 토글. KakaoMap 은 항상 같은 컴포넌트로
-// 마운트 유지 → 선택 시 marker/overlay 만 추가됨 → 깜빡임 없음.
-// /shops/:id 직접 진입은 ShopDetailPage 가 별도 처리 (deeplink 호환).
+const PAGE_SIZE = 4
+
+// 단일 라우트 + 단일 KakaoMap 인스턴스 패턴.
+// BE 페이징 일원화: page/filter/검색 모두 ShopListPage 가 보유 → useShopList 로 전달.
+// ShopListPanel 은 dumb 컴포넌트 (props 만 받음).
 export function ShopListPage() {
   const [adminDongCode, setAdminDongCode] = useState<string | undefined>(undefined)
+  const [activeFilters, setActiveFilters] = useState<{
+    recruiting: boolean
+    cafe: boolean
+    liked: boolean
+  }>({ recruiting: false, cafe: false, liked: false })
+  const [page, setPage] = useState(1) // 1-based UI
+  const [locationLabel, setLocationLabel] = useState<string | undefined>(undefined)
+
   const [selectedShopId, setSelectedShopId] = useState<number | undefined>(undefined)
   const [detailTab, setDetailTab] = useState<'Menu' | 'Info'>('Menu')
 
-  // size=200 — 클라이언트에서 4개씩 페이징하므로 한 번에 충분히 받아옴.
-  const { data, isPending, error, refetch } = useShopList({ adminDongCode, size: 200 })
+  // BE 필터 매핑
+  const status = activeFilters.recruiting ? 'RECRUITING' : undefined
+  const category = activeFilters.cafe ? 'CAFE_DESSERT' : undefined
+  const likedOnly = activeFilters.liked || undefined
+
+  const { data, isPending, error, refetch } = useShopList({
+    adminDongCode,
+    status,
+    category,
+    likedOnly,
+    page: page - 1, // BE 0-based
+    size: PAGE_SIZE,
+  })
   const detail = useShopDetail(selectedShopId != null ? String(selectedShopId) : undefined)
+
+  const shops = data?.content ?? []
+  const totalPages = Math.max(1, data?.totalPages ?? 1)
+  const totalElements = data?.totalElements ?? 0
+
+  // 필터/검색/동 변경 시 page=1 리셋
+  const resetPage = () => setPage(1)
+  const handleDongChange = (code: string | undefined, label?: string) => {
+    setAdminDongCode(code)
+    setLocationLabel(label)
+    resetPage()
+  }
+  const handleFilterToggle = (id: 'recruiting' | 'cafe' | 'liked') => {
+    setActiveFilters((p) => ({ ...p, [id]: !p[id] }))
+    resetPage()
+  }
 
   const handleSelect = (id: number) => {
     setSelectedShopId(id)
@@ -30,17 +66,23 @@ export function ShopListPage() {
   const handleDeselect = () => setSelectedShopId(undefined)
 
   const showDetail = selectedShopId != null
-  // 리스트 캐시에서 selected 가게 summary 즉시 추출 — name/thumbnail/coord 등은
-  // detail 로딩 끝나기 전부터 표시 가능.
+  // selected 가게는 현재 페이지에 있을 수도, 없을 수도 — find 가능하면 즉시 표시
   const selectedSummary =
-    selectedShopId != null ? data?.content.find((s) => s.id === selectedShopId) : undefined
+    selectedShopId != null ? shops.find((s) => s.id === selectedShopId) : undefined
 
   const mapCenter =
     selectedSummary && selectedSummary.latitude != null && selectedSummary.longitude != null
       ? { lat: selectedSummary.latitude, lng: selectedSummary.longitude }
       : undefined
   const mapMarkers: MapMarker[] = selectedSummary
-    ? [{ id: 'shop', position: mapCenter ?? { lat: 37.5665, lng: 126.978 }, label: selectedSummary.name, selected: true }]
+    ? [
+        {
+          id: 'shop',
+          position: mapCenter ?? { lat: 37.5665, lng: 126.978 },
+          label: selectedSummary.name,
+          selected: true,
+        },
+      ]
     : []
 
   return (
@@ -65,9 +107,16 @@ export function ShopListPage() {
         </div>
       ) : (
         <ShopListPanel
-          shops={data?.content ?? []}
+          shops={shops}
+          currentPage={page}
+          totalPages={totalPages}
+          totalElements={totalElements}
+          onPageChange={setPage}
+          activeFilters={activeFilters}
+          onFilterToggle={handleFilterToggle}
+          locationLabel={locationLabel}
           onShopClick={handleSelect}
-          onAdminDongChange={(item) => setAdminDongCode(item.adminDongCode)}
+          onAdminDongChange={(item) => handleDongChange(item.adminDongCode, item.name)}
           className={showDetail ? 'hidden xl:flex' : undefined}
         />
       )}
@@ -87,7 +136,6 @@ export function ShopListPage() {
             <Skeleton className="h-[300px] w-full" />
           </aside>
         ))}
-      {/* 지도 영역 — 항상 같은 컴포넌트로 유지. selection 시 marker + overlay 만 추가. */}
       <div className="relative hidden flex-1 min-w-0 bg-surface-cool md:block">
         <KakaoMap center={mapCenter} level={4} markers={mapMarkers} className="h-full w-full" />
         {showDetail && selectedSummary && (
