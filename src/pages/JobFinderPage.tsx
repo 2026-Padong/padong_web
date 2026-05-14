@@ -15,10 +15,10 @@ import { useDongDetail } from '@/api/queries/useDongDetail'
 import { mobilityToResultDto } from '@/features/neighborhood-finder/utils/mobilityToResult'
 import { buildDetailProps, buildDetailPropsFromApi } from '@/features/neighborhood-finder/utils/buildDetailProps'
 import { useLoginGate } from '@/lib/useLoginGate'
-import { toggleDongneLike, type PageResponse } from '@/api/likes'
+import { toggleDongneLike } from '@/api/likes'
 import { useQueryClient } from '@tanstack/react-query'
-import type { MobilityResponse } from '@/api/mobility'
 import type { DongSuggestionItem } from '@/api/queries/useDongSuggestions'
+import type { ResultDto } from '@/api/contracts/results'
 import { useRecommendationTracking } from '@/lib/useRecommendationTracking'
 
 export function JobFinderPage() {
@@ -29,62 +29,30 @@ export function JobFinderPage() {
   const [destination, setDestination] = useState('')
   const [destinations, setDestinations] = useState<DongSuggestionItem[]>([])
   const [page, setPage] = useState(1)
-  const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
+  // 페이지 이동해도 detail 유지하기 위해 id 가 아닌 full object 보관.
+  const [selectedItem, setSelectedItem] = useState<ResultDto | undefined>(undefined)
   const { requireLogin, loginDialog } = useLoginGate()
   const qc = useQueryClient()
   const track = useRecommendationTracking()
 
-  const handleSelect = (adminDongCode: string) => {
-    setSelectedId(adminDongCode)
-    track.onCardClick(adminDongCode)
+  const handleSelect = (item: ResultDto) => {
+    setSelectedItem(item)
+    track.onCardClick(item.id)
   }
   const handleDeselect = () => {
-    setSelectedId(undefined)
+    setSelectedItem(undefined)
     track.onDetailClose()
   }
 
-  // 좋아요 토글 — mobility 쿼리 캐시 낙관적 업데이트 + 백엔드 sync
+  // 좋아요 토글 — mobility 쿼리 캐시 invalidate (page-aware key 라 cross-page 동기화 어려움 → refetch 가 가장 안전)
   const handleToggleLike = async (adminDongCode: string) => {
     if (!requireLogin({ action: '좋아요' })) return
-    const queries = qc.getQueriesData<PageResponse<MobilityResponse>>({ queryKey: ['mobility'] })
-    const snapshots = queries.map(([key, data]) => [key, data] as const)
-    // optimistic
-    queries.forEach(([key, data]) => {
-      if (!data) return
-      qc.setQueryData<PageResponse<MobilityResponse>>(key, {
-        ...data,
-        content: data.content.map((m) =>
-          m.departureDong.adminDongCode === adminDongCode
-            ? {
-                ...m,
-                likedByCurrentUser: !m.likedByCurrentUser,
-                likeCount: m.likeCount + (m.likedByCurrentUser ? -1 : 1),
-              }
-            : m,
-        ),
-      })
-    })
     try {
       const result = await toggleDongneLike(adminDongCode)
-      // server-authoritative 값으로 재동기화
-      queries.forEach(([key]) => {
-        qc.setQueryData<PageResponse<MobilityResponse>>(key, (old) =>
-          !old
-            ? old
-            : {
-                ...old,
-                content: old.content.map((m) =>
-                  m.departureDong.adminDongCode === adminDongCode
-                    ? { ...m, likedByCurrentUser: result.liked, likeCount: result.likeCount }
-                    : m,
-                ),
-              },
-        )
-      })
+      qc.invalidateQueries({ queryKey: ['mobility'] })
       track.onCardLike(adminDongCode, result.liked)
-    } catch {
-      // rollback
-      snapshots.forEach(([key, data]) => qc.setQueryData(key, data))
+    } catch (e) {
+      console.error('[job-finder:like-toggle] failed:', e)
     }
   }
 
@@ -93,43 +61,44 @@ export function JobFinderPage() {
   // multi 는 2개 이상이어야 결과 조회 가능
   const multiNeedsMore = isMulti && destinations.length < 2
 
-  // 백엔드 mobility API 호출 (single / multi 분기)
+  // 백엔드 mobility API 호출 (single / multi 분기) — BE 페이징 직결
   const singleQuery = useMobilityArrival(
     !isMulti && destinations.length > 0 ? destinations[0].adminDongCode : undefined,
+    { page: page - 1, size: RESULTS_PAGE_SIZE },
   )
   // multi 는 2개 이상일 때만 호출 (백엔드 spec: < 2 면 400)
   const multiQuery = useMobilityArrivalMulti(
     isMulti && destinations.length >= 2 ? destinations.map((d) => d.adminDongCode) : [],
+    { page: page - 1, size: RESULTS_PAGE_SIZE },
   )
 
   const isLoading = isMulti ? multiQuery.isLoading : singleQuery.isLoading
   const error = isMulti ? multiQuery.error : singleQuery.error
   const refetch = isMulti ? multiQuery.refetch : singleQuery.refetch
 
-  // PageResponse<MobilityResponse> → ResultDto[] 매핑
-  // single / multi 둘 다 PageResponse 동일 shape
-  // 검색어 비어있거나 multi 가 부족(<2) 이면 결과 비움 (placeholderData stale 데이터 무시)
-  const rawMobility = useMemo(() => {
-    if (destinations.length === 0) return []
-    if (isMulti && destinations.length < 2) return []
-    const d = isMulti ? multiQuery.data : singleQuery.data
-    return d?.content ?? []
+  // 현재 페이지의 mobility 결과
+  const pageData = useMemo(() => {
+    if (destinations.length === 0) return undefined
+    if (isMulti && destinations.length < 2) return undefined
+    return isMulti ? multiQuery.data : singleQuery.data
   }, [isMulti, multiQuery.data, singleQuery.data, destinations.length])
 
-  const allItems = useMemo(
-    () => rawMobility.map((m) => mobilityToResultDto(m)),
-    [rawMobility],
+  const items = useMemo(
+    () => pageData?.content.map((m) => mobilityToResultDto(m)) ?? [],
+    [pageData],
   )
-  const total = allItems.length
-  const totalPages = Math.max(1, Math.ceil(total / RESULTS_PAGE_SIZE))
-  const start = (page - 1) * RESULTS_PAGE_SIZE
-  const items = allItems.slice(start, start + RESULTS_PAGE_SIZE)
-  const effectiveSelectedId = selectedId
-  const selectedResult = effectiveSelectedId
-    ? allItems.find((r) => r.id === effectiveSelectedId)
+  const total = pageData?.totalElements ?? 0
+  const totalPages = Math.max(1, pageData?.totalPages ?? 1)
+  // 현재 페이지 카드에서 최신 데이터 가져오기, 다른 페이지면 selectedItem 그대로
+  const selectedResult = selectedItem
+    ? items.find((r) => r.id === selectedItem.id) ?? selectedItem
     : undefined
+  // 절대 rank 추정: page * size + index. 선택 카드가 현재 페이지에 있을 때만 정확.
   const selectedRank = selectedResult
-    ? allItems.findIndex((r) => r.id === selectedResult.id) + 1
+    ? (() => {
+        const idxInPage = items.findIndex((r) => r.id === selectedResult.id)
+        return idxInPage >= 0 ? (page - 1) * RESULTS_PAGE_SIZE + idxInPage + 1 : 0
+      })()
     : 0
 
   // 선택된 동네 상세 — 백엔드 /dongne/detail
@@ -151,7 +120,7 @@ export function JobFinderPage() {
     setPage(1)
     setDestinations([])
     setDestination('')
-    setSelectedId(undefined)
+    setSelectedItem(undefined)
   }
 
   const handleDestinationChange = (v: string) => {
@@ -171,7 +140,7 @@ export function JobFinderPage() {
         setDestinations([item])
         setDestination('')
         setPage(1)
-        setSelectedId(undefined)
+        setSelectedItem(undefined)
       } else {
         setDestination('')
       }
@@ -180,12 +149,12 @@ export function JobFinderPage() {
     setDestinations((prev) => [...prev, item])
     setDestination('')
     setPage(1)
-    setSelectedId(undefined)
+    setSelectedItem(undefined)
   }
   const handleRemoveDestination = (adminDongCode: string) => {
     setDestinations((prev) => prev.filter((d) => d.adminDongCode !== adminDongCode))
     setPage(1)
-    setSelectedId(undefined)
+    setSelectedItem(undefined)
   }
   // hint: 단일은 없음 / 다중은 0개일 때만 안내
   const hint = isMulti && destinations.length === 0
@@ -306,13 +275,19 @@ export function JobFinderPage() {
               score: r.score,
               onToggleLike: () => handleToggleLike(r.id),
             }))}
-            selectedId={effectiveSelectedId}
-            onSelect={handleSelect}
+            selectedId={selectedResult?.id}
+            onSelect={(id) => {
+              const item = items.find((r) => r.id === id)
+              if (item) handleSelect(item)
+            }}
             resultCount={total}
             resultSubtitle={summarySubtitle}
             currentPage={page}
             totalPages={totalPages}
-            onPageChange={setPage}
+            onPageChange={(p) => {
+              setPage(p)
+              handleDeselect()
+            }}
             filterSlot={
               <div className="flex flex-wrap items-center justify-end gap-xs">
                 {['통근시간', '자치구', '주거'].map((label) => (
@@ -351,10 +326,13 @@ export function JobFinderPage() {
               id: r.id,
               position: r.center!,
               label: r.dong,
-              selected: r.id === effectiveSelectedId,
+              selected: r.id === selectedResult?.id,
             }))}
-          selectedId={effectiveSelectedId}
-          onDongClick={handleSelect}
+          selectedId={selectedResult?.id}
+          onDongClick={(id) => {
+            const item = items.find((r) => r.id === id)
+            if (item) handleSelect(item)
+          }}
           // 검색 변경 / 페이지 변경 시 강제 fitBounds (사용자 수동 줌 상태 리셋)
           fitBoundsKey={`${isMulti ? 'm' : 's'}:${destinations.map((d) => d.adminDongCode).join(',')}:${page}`}
         />

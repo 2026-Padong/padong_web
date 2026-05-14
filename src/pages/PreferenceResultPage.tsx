@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { clearPreferenceAnswers } from '@/lib/preferenceStorage'
@@ -10,6 +10,7 @@ import { DetailPanel } from '@/features/neighborhood-finder/components/DetailPan
 import { KakaoMap } from '@/components/map/KakaoMap'
 import { buildDetailProps, buildDetailPropsFromApi } from '@/features/neighborhood-finder/utils/buildDetailProps'
 import { mobilityToResultDtoForPreference } from '@/features/neighborhood-finder/utils/mobilityToResult'
+import type { ResultDto } from '@/api/contracts/results'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Chip } from '@/components/ui/Chip'
 import {
@@ -25,19 +26,17 @@ import { resolveUserType } from '@/features/neighborhood-finder/utils/userTypeMa
 export function PreferenceResultPage() {
   const nav = useNavigate()
   const [page, setPage] = useState(1)
-  const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
-  // DB(엔티티)에 저장된 답변 → 추천 결과를 항상 백엔드 기준으로 조회 (메모리 캐시 shortcut X)
-  const recQuery = usePreferenceRecommendation()
+  // 다른 페이지로 넘어가도 detail 패널 유지하려고 id 가 아닌 ResultDto 객체 보관.
+  const [selectedItem, setSelectedItem] = useState<ResultDto | undefined>(undefined)
+
+  // BE 페이징 직결 — page-1 (0-based), size=5
+  const recQuery = usePreferenceRecommendation(page - 1, RESULTS_PAGE_SIZE)
   const rec = recQuery.data ?? undefined
-  // 좋아요 optimistic update 를 위해 query key 직접 사용
-  const PREFERENCE_REC_KEY = ['preference', 'recommendation'] as const
+
   const { requireLogin, loginDialog } = useLoginGate()
   const qc = useQueryClient()
   const track = useRecommendationTracking()
 
-  // "다시 설문하기" — localStorage 폴백 비우고 캐시 정리 후 설문 페이지로.
-  // PreferencePage 가 state.restart 를 보면 자동 redirect 우회.
-  // 새 답변 제출 시 백엔드가 entity upsert 하므로 DB 답변도 자연스럽게 갱신됨.
   const handleRestart = () => {
     clearPreferenceAnswers()
     qc.removeQueries({ queryKey: ['preference', 'me', 'answers', 'check'] })
@@ -45,21 +44,22 @@ export function PreferenceResultPage() {
     nav('/finder/preference', { state: { restart: true }, replace: true })
   }
 
-  const handleSelect = (adminDongCode: string) => {
-    setSelectedId(adminDongCode)
-    track.onCardClick(adminDongCode)
+  const handleSelect = (item: ResultDto) => {
+    setSelectedItem(item)
+    track.onCardClick(item.id)
   }
   const handleDeselect = () => {
-    setSelectedId(undefined)
+    setSelectedItem(undefined)
     track.onDetailClose()
   }
 
+  // 현재 페이지의 캐시만 optimistic update. 다른 페이지는 invalidate 로 refetch.
+  const currentPageKey = ['preference', 'recommendation', page - 1, RESULTS_PAGE_SIZE] as const
   const handleToggleLike = async (adminDongCode: string) => {
     if (!requireLogin({ action: '좋아요' })) return
-    const prev = qc.getQueryData<DongneRecommendationResponse>(PREFERENCE_REC_KEY)
+    const prev = qc.getQueryData<DongneRecommendationResponse>(currentPageKey)
     if (!prev) return
-    // optimistic
-    qc.setQueryData<DongneRecommendationResponse>(PREFERENCE_REC_KEY, {
+    qc.setQueryData<DongneRecommendationResponse>(currentPageKey, {
       ...prev,
       page: {
         ...prev.page,
@@ -76,89 +76,39 @@ export function PreferenceResultPage() {
     })
     try {
       const result = await toggleDongneLike(adminDongCode)
-      qc.setQueryData<DongneRecommendationResponse>(PREFERENCE_REC_KEY, (old) =>
-        !old
-          ? old
-          : {
-              ...old,
-              page: {
-                ...old.page,
-                content: old.page.content.map((m) =>
-                  m.departureDong.adminDongCode === adminDongCode
-                    ? { ...m, likedByCurrentUser: result.liked, likeCount: result.likeCount }
-                    : m,
-                ),
-              },
-            },
-      )
+      // server-authoritative — 모든 페이지 캐시 갱신
+      qc.invalidateQueries({ queryKey: ['preference', 'recommendation'] })
       track.onCardLike(adminDongCode, result.liked)
     } catch {
-      qc.setQueryData(PREFERENCE_REC_KEY, prev)
+      qc.setQueryData(currentPageKey, prev)
     }
   }
 
-  // 취향 추천 카드 — 안전·주거·인구 3 chip 으로 표기 (출퇴근/유동 X)
-  const allItems = useMemo(() => {
-    if (!rec) return []
-    return rec.page.content.map((m) => mobilityToResultDtoForPreference(m))
-  }, [rec])
+  // 현재 페이지 카드들
+  const pageItems = rec?.page.content.map((m) => mobilityToResultDtoForPreference(m)) ?? []
+  const totalPages = Math.max(1, rec?.page.totalPages ?? 1)
+  const totalElements = rec?.page.totalElements ?? 0
 
-  const total = allItems.length
-  const totalPages = Math.max(1, Math.ceil(total / RESULTS_PAGE_SIZE))
-  const start = (page - 1) * RESULTS_PAGE_SIZE
-  const pageItems = allItems.slice(start, start + RESULTS_PAGE_SIZE)
-  const selectedResult = selectedId ? allItems.find((r) => r.id === selectedId) : undefined
+  // 선택된 가게 — pageItems 에 있으면 최신, 없으면 selectedItem 그대로 (다른 페이지일 때)
+  const selectedResult =
+    selectedItem &&
+    (pageItems.find((r) => r.id === selectedItem.id) ?? selectedItem)
+  // selectedRank — 서버 전체 기준 인덱스 추정. 페이지를 가로지를 땐 정확치 않으므로
+  // 현재 페이지 내 순위만 표시. (BE 가 절대 순위 반환하면 그걸 사용)
   const selectedRank = selectedResult
-    ? allItems.findIndex((r) => r.id === selectedResult.id) + 1
+    ? pageItems.findIndex((r) => r.id === selectedResult.id) + 1 + (page - 1) * RESULTS_PAGE_SIZE
     : 0
+
   const detailQuery = useDongDetail(selectedResult?.id)
-  const detailProps = useMemo(() => {
-    if (!selectedResult) return null
-    return detailQuery.data
+  const detailProps = selectedResult
+    ? detailQuery.data
       ? buildDetailPropsFromApi(selectedResult, detailQuery.data)
       : buildDetailProps(selectedResult)
-  }, [selectedResult, detailQuery.data])
+    : null
 
   const userTypeMeta = resolveUserType(rec?.userType)
   const resultTitle = userTypeMeta.display
   const resultSubDescription = userTypeMeta.description
-
-  // 디버그 — 결과 페이지 상태/응답 추적 (console.group 으로 라벨링)
-  useEffect(() => {
-    console.groupCollapsed(
-      `[PreferenceResult] status=${recQuery.status} fetchStatus=${recQuery.fetchStatus} items=${allItems.length}`,
-    )
-    console.log('recQuery.isPending:', recQuery.isPending)
-    console.log('recQuery.isFetching:', recQuery.isFetching)
-    console.log('recQuery.isError:', recQuery.isError)
-    if (recQuery.error) console.error('recQuery.error:', recQuery.error)
-    console.log('recQuery.dataUpdatedAt:', recQuery.dataUpdatedAt && new Date(recQuery.dataUpdatedAt).toISOString())
-    console.log('rec (data):', rec)
-    console.log('  userType:', rec?.userType)
-    console.log('  page.content.length:', rec?.page?.content?.length)
-    console.log('  page.totalElements:', rec?.page?.totalElements)
-    console.log('  first content item:', rec?.page?.content?.[0])
-    console.log('allItems.length:', allItems.length)
-    console.log('current pageItems:', pageItems.length, 'page=', page, '/', totalPages)
-    console.log(
-      'EmptyState branch:',
-      recQuery.isPending ? 'LOADING' : !rec ? 'NO_ANSWERS' : allItems.length === 0 ? 'NO_RESULTS' : 'OK',
-    )
-    console.groupEnd()
-  }, [
-    recQuery.status,
-    recQuery.fetchStatus,
-    recQuery.isPending,
-    recQuery.isFetching,
-    recQuery.isError,
-    recQuery.error,
-    recQuery.dataUpdatedAt,
-    rec,
-    allItems.length,
-    pageItems.length,
-    page,
-    totalPages,
-  ])
 
   return (
     <div className="flex min-h-screen w-full pb-14 lg:pb-0">
@@ -169,12 +119,9 @@ export function PreferenceResultPage() {
         </div>
       ) : !rec ? (
         <div className="flex w-full items-center justify-center p-xl md:w-[420px] md:shrink-0 md:min-h-screen">
-          <EmptyState
-            title="추천 결과가 없어요"
-            message="취향 설문을 먼저 진행해주세요"
-          />
+          <EmptyState title="추천 결과가 없어요" message="취향 설문을 먼저 진행해주세요" />
         </div>
-      ) : allItems.length === 0 ? (
+      ) : totalElements === 0 ? (
         <div className="flex w-full items-center justify-center p-xl md:w-[420px] md:shrink-0 md:min-h-screen">
           <EmptyState
             title="조건에 맞는 동네가 없어요"
@@ -205,8 +152,11 @@ export function PreferenceResultPage() {
             score: r.score,
             onToggleLike: () => handleToggleLike(r.id),
           }))}
-          selectedId={selectedId}
-          onSelect={handleSelect}
+          selectedId={selectedResult?.id}
+          onSelect={(id) => {
+            const item = pageItems.find((r) => r.id === id)
+            if (item) handleSelect(item)
+          }}
           currentPage={page}
           totalPages={totalPages}
           onPageChange={(p) => {
@@ -242,10 +192,13 @@ export function PreferenceResultPage() {
               id: r.id,
               position: r.center!,
               label: r.dong,
-              selected: r.id === selectedId,
+              selected: r.id === selectedResult?.id,
             }))}
-          selectedId={selectedId}
-          onDongClick={handleSelect}
+          selectedId={selectedResult?.id}
+          onDongClick={(id) => {
+            const item = pageItems.find((r) => r.id === id)
+            if (item) handleSelect(item)
+          }}
         />
       </div>
       <BottomNav activeType="Custom" className="lg:hidden" />
