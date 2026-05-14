@@ -141,7 +141,11 @@ export function HomePage() {
                   </>
                 )}
               </div>
-              <SectionHeader type="More" moreLabel="더보기" />
+              <SectionHeader
+                type="More"
+                moreLabel="더보기"
+                onMoreClick={() => nav('/shops', { viewTransition: true })}
+              />
             </div>
 
             {/* NewsSection — 백엔드 GET /news/random?size=3 */}
@@ -170,7 +174,13 @@ export function HomePage() {
                   ))
                 )}
               </div>
-              {topNews.length > 0 && <SectionHeader type="More" moreLabel="더보기" />}
+              {topNews.length > 0 && (
+                <SectionHeader
+                  type="More"
+                  moreLabel="더보기"
+                  onMoreClick={() => nav('/news', { viewTransition: true })}
+                />
+              )}
             </div>
           </section>
 

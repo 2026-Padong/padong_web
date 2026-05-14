@@ -16,6 +16,8 @@ export interface SectionHeaderProps {
   onSearchChange?: (v: string) => void
   /** More type 라벨 */
   moreLabel?: string
+  /** More type 클릭 핸들러 — 미지정 시 단순 span 으로 표시 */
+  onMoreClick?: () => void
   trailing?: ReactNode
 }
 
@@ -25,14 +27,25 @@ export function SectionHeader({
   searchValue,
   onSearchChange,
   moreLabel = '더보기 →',
+  onMoreClick,
   trailing,
 }: SectionHeaderProps) {
   if (type === 'More') {
     return (
       <div className="flex items-center justify-end">
-        <span className="text-[12px] font-normal text-text-tertiary whitespace-nowrap">
-          {moreLabel}
-        </span>
+        {onMoreClick ? (
+          <button
+            type="button"
+            onClick={onMoreClick}
+            className="cursor-pointer rounded-sm text-[12px] font-normal text-text-tertiary whitespace-nowrap transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+          >
+            {moreLabel}
+          </button>
+        ) : (
+          <span className="text-[12px] font-normal text-text-tertiary whitespace-nowrap">
+            {moreLabel}
+          </span>
+        )}
       </div>
     )
   }
