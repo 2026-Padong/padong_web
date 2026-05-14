@@ -19,7 +19,8 @@ export function ShopListPage() {
   const [selectedShopId, setSelectedShopId] = useState<number | undefined>(undefined)
   const [detailTab, setDetailTab] = useState<'Menu' | 'Info'>('Menu')
 
-  const { data, isPending, error, refetch } = useShopList({ adminDongCode })
+  // size=200 — 클라이언트에서 4개씩 페이징하므로 한 번에 충분히 받아옴.
+  const { data, isPending, error, refetch } = useShopList({ adminDongCode, size: 200 })
   const detail = useShopDetail(selectedShopId != null ? String(selectedShopId) : undefined)
 
   const handleSelect = (id: number) => {
