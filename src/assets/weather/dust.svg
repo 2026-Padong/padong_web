@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="20" fill="#EEF8F4"/>
+  <!-- 위 sweep -->
+  <path d="M16 26H37C40.3 26 43 23.5 43 20.5C43 17.5 40.5 15 37.5 15C34.7 15 32.5 16.8 32 19.5" stroke="#57B28C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 중간 sweep (긴 메인) -->
+  <path d="M14 34H46C49.5 34 52 36.5 52 40C52 43.3 49.3 46 46 46C43 46 40.5 43.8 40 41" stroke="#57B28C" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 아래 짧은 sweep -->
+  <path d="M20 53H44" stroke="#8DD2B5" stroke-width="3" stroke-linecap="round"/>
+  <!-- 입자 점 2개 -->
+  <circle cx="47" cy="22.5" r="2.4" fill="#57B28C"/>
+  <circle cx="17" cy="40" r="2" fill="#8DD2B5"/>
+</svg>

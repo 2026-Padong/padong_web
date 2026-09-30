@@ -1,0 +1,15 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="20" fill="#EEF5FF"/>
+  <!-- 캐노피 외곽 (위 반원 + 아래 4-scallop) -->
+  <path d="M12 32C12 20.95 20.95 12 32 12C43.05 12 52 20.95 52 32C49.5 30.2 47 30.2 44.5 32C42 30.2 39.5 30.2 37 32C34.5 30.2 32 30.2 29.5 32C27 30.2 24.5 30.2 22 32C19.5 30.2 17 30.2 14.5 32C13.7 31.4 12.8 31.4 12 32Z" stroke="#7BA9F0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 위 꼭지 (작은 점) -->
+  <circle cx="32" cy="12" r="1.4" fill="#7BA9F0"/>
+  <!-- 캐노피 내부 ribs (4개) — 꼭지에서 각 scallop 골로 -->
+  <path d="M32 12L22 32" stroke="#7BA9F0" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M32 12L42 32" stroke="#7BA9F0" stroke-width="2.4" stroke-linecap="round"/>
+  <!-- 손잡이 (수직 → J 갈고리) -->
+  <path d="M32 32V44C32 47.5 29.2 50 26 50C24 50 22.8 49 22 47.5" stroke="#7BA9F0" stroke-width="3" stroke-linecap="round"/>
+  <!-- 빗방울 2개 -->
+  <path d="M42.5 35.5C42.5 35.5 40.5 38 40.5 39.5C40.5 40.6 41.4 41.5 42.5 41.5C43.6 41.5 44.5 40.6 44.5 39.5C44.5 38 42.5 35.5 42.5 35.5Z" stroke="#7BA9F0" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M46.5 43C46.5 43 44.3 45.8 44.3 47.5C44.3 48.7 45.3 49.7 46.5 49.7C47.7 49.7 48.7 48.7 48.7 47.5C48.7 45.8 46.5 43 46.5 43Z" stroke="#7BA9F0" stroke-width="2.2" stroke-linejoin="round"/>
+</svg>

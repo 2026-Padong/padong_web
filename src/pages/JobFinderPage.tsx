@@ -1,0 +1,344 @@
+import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router'
+import { SideNav } from '@/components/layout/SideNav'
+import { BottomNav } from '@/components/layout/BottomNav'
+import { JobSearchTop } from '@/features/neighborhood-finder/components/JobSearchTop'
+import { ResultListPanelExpanded } from '@/features/neighborhood-finder/components/ResultListPanelExpanded'
+import { RESULTS_PAGE_SIZE } from '@/features/neighborhood-finder/components/ResultListPanel'
+import { DetailPanel } from '@/features/neighborhood-finder/components/DetailPanel'
+import { KakaoMap } from '@/components/map/KakaoMap'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { Chip } from '@/components/ui/Chip'
+import { useMobilityArrival, useMobilityArrivalMulti } from '@/api/queries/useMobility'
+import { useDongDetail } from '@/api/queries/useDongDetail'
+import { mobilityToResultDto } from '@/features/neighborhood-finder/utils/mobilityToResult'
+import { buildDetailProps, buildDetailPropsFromApi } from '@/features/neighborhood-finder/utils/buildDetailProps'
+import { useLoginGate } from '@/lib/useLoginGate'
+import { toggleDongneLike } from '@/api/likes'
+import { useQueryClient } from '@tanstack/react-query'
+import type { DongSuggestionItem } from '@/api/queries/useDongSuggestions'
+import type { ResultDto } from '@/api/contracts/results'
+import { useRecommendationTracking } from '@/lib/useRecommendationTracking'
+
+export function JobFinderPage() {
+  const [params, setParams] = useSearchParams()
+  const isMulti = params.get('multi') === '1'
+  // 통일된 패턴: input은 임시 버퍼, destinations는 자동완성 클릭으로만 추가됨
+  // 백엔드 mobility API 가 adminDongCode 필요 → DongSuggestionItem 전체 보관
+  const [destination, setDestination] = useState('')
+  const [destinations, setDestinations] = useState<DongSuggestionItem[]>([])
+  const [page, setPage] = useState(1)
+  // 페이지 이동해도 detail 유지하기 위해 id 가 아닌 full object 보관.
+  const [selectedItem, setSelectedItem] = useState<ResultDto | undefined>(undefined)
+  const { requireLogin, loginDialog } = useLoginGate()
+  const qc = useQueryClient()
+  const track = useRecommendationTracking()
+
+  const handleSelect = (item: ResultDto) => {
+    setSelectedItem(item)
+    track.onCardClick(item.id)
+  }
+  const handleDeselect = () => {
+    setSelectedItem(undefined)
+    track.onDetailClose()
+  }
+
+  // 좋아요 토글 — mobility 쿼리 캐시 invalidate (page-aware key 라 cross-page 동기화 어려움 → refetch 가 가장 안전)
+  const handleToggleLike = async (adminDongCode: string) => {
+    if (!requireLogin({ action: '좋아요' })) return
+    try {
+      const result = await toggleDongneLike(adminDongCode)
+      qc.invalidateQueries({ queryKey: ['mobility'] })
+      track.onCardLike(adminDongCode, result.liked)
+    } catch (e) {
+      console.error('[job-finder:like-toggle] failed:', e)
+    }
+  }
+
+  const MAX_DESTINATIONS = isMulti ? 5 : 1
+  const hasSearched = destinations.length > 0
+  // multi 는 2개 이상이어야 결과 조회 가능
+  const multiNeedsMore = isMulti && destinations.length < 2
+
+  // 백엔드 mobility API 호출 (single / multi 분기) — BE 페이징 직결
+  const singleQuery = useMobilityArrival(
+    !isMulti && destinations.length > 0 ? destinations[0].adminDongCode : undefined,
+    { page: page - 1, size: RESULTS_PAGE_SIZE },
+  )
+  // multi 는 2개 이상일 때만 호출 (백엔드 spec: < 2 면 400)
+  const multiQuery = useMobilityArrivalMulti(
+    isMulti && destinations.length >= 2 ? destinations.map((d) => d.adminDongCode) : [],
+    { page: page - 1, size: RESULTS_PAGE_SIZE },
+  )
+
+  const isLoading = isMulti ? multiQuery.isLoading : singleQuery.isLoading
+  const error = isMulti ? multiQuery.error : singleQuery.error
+  const refetch = isMulti ? multiQuery.refetch : singleQuery.refetch
+
+  // 현재 페이지의 mobility 결과
+  const pageData = useMemo(() => {
+    if (destinations.length === 0) return undefined
+    if (isMulti && destinations.length < 2) return undefined
+    return isMulti ? multiQuery.data : singleQuery.data
+  }, [isMulti, multiQuery.data, singleQuery.data, destinations.length])
+
+  const items = useMemo(
+    () => pageData?.content.map((m) => mobilityToResultDto(m)) ?? [],
+    [pageData],
+  )
+  const total = pageData?.totalElements ?? 0
+  const totalPages = Math.max(1, pageData?.totalPages ?? 1)
+  // 현재 페이지 카드에서 최신 데이터 가져오기, 다른 페이지면 selectedItem 그대로
+  const selectedResult = selectedItem
+    ? items.find((r) => r.id === selectedItem.id) ?? selectedItem
+    : undefined
+  // 절대 rank 추정: page * size + index. 선택 카드가 현재 페이지에 있을 때만 정확.
+  const selectedRank = selectedResult
+    ? (() => {
+        const idxInPage = items.findIndex((r) => r.id === selectedResult.id)
+        return idxInPage >= 0 ? (page - 1) * RESULTS_PAGE_SIZE + idxInPage + 1 : 0
+      })()
+    : 0
+
+  // 선택된 동네 상세 — 백엔드 /dongne/detail
+  // arrivalAdminDongCode 는 사용자가 입력한 직장 (single 모드의 첫 도착지)
+  const detailQuery = useDongDetail(
+    selectedResult?.id,
+    !isMulti && destinations.length > 0 ? destinations[0].adminDongCode : undefined,
+  )
+  const detailProps = useMemo(() => {
+    if (!selectedResult) return null
+    return detailQuery.data
+      ? buildDetailPropsFromApi(selectedResult, detailQuery.data)
+      : buildDetailProps(selectedResult)
+  }, [selectedResult, detailQuery.data])
+
+  const handleModeChange = (m: 'single' | 'multi') => {
+    if (m === 'multi') setParams({ multi: '1' })
+    else setParams({})
+    setPage(1)
+    setDestinations([])
+    setDestination('')
+    setSelectedItem(undefined)
+  }
+
+  const handleDestinationChange = (v: string) => {
+    setDestination(v)
+    setPage(1)
+  }
+
+  // 자동완성 클릭으로만 칩 추가 — 타이핑은 추가 안 함
+  const handleAddDestination = (item: DongSuggestionItem) => {
+    if (destinations.some((d) => d.adminDongCode === item.adminDongCode)) {
+      setDestination('')
+      return
+    }
+    if (destinations.length >= MAX_DESTINATIONS) {
+      // 단일 모드: 1개 도달 시 새로 추가 → 기존 칩 교체
+      if (!isMulti) {
+        setDestinations([item])
+        setDestination('')
+        setPage(1)
+        setSelectedItem(undefined)
+      } else {
+        setDestination('')
+      }
+      return
+    }
+    setDestinations((prev) => [...prev, item])
+    setDestination('')
+    setPage(1)
+    setSelectedItem(undefined)
+  }
+  const handleRemoveDestination = (adminDongCode: string) => {
+    setDestinations((prev) => prev.filter((d) => d.adminDongCode !== adminDongCode))
+    setPage(1)
+    setSelectedItem(undefined)
+  }
+  // hint: 단일은 없음 / 다중은 0개일 때만 안내
+  const hint = isMulti && destinations.length === 0
+    ? `최대 ${MAX_DESTINATIONS}개 선택 가능`
+    : undefined
+  // "추천 동네 N개" 텍스트는 제거 — 다중 모드는 "N개 직장 종합" 만 노출
+  const summarySubtitle = isMulti
+    ? `${destinations.length}개 직장 종합`
+    : ''
+
+  return (
+    <div className="flex h-screen overflow-hidden">
+      <SideNav activeType="Commute" />
+      <aside className="flex w-full flex-col items-center gap-sm px-lg py-xl md:w-[421px] md:shrink-0 md:min-h-screen">
+        <JobSearchTop
+          title="직장 위치 기반"
+          mode={isMulti ? 'multi' : 'single'}
+          onModeChange={handleModeChange}
+          destination={destination}
+          onDestinationChange={handleDestinationChange}
+          onSubmitDestination={handleAddDestination}
+          hint={hint}
+        />
+        {isMulti
+          ? destinations.length > 0 && (
+              <div className="flex w-full flex-wrap items-center gap-xs">
+                {destinations.map((d) => (
+                  <button
+                    key={d.adminDongCode}
+                    type="button"
+                    onClick={() => handleRemoveDestination(d.adminDongCode)}
+                    className="inline-flex items-center gap-xxs rounded-full bg-brand-primary-tint px-sm py-xxs text-body font-normal text-brand-primary transition-colors hover:bg-brand-primary hover:text-neutral-white"
+                    aria-label={`${d.name} 제외`}
+                  >
+                    <span>{d.name}</span>
+                    <span aria-hidden>×</span>
+                  </button>
+                ))}
+                <span
+                  className={`ml-auto text-body font-normal ${
+                    destinations.length >= MAX_DESTINATIONS
+                      ? 'text-status-warning'
+                      : 'text-text-tertiary'
+                  }`}
+                  aria-live="polite"
+                >
+                  {destinations.length} / {MAX_DESTINATIONS}
+                </span>
+              </div>
+            )
+          : destinations.length > 0 && (
+              <div className="flex w-full items-center gap-xs">
+                <button
+                  type="button"
+                  onClick={() => handleRemoveDestination(destinations[0].adminDongCode)}
+                  className="inline-flex items-center gap-xxs rounded-full bg-brand-primary-tint px-sm py-xxs text-body font-normal text-brand-primary transition-colors hover:bg-brand-primary hover:text-neutral-white"
+                  aria-label={`${destinations[0].name} 제외`}
+                >
+                  <span>{destinations[0].name}</span>
+                  <span aria-hidden>×</span>
+                </button>
+                <span
+                  className="ml-auto text-body font-normal text-text-tertiary"
+                  aria-live="polite"
+                >
+                  1 / 1
+                </span>
+              </div>
+            )}
+        {!hasSearched ? (
+          <div
+            className="flex flex-1 flex-col items-center justify-center gap-xs px-md py-2xl text-center"
+            aria-live="polite"
+          >
+            <p className="text-subhead font-bold text-text-secondary">
+              직장 위치를 입력해주세요
+            </p>
+            <p className="text-body-l font-normal text-text-tertiary">
+              출퇴근 시간 기반으로 동네를 추천해드려요
+            </p>
+          </div>
+        ) : multiNeedsMore ? (
+          <div
+            className="flex flex-1 flex-col items-center justify-center gap-xs px-md py-2xl text-center"
+            aria-live="polite"
+          >
+            <p className="text-subhead font-bold text-text-secondary">
+              직장 위치를 1개 더 입력해주세요
+            </p>
+            <p className="text-body-l font-normal text-text-tertiary">
+              다중 모드는 2개 이상 직장의 공통 추천을 보여드려요
+            </p>
+          </div>
+        ) : isLoading ? (
+          <div
+            className="flex w-full flex-col gap-md"
+            aria-busy="true"
+            aria-live="polite"
+            aria-label="결과 불러오는 중"
+          >
+            <Skeleton className="h-[34px] w-full" />
+            {[0, 1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-[100px] w-full" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="flex flex-1 items-center justify-center">
+            <ErrorState onRetry={() => refetch()} />
+          </div>
+        ) : (
+          <ResultListPanelExpanded
+            results={items.map((r) => ({
+              id: r.id,
+              dong: r.dong,
+              fullAddress: r.fullAddress,
+              liked: r.liked,
+              tags: r.tags,
+              score: r.score,
+              onToggleLike: () => handleToggleLike(r.id),
+            }))}
+            selectedId={selectedResult?.id}
+            onSelect={(id) => {
+              const item = items.find((r) => r.id === id)
+              if (item) handleSelect(item)
+            }}
+            resultCount={total}
+            resultSubtitle={summarySubtitle}
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={(p) => {
+              setPage(p)
+              handleDeselect()
+            }}
+            filterSlot={
+              <div className="flex flex-wrap items-center justify-end gap-xs">
+                {['통근시간', '자치구', '주거'].map((label) => (
+                  <Chip key={label} state="default" className="cursor-pointer whitespace-nowrap">
+                    {label} ▾
+                  </Chip>
+                ))}
+              </div>
+            }
+          />
+        )}
+      </aside>
+      {hasSearched && selectedResult && detailProps && (
+        <div className="hidden md:block">
+          <DetailPanel
+            onBack={handleDeselect}
+            {...detailProps}
+            score={selectedRank}
+            placeImageUrl={
+              detailQuery.data?.images?.[0]
+              ?? `https://picsum.photos/seed/dong-${encodeURIComponent(selectedResult.id)}/640/400`
+            }
+          />
+        </div>
+      )}
+      <div className="hidden min-w-0 flex-1 md:block">
+        <KakaoMap
+          center={selectedResult?.center}
+          level={selectedResult ? 6 : 7}
+          dongs={items
+            .filter((r) => r.geometry && r.geometry.length > 0)
+            .map((r) => ({ id: r.id, name: r.dong, paths: r.geometry! }))}
+          markers={items
+            .filter((r) => r.center)
+            .map((r) => ({
+              id: r.id,
+              position: r.center!,
+              label: r.dong,
+              selected: r.id === selectedResult?.id,
+            }))}
+          selectedId={selectedResult?.id}
+          onDongClick={(id) => {
+            const item = items.find((r) => r.id === id)
+            if (item) handleSelect(item)
+          }}
+          // 검색 변경 / 페이지 변경 시 강제 fitBounds (사용자 수동 줌 상태 리셋)
+          fitBoundsKey={`${isMulti ? 'm' : 's'}:${destinations.map((d) => d.adminDongCode).join(',')}:${page}`}
+        />
+      </div>
+      <BottomNav activeType="Commute" className="lg:hidden" />
+      {loginDialog}
+    </div>
+  )
+}

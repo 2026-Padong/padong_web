@@ -1,0 +1,7 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="20" fill="#EEF5FF"/>
+  <!-- 작은 구름 (뒤쪽 우상단) -->
+  <path d="M52 22.5C52 19.5 49.5 17 46.5 17C45.6 17 44.7 17.2 44 17.6C42.9 15.5 40.7 14 38.2 14C34.5 14 31.5 17 31.5 20.8C31.5 21.2 31.5 21.6 31.6 22C29.7 22.5 28.3 24.2 28.3 26.3C28.3 28.6 30.2 30.5 32.5 30.5H46.5C49.5 30.5 52 28 52 25Z" stroke="#7BA9F0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 큰 구름 (앞쪽 좌하단) -->
+  <path d="M42 38C42 33.6 38.4 30 34 30C33.6 30 33.2 30 32.8 30.1C31.6 26.6 28.3 24 24.4 24C19.5 24 15.5 28 15.5 32.9C15.5 33.3 15.5 33.7 15.6 34.1C13.5 34.8 12 36.7 12 39C12 41.8 14.2 44 17 44H40C43.3 44 46 41.3 46 38Z" stroke="#7BA9F0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
