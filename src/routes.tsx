@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router'
+import { createBrowserRouter, Navigate, useLocation } from 'react-router'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { AdminLoginPage } from '@/pages/AdminLoginPage'
@@ -40,8 +40,27 @@ import { IconsPreview } from '@/dev/IconsPreview'
 import { HeaderAuthPreview } from '@/dev/HeaderAuthPreview'
 import { WeatherPreview } from '@/dev/WeatherPreview'
 
+function HomeRoute() {
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  const hasOAuthResponse = [
+    'signupRequired',
+    'roleMismatch',
+    'pendingApproval',
+    'accessToken',
+    'error',
+    'error_description',
+  ].some((key) => params.has(key))
+
+  if (hasOAuthResponse) {
+    return <Navigate to={`/auth/kakao/callback${location.search}`} replace />
+  }
+
+  return <HomePage />
+}
+
 export const router = createBrowserRouter([
-  { path: '/', element: <HomePage /> },
+  { path: '/', element: <HomeRoute /> },
   {
     path: '/finder/preference',
     children: [
